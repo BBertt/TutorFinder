@@ -19,6 +19,7 @@ return new class extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->foreignId('role_id')->constrained('roles');
+            $table->string('phone_number');
             $table->string('gender');
             $table->dateTime('date_of_birth');
             $table->string('profile_image_path')->nullable();
