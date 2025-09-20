@@ -9,6 +9,7 @@ use Illuminate\Http\RedirectResponse;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Requests\Auth\TutorRegisterRequest;
+use App\Models\TutorRegistration;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Facades\Auth;
 
@@ -27,13 +28,17 @@ class RegisteredTutorController extends Controller
             'phone_number' => $request->phoneNumber,
             'gender' => $request->gender,
             'date_of_birth' => $request->dateOfBirth,
-            'role_id' => 2, // default role_id for tutor
+            'role_id' => 2, // default role_id for tutor,
+            'identification_image_path' => $request->file('identificationImage')->store('identification'),
+            'certification_image_path' => $request->file('certificationImage')->store('certification')
+        ]);
+
+        TutorRegistration::create([
+            'user_id' => $tutor->id
         ]);
 
         event(new Registered($tutor));
 
-        Auth::login($tutor);
-
-        return redirect(route('home', absolute: false));
+        return redirect(route('login', absolute: false));
     }
 }

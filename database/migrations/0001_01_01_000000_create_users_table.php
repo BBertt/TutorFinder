@@ -23,6 +23,8 @@ return new class extends Migration
             $table->string('gender');
             $table->dateTime('date_of_birth');
             $table->string('profile_image_path')->nullable();
+            $table->string('identification_image_path')->nullable();
+            $table->string('certification_image_path')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });

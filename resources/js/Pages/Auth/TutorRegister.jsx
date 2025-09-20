@@ -12,7 +12,7 @@ const TutorRegister = () => {
         phoneNumber: "",
         gender: "",
         dateOfBirth: "",
-        idImage: "",
+        identificationImage: "",
         certificationImage: "",
     });
 
@@ -28,7 +28,7 @@ const TutorRegister = () => {
 
     const submit = (e) => {
         e.preventDefault();
-        post("/tutor/register");
+        post("/tutor/register", { forceFormData: true });
     };
 
     return (
@@ -271,21 +271,31 @@ const TutorRegister = () => {
                     <button
                         type="button"
                         onClick={() => idImageRef.current.click()}
-                        className="w-full px-4 py-2 rounded-full text-black bg-white border border-gray-300 text-left"
+                        className="w-full px-4 py-2 rounded-full text-primary bg-white text-center font-extrabold flex items-center justify-center gap-2"
                     >
-                        {data.idImage ? data.idImage.name : "Add Image"}
+                        <img
+                            src="/assets/icons/gallery-add.svg"
+                            alt="Add"
+                            className="w-5 h-5"
+                        />
+                        {data.identificationImage
+                            ? data.identificationImage.name
+                            : "Add Image"}
                     </button>
                     <input
                         type="file"
                         ref={idImageRef}
-                        onChange={(e) => setData("idImage", e.target.files[0])}
+                        onChange={(e) => {
+                            setData("identificationImage", e.target.files[0]);
+                            clearErrors("identificationImage");
+                        }}
                         name="idImage"
                         className="hidden"
                         accept="image/*"
                     />
-                    {errors.idImage && (
+                    {errors.identificationImage && (
                         <p className="text-red-500 text-sm mt-1">
-                            {errors.idImage}
+                            {errors.identificationImage}
                         </p>
                     )}
                 </div>
@@ -298,8 +308,13 @@ const TutorRegister = () => {
                     <button
                         type="button"
                         onClick={() => certImageRef.current.click()}
-                        className="w-full px-4 py-2 rounded-full text-black bg-white border border-gray-300 text-left"
+                        className="w-full px-4 py-2 rounded-full text-primary bg-white text-center font-extrabold flex items-center justify-center gap-2"
                     >
+                        <img
+                            src="/assets/icons/gallery-add.svg"
+                            alt="Add"
+                            className="w-5 h-5"
+                        />
                         {data.certificationImage
                             ? data.certificationImage.name
                             : "Add Image"}
@@ -307,9 +322,10 @@ const TutorRegister = () => {
                     <input
                         type="file"
                         ref={certImageRef}
-                        onChange={(e) =>
-                            setData("certificationImage", e.target.files[0])
-                        }
+                        onChange={(e) => {
+                            setData("certificationImage", e.target.files[0]);
+                            clearErrors("certificationImage");
+                        }}
                         name="certificationImage"
                         className="hidden"
                         accept="image/*"
@@ -326,7 +342,7 @@ const TutorRegister = () => {
                     disabled={processing}
                     className="p-2 font-extrabold rounded-full bg-[#3D3D3D] hover:bg-[#000000] w-full"
                 >
-                    Create Account
+                    Register
                 </button>
             </form>
         </div>

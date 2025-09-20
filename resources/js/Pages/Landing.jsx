@@ -29,12 +29,6 @@ const GuestNavbar = () => {
                             href="#"
                             className="text-[#3D3D3D] hover:text-[#4F6D40]"
                         >
-                            How It Works?
-                        </Link>
-                        <Link
-                            href="#"
-                            className="text-[#3D3D3D] hover:text-[#4F6D40]"
-                        >
                             Forum
                         </Link>
                         <Link
@@ -74,7 +68,7 @@ const Landing = () => {
                 <div className="flex justify-between items-center w-full">
                     <img
                         className="w-40 h-40 object-cover"
-                        src="/images/landing/ellipse.png"
+                        src="/assets/images/landing/ellipse.png"
                     />
                     <div className="flex-1 max-w-2xl flex flex-col gap-6">
                         <h1 className="text-4xl font-extrabold">
@@ -104,7 +98,7 @@ const Landing = () => {
                     </div>
                     <img
                         className="w-40 h-40 object-cover"
-                        src="/images/landing/rectangle.png"
+                        src="/assets/images/landing/rectangle.png"
                     />
                 </div>
             </section>
@@ -130,7 +124,7 @@ const Landing = () => {
                             <p>{text}</p>
                             <img
                                 className="w-32 h-32 mx-auto object-cover"
-                                src="/images/landing/books.png"
+                                src="/assets/images/landing/books.png"
                                 alt="books"
                             />
                         </div>

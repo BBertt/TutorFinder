@@ -11,7 +11,7 @@ class TutorRegisterRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -30,8 +30,8 @@ class TutorRegisterRequest extends FormRequest
             'phoneNumber' => ['required', 'string', 'regex:/^[0-9]+$/'],
             'gender' => ['required', 'string'],
             'dateOfBirth' => ['required', 'date', 'before_or_equal:today'],
-            'identificationImages' => ['required', 'image'],
-            'certificationImages' => ['required', 'image']
+            'identificationImage' => ['required', 'image'],
+            'certificationImage' => ['required', 'image']
         ];
     }
 }
