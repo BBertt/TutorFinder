@@ -40,5 +40,10 @@ class DatabaseSeeder extends Seeder
             'email' => 'student@example.com',
             'role_id' => 3,
         ]);
+
+        $this->call([
+            CategorySeeder::class,
+            CourseSeeder::class,
+        ]);
     }
 }
