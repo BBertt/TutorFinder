@@ -87,7 +87,7 @@ const AppNavbar = ({ logoSrc }) => {
 
 const AppFooter = ({ logoSrc }) => {
     return (
-        <footer className="bg-primary">
+        <footer className="bg-gradient-to-r from-[#99D37C] to-[#4F6D40]">
             <div className="container mx-auto py-12 px-4 sm:px-6 lg:px-8">
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
                     <div className="space-y-4">
@@ -110,44 +110,36 @@ const AppFooter = ({ logoSrc }) => {
                         </h3>
                         <ul className="mt-4 space-y-2">
                             <li>
-                                {" "}
                                 <Link
                                     href="#"
                                     className="text-base text-white hover:text-gray-300 font-bold"
                                 >
-                                    {" "}
-                                    Navigation Link{" "}
-                                </Link>{" "}
+                                    Navigation Link
+                                </Link>
                             </li>
                             <li>
-                                {" "}
                                 <Link
                                     href="#"
                                     className="text-base text-white hover:text-gray-300 font-bold"
                                 >
-                                    {" "}
-                                    Navigation Link{" "}
-                                </Link>{" "}
+                                    Navigation Link
+                                </Link>
                             </li>
                             <li>
-                                {" "}
                                 <Link
                                     href="#"
                                     className="text-base text-white hover:text-gray-300 font-bold"
                                 >
-                                    {" "}
-                                    Navigation Link{" "}
-                                </Link>{" "}
+                                    Navigation Link
+                                </Link>
                             </li>
                             <li>
-                                {" "}
                                 <Link
                                     href="#"
                                     className="text-base text-white hover:text-gray-300 font-bold"
                                 >
-                                    {" "}
-                                    Navigation Link{" "}
-                                </Link>{" "}
+                                    Navigation Link
+                                </Link>
                             </li>
                         </ul>
                     </div>
@@ -158,34 +150,28 @@ const AppFooter = ({ logoSrc }) => {
                         </h3>
                         <ul className="mt-4 space-y-2 md:mt-10">
                             <li>
-                                {" "}
                                 <Link
                                     href="#"
                                     className="text-base text-white hover:text-gray-300 font-bold"
                                 >
-                                    {" "}
-                                    Navigation Link{" "}
-                                </Link>{" "}
+                                    Navigation Link
+                                </Link>
                             </li>
                             <li>
-                                {" "}
                                 <Link
                                     href="#"
                                     className="text-base text-white hover:text-gray-300 font-bold"
                                 >
-                                    {" "}
-                                    Navigation Link{" "}
-                                </Link>{" "}
+                                    Navigation Link
+                                </Link>
                             </li>
                             <li>
-                                {" "}
                                 <Link
                                     href="#"
                                     className="text-base text-white hover:text-gray-300 font-bold"
                                 >
-                                    {" "}
-                                    Navigation Link{" "}
-                                </Link>{" "}
+                                    Navigation Link
+                                </Link>
                             </li>
                         </ul>
                     </div>
@@ -204,7 +190,7 @@ const AppFooter = ({ logoSrc }) => {
                 </div>
 
                 <div className="mt-12 border-t border-gray-600 pt-8">
-                    <p className="text-base text-white font-bold text-center">
+                    <p className="text-base text-white font-bold text-left">
                         &copy; 2025 TutorFinder, Inc.
                     </p>
                 </div>
