@@ -1,9 +1,8 @@
 import AuthPagesLayout from "@/Layouts/AuthPagesLayout";
+import { useForm } from "@inertiajs/react";
+import { useState, useRef } from "react";
 
-import { useForm, Link } from "@inertiajs/react";
-import { useState } from "react";
-
-const Register = () => {
+const TutorRegister = () => {
     const { data, setData, post, processing, errors, clearErrors } = useForm({
         firstName: "",
         lastName: "",
@@ -13,6 +12,8 @@ const Register = () => {
         phoneNumber: "",
         gender: "",
         dateOfBirth: "",
+        identificationImage: "",
+        certificationImage: "",
     });
 
     const [firstNameError, setFirstNameError] = useState("");
@@ -22,24 +23,25 @@ const Register = () => {
     const [confirmPasswordError, setConfirmPasswordError] = useState("");
     const [phoneNumberError, setPhoneNumberError] = useState("");
 
+    const idImageRef = useRef(null);
+    const certImageRef = useRef(null);
+
     const submit = (e) => {
-        e.preventDefault(e);
-        post("/register");
+        e.preventDefault();
+        post("/tutor/register", { forceFormData: true });
     };
 
     return (
-        <div className="w-full max-w-xs flex flex-col gap-6">
+        <div className="w-full max-w-xs flex flex-col gap-6 py-6">
             <div className="text-center">
-                <h1 className="text-5xl font-bold">Create an Account</h1>
+                <h1 className="text-5xl font-bold">Tutor Registration</h1>
             </div>
 
             <form onSubmit={submit} className="flex flex-col gap-6">
+                {/* First & Last Name */}
                 <div className="flex gap-3">
                     <div>
-                        <label
-                            htmlFor="firstName"
-                            className="text-sm font-extrabold"
-                        >
+                        <label className="text-sm font-extrabold">
                             First Name
                         </label>
                         <input
@@ -48,14 +50,11 @@ const Register = () => {
                             onChange={(e) => {
                                 setData("firstName", e.target.value);
                                 clearErrors("firstName");
-
-                                if (!e.target.value) {
-                                    setFirstNameError(
-                                        "The first name field is required."
-                                    );
-                                } else {
-                                    setFirstNameError("");
-                                }
+                                setFirstNameError(
+                                    e.target.value
+                                        ? ""
+                                        : "The first name field is required."
+                                );
                             }}
                             name="firstName"
                             placeholder="John"
@@ -67,11 +66,9 @@ const Register = () => {
                             </p>
                         )}
                     </div>
+
                     <div>
-                        <label
-                            htmlFor="lastName"
-                            className="text-sm font-extrabold"
-                        >
+                        <label className="text-sm font-extrabold">
                             Last Name
                         </label>
                         <input
@@ -80,14 +77,11 @@ const Register = () => {
                             onChange={(e) => {
                                 setData("lastName", e.target.value);
                                 clearErrors("lastName");
-
-                                if (!e.target.value) {
-                                    setLastNameError(
-                                        "The last name field is required."
-                                    );
-                                } else {
-                                    setLastNameError("");
-                                }
+                                setLastNameError(
+                                    e.target.value
+                                        ? ""
+                                        : "The last name field is required."
+                                );
                             }}
                             name="lastName"
                             placeholder="Doe"
@@ -101,22 +95,20 @@ const Register = () => {
                     </div>
                 </div>
 
+                {/* Email */}
                 <div>
-                    <label htmlFor="email" className="text-sm font-extrabold">
-                        Email
-                    </label>
+                    <label className="text-sm font-extrabold">Email</label>
                     <input
                         type="email"
                         value={data.email}
                         onChange={(e) => {
                             setData("email", e.target.value);
                             clearErrors("email");
-
-                            if (!e.target.value) {
-                                setEmailError("The email field is required.");
-                            } else {
-                                setEmailError("");
-                            }
+                            setEmailError(
+                                e.target.value
+                                    ? ""
+                                    : "The email field is required."
+                            );
                         }}
                         name="email"
                         placeholder="example@email.com"
@@ -129,27 +121,20 @@ const Register = () => {
                     )}
                 </div>
 
+                {/* Password */}
                 <div>
-                    <label
-                        htmlFor="password"
-                        className="text-sm font-extrabold"
-                    >
-                        Password
-                    </label>
+                    <label className="text-sm font-extrabold">Password</label>
                     <input
                         type="password"
                         value={data.password}
                         onChange={(e) => {
                             setData("password", e.target.value);
                             clearErrors("password");
-
-                            if (!e.target.value) {
-                                setPasswordError(
-                                    "The password field is required."
-                                );
-                            } else {
-                                setPasswordError("");
-                            }
+                            setPasswordError(
+                                e.target.value
+                                    ? ""
+                                    : "The password field is required."
+                            );
                         }}
                         name="password"
                         placeholder="••••••••"
@@ -162,11 +147,9 @@ const Register = () => {
                     )}
                 </div>
 
+                {/* Confirm Password */}
                 <div>
-                    <label
-                        htmlFor="confirmPassword"
-                        className="text-sm font-extrabold"
-                    >
+                    <label className="text-sm font-extrabold">
                         Confirm Password
                     </label>
                     <input
@@ -175,14 +158,11 @@ const Register = () => {
                         onChange={(e) => {
                             setData("confirmPassword", e.target.value);
                             clearErrors("confirmPassword");
-
-                            if (!e.target.value) {
-                                setConfirmPasswordError(
-                                    "The confirm password field is required."
-                                );
-                            } else {
-                                setConfirmPasswordError("");
-                            }
+                            setConfirmPasswordError(
+                                e.target.value
+                                    ? ""
+                                    : "The confirm password field is required."
+                            );
                         }}
                         name="confirmPassword"
                         placeholder="••••••••"
@@ -195,11 +175,9 @@ const Register = () => {
                     )}
                 </div>
 
+                {/* Phone Number */}
                 <div>
-                    <label
-                        htmlFor="phoneNumber"
-                        className="text-sm font-extrabold"
-                    >
+                    <label className="text-sm font-extrabold">
                         Phone Number
                     </label>
                     <input
@@ -208,14 +186,11 @@ const Register = () => {
                         onChange={(e) => {
                             setData("phoneNumber", e.target.value);
                             clearErrors("phoneNumber");
-
-                            if (!e.target.value) {
-                                setPhoneNumberError(
-                                    "The phone number field is required."
-                                );
-                            } else {
-                                setPhoneNumberError("");
-                            }
+                            setPhoneNumberError(
+                                e.target.value
+                                    ? ""
+                                    : "The phone number field is required."
+                            );
                         }}
                         name="phoneNumber"
                         placeholder="081234567890"
@@ -228,10 +203,10 @@ const Register = () => {
                     )}
                 </div>
 
+                {/* Gender & Date of Birth */}
                 <div className="flex gap-3">
                     <div>
                         <label className="text-sm font-extrabold">Gender</label>
-
                         <div className="flex items-center gap-4 mt-2">
                             <label className="flex items-center gap-2">
                                 <input
@@ -246,7 +221,6 @@ const Register = () => {
                                 />
                                 Male
                             </label>
-
                             <label className="flex items-center gap-2">
                                 <input
                                     type="radio"
@@ -261,7 +235,6 @@ const Register = () => {
                                 Female
                             </label>
                         </div>
-
                         {errors.gender && (
                             <p className="text-red-500 text-sm mt-1">
                                 {errors.gender}
@@ -269,10 +242,7 @@ const Register = () => {
                         )}
                     </div>
                     <div>
-                        <label
-                            htmlFor="dateOfBirth"
-                            className="text-sm font-extrabold"
-                        >
+                        <label className="text-sm font-extrabold">
                             Date of Birth
                         </label>
                         <input
@@ -293,32 +263,92 @@ const Register = () => {
                     </div>
                 </div>
 
+                {/* User Identification Image */}
+                <div>
+                    <label className="text-sm font-extrabold">
+                        User Identification Image
+                    </label>
+                    <button
+                        type="button"
+                        onClick={() => idImageRef.current.click()}
+                        className="w-full px-4 py-2 rounded-full text-primary bg-white text-center font-extrabold flex items-center justify-center gap-2"
+                    >
+                        <img
+                            src="/assets/icons/gallery-add.svg"
+                            alt="Add"
+                            className="w-5 h-5"
+                        />
+                        {data.identificationImage
+                            ? data.identificationImage.name
+                            : "Add Image"}
+                    </button>
+                    <input
+                        type="file"
+                        ref={idImageRef}
+                        onChange={(e) => {
+                            setData("identificationImage", e.target.files[0]);
+                            clearErrors("identificationImage");
+                        }}
+                        name="idImage"
+                        className="hidden"
+                        accept="image/*"
+                    />
+                    {errors.identificationImage && (
+                        <p className="text-red-500 text-sm mt-1">
+                            {errors.identificationImage}
+                        </p>
+                    )}
+                </div>
+
+                {/* Certification Image */}
+                <div>
+                    <label className="text-sm font-extrabold">
+                        Certification Image
+                    </label>
+                    <button
+                        type="button"
+                        onClick={() => certImageRef.current.click()}
+                        className="w-full px-4 py-2 rounded-full text-primary bg-white text-center font-extrabold flex items-center justify-center gap-2"
+                    >
+                        <img
+                            src="/assets/icons/gallery-add.svg"
+                            alt="Add"
+                            className="w-5 h-5"
+                        />
+                        {data.certificationImage
+                            ? data.certificationImage.name
+                            : "Add Image"}
+                    </button>
+                    <input
+                        type="file"
+                        ref={certImageRef}
+                        onChange={(e) => {
+                            setData("certificationImage", e.target.files[0]);
+                            clearErrors("certificationImage");
+                        }}
+                        name="certificationImage"
+                        className="hidden"
+                        accept="image/*"
+                    />
+                    {errors.certificationImage && (
+                        <p className="text-red-500 text-sm mt-1">
+                            {errors.certificationImage}
+                        </p>
+                    )}
+                </div>
+
                 <button
                     type="submit"
                     disabled={processing}
                     className="p-2 font-extrabold rounded-full bg-[#3D3D3D] hover:bg-[#000000] w-full"
                 >
-                    Create Account
+                    Register
                 </button>
             </form>
-
-            <div className="flex flex-col items-center gap-6">
-                <div className="flex items-center w-full">
-                    <div className="w-1/2 border-t border-white"></div>
-                    <span className="px-3 text-sm">OR</span>
-                    <div className="w-1/2 border-t border-white"></div>
-                </div>
-                <Link
-                    href="/login"
-                    className="p-2 text-center text-[#4F6D40] font-extrabold rounded-full bg-[#FFFFFF] hover:bg-[#3D3D3D] hover:text-white w-full"
-                >
-                    Sign In
-                </Link>
-            </div>
         </div>
     );
 };
 
-Register.layout = (page) => <AuthPagesLayout children={page} />;
+TutorRegister.layout = (page) => <AuthPagesLayout children={page} />;
 
-export default Register;
+export default TutorRegister;
