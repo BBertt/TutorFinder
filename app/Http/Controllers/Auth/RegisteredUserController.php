@@ -40,7 +40,7 @@ class RegisteredUserController extends Controller
             'phone_number' => $request->phoneNumber,
             'gender' => $request->gender,
             'date_of_birth' => $request->dateOfBirth,
-            'role_id' => 2, // default role_id for user
+            'role_id' => 3, // default role_id for user
         ]);
 
         event(new Registered($user));

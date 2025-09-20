@@ -120,7 +120,7 @@ const UserIcon = (props) => (
 
 const AppNavbar = ({ logoSrc }) => {
     return (
-        <nav className="bg-[#f5f5f5] shadow-sm sticky top-0 z-50">
+        <nav className="bg-accent shadow-sm sticky top-0 z-50">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex items-center justify-between h-20">
                     <div className="flex-shrink-0">
@@ -151,31 +151,31 @@ const AppNavbar = ({ logoSrc }) => {
                     <div className="hidden md:flex items-center space-x-6">
                         <Link
                             href="/shop"
-                            className="text-gray-500 hover:text-green-800"
+                            className="text-secondary hover:text-primary"
                         >
                             <ShopIcon className="h-6 w-6" />
                         </Link>
                         <Link
                             href="/friends"
-                            className="text-gray-500 hover:text-green-800"
+                            className="text-secondary hover:text-primary"
                         >
                             <FriendsIcon className="h-6 w-6" />
                         </Link>
                         <Link
                             href="/messages"
-                            className="text-gray-500 hover:text-green-800"
+                            className="text-secondary hover:text-primary"
                         >
                             <MessageSquareIcon className="h-6 w-6" />
                         </Link>
                         <Link
                             href="/notifications"
-                            className="text-gray-500 hover:text-green-800"
+                            className="text-secondary hover:text-primary"
                         >
                             <BellIcon className="h-6 w-6" />
                         </Link>
                         <Link
                             href="/profile"
-                            className="p-2 rounded-full bg-gray-200 text-gray-600 hover:bg-green-200 hover:text-green-800"
+                            className="p-2 rounded-full bg-gray-200 text-secondary hover:bg-green-200 hover:text-primary"
                         >
                             <UserIcon className="h-6 w-6" />
                         </Link>
@@ -188,7 +188,7 @@ const AppNavbar = ({ logoSrc }) => {
 
 const AppFooter = ({ logoSrc }) => {
     return (
-        <footer className="bg-[#4f6d40]">
+        <footer className="bg-primary">
             <div className="container mx-auto py-12 px-4 sm:px-6 lg:px-8">
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
                     <div className="space-y-4">
@@ -315,10 +315,10 @@ const AppFooter = ({ logoSrc }) => {
 };
 
 export default function AuthenticatedLayout({ children }) {
-    const logoSrc = "/assets/logo.png";
+    const logoSrc = "/assets/logo.svg";
 
     return (
-        <div className="flex flex-col min-h-screen bg-white font-sans">
+        <div className="flex flex-col min-h-screen bg-white">
             <AppNavbar logoSrc={logoSrc} />
             <main className="flex-grow">{children}</main>
             <AppFooter logoSrc={logoSrc} />
