@@ -2,7 +2,7 @@ import React from "react";
 import { Link, usePage } from "@inertiajs/react";
 
 const AppNavbar = ({ logoSrc }) => {
-    const { user } = usePage().props();
+    const { auth } = usePage().props;
 
     return (
         <nav className="bg-accent shadow-sm sticky top-0 z-50">
@@ -77,8 +77,8 @@ const AppNavbar = ({ logoSrc }) => {
                             <img
                                 className="w-7 h-7"
                                 src={
-                                    user.profile_image_path
-                                        ? `/storage/${user.profile_image_path}`
+                                    auth.user.profile_image_path
+                                        ? `/storage/${auth.user.profile_image_path}`
                                         : "/assets/icons/profile.svg"
                                 }
                                 alt="search"
