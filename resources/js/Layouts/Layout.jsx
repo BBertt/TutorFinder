@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link, usePage } from "@inertiajs/react";
 
 const AppNavbar = ({ logoSrc }) => {
+    const [open, setOpen] = useState(false);
     const { auth } = usePage().props;
 
     return (
@@ -73,17 +74,42 @@ const AppNavbar = ({ logoSrc }) => {
                                 alt="search"
                             />
                         </Link>
-                        <Link href="/profile">
-                            <img
-                                className="w-7 h-7"
-                                src={
-                                    auth.user.profile_image_path
-                                        ? `/storage/${auth.user.profile_image_path}`
-                                        : "/assets/icons/profile.svg"
-                                }
-                                alt="search"
-                            />
-                        </Link>
+                        <div className="relative">
+                            <div
+                                onClick={() => setOpen(!open)}
+                                className="cursor-pointer"
+                            >
+                                <img
+                                    className="w-7 h-7 rounded-full"
+                                    src={
+                                        auth.user?.profile_image_path
+                                            ? `/storage/${auth.user.profile_image_path}`
+                                            : "/assets/icons/profile.svg"
+                                    }
+                                    alt="Profile"
+                                />
+                            </div>
+
+                            {open && (
+                                <div className="absolute right-0 mt-2 w-64 bg-white rounded-md border border-gray-200 z-1">
+                                    <Link
+                                        href="/profile"
+                                        className="block px-4 py-2 text-secondary hover:bg-primary hover:text-white rounded-md"
+                                        onClick={() => setOpen(false)}
+                                    >
+                                        Profile
+                                    </Link>
+                                    <Link
+                                        href="/logout"
+                                        method="post"
+                                        as="button"
+                                        className="w-full text-left px-4 py-2 text-secondary hover:bg-primary hover:text-white rounded-md"
+                                    >
+                                        Logout
+                                    </Link>
+                                </div>
+                            )}
+                        </div>
                     </div>
                 </div>
             </div>
