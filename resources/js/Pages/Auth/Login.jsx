@@ -92,7 +92,7 @@ const Login = () => {
                 <button
                     type="submit"
                     disabled={processing}
-                    className="p-2 font-extrabold rounded-full bg-[#3D3D3D] hover:bg-[#000000] w-full"
+                    className="p-2 font-extrabold rounded-full bg-secondary hover:bg-[#000000] w-full"
                 >
                     Log In
                 </button>

@@ -1,4 +1,4 @@
-import { Link } from "@inertiajs/react";
+import { Link, usePage } from "@inertiajs/react";
 
 const GuestNavbar = () => {
     const logoSrc = "/assets/logo.png";
@@ -61,6 +61,8 @@ const GuestNavbar = () => {
 };
 
 const Landing = () => {
+    const { reviews } = usePage().props;
+
     return (
         <div className="flex flex-col">
             <GuestNavbar />
@@ -140,26 +142,28 @@ const Landing = () => {
                     Top Tutor of the Week
                 </h2>
                 <div className="flex justify-evenly items-center gap-8">
-                    <div className="bg-secondary rounded-xl p-6 flex gap-4 items-center">
-                        <div className="w-24 h-24rounded-full"></div>
-                        <div>
-                            <h3 className="font-bold">Tutor Name</h3>
-                            <p className="text-sm mt-2">
-                                “Lorem ipsum dolor sit amet, consectetur
-                                adipiscing elit...”
-                            </p>
+                    {reviews.map((tutor) => (
+                        <div
+                            key={tutor.id}
+                            className="bg-secondary rounded-xl p-6 flex gap-4 items-center"
+                        >
+                            <img
+                                className="w-24 h-24 rounded-full"
+                                src={
+                                    tutor?.profile_image_path
+                                        ? `/storage/${tutor.profile_image_path}`
+                                        : "/assets/icons/profile.svg"
+                                }
+                                alt=""
+                            />
+                            <div>
+                                <h3 className="font-bold">
+                                    {tutor.first_name} {tutor.last_name}
+                                </h3>
+                                <p className="text-sm mt-2">{tutor.bio}</p>
+                            </div>
                         </div>
-                    </div>
-                    <div className="bg-secondary rounded-xl p-6 flex gap-4 items-center">
-                        <div className="w-24 h-24rounded-full"></div>
-                        <div>
-                            <h3 className="font-bold">Tutor Name</h3>
-                            <p className="text-sm mt-2">
-                                “Lorem ipsum dolor sit amet, consectetur
-                                adipiscing elit...”
-                            </p>
-                        </div>
-                    </div>
+                    ))}
                 </div>
             </section>
         </div>
