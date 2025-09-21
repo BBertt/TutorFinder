@@ -30,8 +30,8 @@ class TutorRegisterRequest extends FormRequest
             'phoneNumber' => ['required', 'string', 'regex:/^[0-9]+$/'],
             'gender' => ['required', 'string'],
             'dateOfBirth' => ['required', 'date', 'before_or_equal:today'],
-            'identificationImage' => ['required', 'image'],
-            'certificationImage' => ['required', 'image']
+            'identificationImage' => ['required', 'image', 'mimes:jpg,jpeg,png'],
+            'certificationImage' => ['required', 'image', 'mimes:jpg,jpeg,png']
         ];
     }
 }

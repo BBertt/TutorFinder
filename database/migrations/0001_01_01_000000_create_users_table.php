@@ -25,6 +25,7 @@ return new class extends Migration
             $table->string('profile_image_path')->nullable();
             $table->string('identification_image_path')->nullable();
             $table->string('certification_image_path')->nullable();
+            $table->string('bio')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });
