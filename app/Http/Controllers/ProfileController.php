@@ -18,7 +18,6 @@ class ProfileController extends Controller
             'auth' => [
                 'user' => auth()->user()->load('role'),
             ],
-            'status' => session('success'),
         ]);
     }
 

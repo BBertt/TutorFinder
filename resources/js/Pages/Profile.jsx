@@ -3,7 +3,7 @@ import Layout from "@/Layouts/Layout";
 import { useForm, usePage } from "@inertiajs/react";
 
 const Profile = () => {
-    const { auth, status } = usePage().props;
+    const { auth, flash } = usePage().props;
 
     const [profileImage, setProfileImage] = useState(
         auth.user.profile_image_path
@@ -39,9 +39,9 @@ const Profile = () => {
 
     return (
         <div className="max-w-lg w-full mx-auto my-10 bg-primary p-6 rounded-xl text-white flex flex-col items-center">
-            {status && (
+            {flash.success && (
                 <div className="bg-green-500 text-white px-4 py-2 rounded mb-4 w-full">
-                    {status}
+                    {flash.success}
                 </div>
             )}
 
@@ -214,6 +214,7 @@ const Profile = () => {
                             value={data.bio || ""}
                             onChange={(e) => setData("bio", e.target.value)}
                             name="bio"
+                            placeholder="Write something about yourself"
                             className="px-4 py-2 rounded-full text-black w-full"
                         />
                     </div>

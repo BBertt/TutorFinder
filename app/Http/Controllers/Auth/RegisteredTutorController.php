@@ -39,6 +39,6 @@ class RegisteredTutorController extends Controller
 
         event(new Registered($tutor));
 
-        return redirect(route('login', absolute: false));
+        return redirect(route('login', absolute: false))->with('success', 'Registration successful! Please wait for approval.');
     }
 }

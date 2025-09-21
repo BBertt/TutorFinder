@@ -1,9 +1,11 @@
 import AuthPagesLayout from "@/Layouts/AuthPagesLayout";
 
-import { useForm, Link } from "@inertiajs/react";
+import { useForm, Link, usePage } from "@inertiajs/react";
 import { useState } from "react";
 
 const Login = () => {
+    const { flash } = usePage().props;
+
     const { data, setData, post, processing, errors, clearErrors } = useForm({
         email: "",
         password: "",
@@ -20,6 +22,12 @@ const Login = () => {
     return (
         <div className="w-full max-w-xs flex flex-col gap-6">
             <div className="text-center">
+                {flash.success && (
+                    <div className="bg-green-500 text-white px-4 py-2 rounded mb-4 w-full">
+                        {flash.success}
+                    </div>
+                )}
+
                 <h1 className="text-5xl font-bold">
                     Welcome!
                     <br />
