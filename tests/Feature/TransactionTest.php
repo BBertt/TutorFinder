@@ -3,16 +3,12 @@
 namespace Tests\Feature;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 use App\Models\User;
 use App\Models\Course;
-use App\Models\Category;
 use App\Models\CourseCart;
 use App\Models\TransactionHeader;
-use App\Models\TransactionDetail;
 use Database\Seeders\RoleSeeder;
-use Illuminate\Support\Facades\Http;
 use Xendit\Configuration;
 use Xendit\Invoice\InvoiceApi;
 
@@ -38,7 +34,7 @@ class TransactionTest extends TestCase
         $course = Course::factory()->create(['price' => 100]);
 
         // 3. Add the course to the user's cart
-        CourseCart::create([
+        $cartItem = CourseCart::create([
             'user_id' => $user->id,
             'course_id' => $course->id,
         ]);
@@ -54,7 +50,9 @@ class TransactionTest extends TestCase
         });
 
         // 5. Call the checkout endpoint
-        $response = $this->postJson('/checkout');
+        $response = $this->postJson('/checkout', [
+            'course_cart_ids' => [$cartItem->id],
+        ]);
 
         // 6. Assert that the response has a successful status code and contains the invoice URL
         $response->assertStatus(200);
@@ -72,12 +70,12 @@ class TransactionTest extends TestCase
         $this->assertDatabaseHas('transaction_details', [
             'transaction_header_id' => $transactionHeader->id,
             'course_id' => $course->id,
-            'price' => 100,
+            'price_at_transaction' => 100,
         ]);
 
-        // 8. Assert that the user's cart is empty
+        // 8. Assert that the item is removed from the cart
         $this->assertDatabaseMissing('course_carts', [
-            'user_id' => $user->id,
+            'id' => $cartItem->id,
         ]);
     }
 }

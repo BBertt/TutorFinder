@@ -2,28 +2,27 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\Http\Requests\CheckoutRequest;
 use Illuminate\Support\Facades\Auth;
 use App\Models\CourseCart;
 use App\Models\TransactionHeader;
 use App\Models\TransactionDetail;
-use App\Models\Course;
 use Xendit\Configuration;
 use Xendit\Invoice\InvoiceApi;
 
 class TransactionController extends Controller
 {
-    public function checkout(Request $request)
+    public function checkout(CheckoutRequest $request)
     {
         $config = new Configuration();
         $config->setApiKey(env('XENDIT_API_KEY'));
 
         $user = Auth::user();
-        $cartItems = CourseCart::where('user_id', $user->id)->get();
+        $cartItemIds = $request->validated()['course_cart_ids'];
 
-        if ($cartItems->isEmpty()) {
-            return response()->json(['message' => 'Your cart is empty.'], 400);
-        }
+        $cartItems = CourseCart::where('user_id', $user->id)
+                                ->whereIn('id', $cartItemIds)
+                                ->get();
 
         $totalPrice = 0;
         foreach ($cartItems as $item) {
@@ -39,7 +38,7 @@ class TransactionController extends Controller
             'failure_redirect_url' => route('transaction.failure'),
         ];
 
-        $apiInstance = new InvoiceApi();
+        $apiInstance = resolve(InvoiceApi::class);
         $invoice = $apiInstance->createInvoice($params);
 
         $transactionHeader = TransactionHeader::create([
@@ -54,23 +53,23 @@ class TransactionController extends Controller
             TransactionDetail::create([
                 'transaction_header_id' => $transactionHeader->id,
                 'course_id' => $item->course_id,
-                'price' => $item->course->price,
+                'price_at_transaction' => $item->course->price,
             ]);
         }
 
-        CourseCart::where('user_id', $user->id)->delete();
+        CourseCart::whereIn('id', $cartItemIds)->where('user_id', $user->id)->delete();
 
         return response()->json(['invoice_url' => $invoice['invoice_url']]);
     }
 
-    public function success(Request $request)
+    public function success()
     {
         // Handle successful payment
         // You can update the transaction status and enroll the user in the course
         return response()->json(['message' => 'Payment successful.']);
     }
 
-    public function failure(Request $request)
+    public function failure()
     {
         // Handle failed payment
         return response()->json(['message' => 'Payment failed.']);
