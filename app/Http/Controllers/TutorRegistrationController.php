@@ -13,7 +13,7 @@ class TutorRegistrationController extends Controller
             $query->where('status', '=', 'pending');
         })->get();
 
-        return Inertia::render('Tutors', [
+        return Inertia::render('Admin/Tutors', [
             'tutors' => $tutors
         ]);
     }
@@ -26,9 +26,7 @@ class TutorRegistrationController extends Controller
     }
 
     public function reject(User $tutor) {
-        $registration = $tutor->tutorRegistration;
-        $registration->status = 'rejected';
-        $registration->save();
+        $tutor->delete();
         return back()->with('success', 'Tutor rejected successfully!');
     }
 }

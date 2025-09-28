@@ -86,14 +86,14 @@ const Tutors = () => {
                                 <td className="border p-2">
                                     <button
                                         onClick={() => handleApprove(tutor.id)}
-                                        className="text-primary"
+                                        className="text-primary font-extrabold"
                                     >
                                         Approve
                                     </button>
                                     {" | "}
                                     <button
                                         onClick={() => handleReject(tutor.id)}
-                                        className="text-secondary"
+                                        className="text-secondary font-extrabold"
                                     >
                                         Reject
                                     </button>
