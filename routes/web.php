@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TutorReviewController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\TutorRegistrationController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -29,6 +31,17 @@ Route::get('/landing', [TutorReviewController::class, 'show'])
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'create'])->name('profile.create');
     Route::post('/profile', [ProfileController::class, 'update'])->name('profile.update');
+});
+
+Route::middleware('admin')->group(function() {
+    Route::get('/dashboard', function() {
+        return Inertia::render('Dashboard');
+    })->name('dashboard');
+
+    Route::get('/users', [UserController::class, 'index'])->name('admin.users');
+    Route::get('/tutors', [TutorRegistrationController::class, 'index'])->name('admin.tutors');
+    Route::patch('/tutors/{tutor}/approve', [TutorRegistrationController::class, 'approve'])->name('admin.tutors.approve');
+    Route::patch('/tutors/{tutor}/reject', [TutorRegistrationcOntroller::class, 'reject'])->name('admin.tutors.reject');
 });
 
 require __DIR__.'/auth.php';

@@ -66,4 +66,8 @@ class User extends Authenticatable
     public function reviews() {
         return $this->hasMany(TutorReview::class, 'tutor_id', 'id');
     }
+    
+    public function tutorRegistration() {
+        return $this->hasOne(TutorRegistration::class, 'user_id', 'id');
+    }
 }
