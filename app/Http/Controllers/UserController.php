@@ -2,9 +2,54 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ProfileUpdateRequest;
+use App\Models\User;
+use Illuminate\Contracts\Database\Eloquent\Builder;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class UserController extends Controller
 {
-    //
+    public function index() {
+        $students = User::with('role')->whereHas('role', function (Builder $query) {
+            $query->where('name', '=', 'student');            
+        })->get();
+        
+        $tutors = User::with('role')->whereHas('tutorRegistration', function(Builder $query) {
+            $query->where('status', '=', 'approved');
+        })->get();
+
+        $users = $students->merge($tutors);
+
+        return Inertia::render('Admin/Users', [
+            'users' => $users
+        ]);
+    }
+
+    public function edit(User $user) {
+        $user->load('role');
+        return Inertia::render('Admin/UserEdit', ['user' => $user]);
+    }
+
+    public function update(ProfileUpdateRequest $request, User $user) : RedirectResponse {
+        if ($request->hasFile('profileImage')) {
+            $user->profile_image_path = $request->file('profileImage')->store('profile');
+        }
+
+        $user->first_name = $request->firstName;
+        $user->last_name = $request->lastName;
+        $user->phone_number = $request->phoneNumber;
+        $user->date_of_birth = $request->dateOfBirth;
+        $user->bio = $request->bio;
+
+        $user->save();
+
+        return redirect()->route('admin.users')->with('success', 'User updated!');
+    }
+
+    public function destroy(User $user) {
+        $user->delete();
+        return back()->with('success', 'User deleted successfully!');
+    }
 }

@@ -13,7 +13,7 @@ use Inertia\Response;
 
 class ProfileController extends Controller
 {
-    public function create() {
+    public function edit() {
         return Inertia::render('Profile', [
             'auth' => [
                 'user' => auth()->user()->load('role'),

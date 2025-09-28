@@ -48,7 +48,7 @@ class LoginRequest extends FormRequest
         if ($user && $user->role_id === 2) {
             $registration = TutorRegistration::where('user_id', $user->id)->first();
 
-            if ($registration && in_array($registration->status, ['pending', 'rejected'])) {
+            if ($registration && $registration->status === 'pending') {
                 throw ValidationException::withMessages([
                     'email' => 'Your tutor registration is ' . $registration->status . '.',
                 ]);

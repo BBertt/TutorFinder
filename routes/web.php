@@ -29,16 +29,20 @@ Route::get('/landing', [TutorReviewController::class, 'show'])
 ->middleware('guest')->name('landing');
 
 Route::middleware('auth')->group(function () {
-    Route::get('/profile', [ProfileController::class, 'create'])->name('profile.create');
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::post('/profile', [ProfileController::class, 'update'])->name('profile.update');
 });
 
 Route::middleware('admin')->group(function() {
     Route::get('/dashboard', function() {
-        return Inertia::render('Dashboard');
+        return Inertia::render('Admin/Dashboard');
     })->name('dashboard');
 
     Route::get('/users', [UserController::class, 'index'])->name('admin.users');
+    Route::get('/users/{user}/edit', [UserController::class, 'edit'])->name('admin.users.edit');
+    Route::post('/users/{user}', [UserController::class, 'update'])->name('admin.users.update');
+    Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('admin.users.destroy');
+
     Route::get('/tutors', [TutorRegistrationController::class, 'index'])->name('admin.tutors');
     Route::patch('/tutors/{tutor}/approve', [TutorRegistrationController::class, 'approve'])->name('admin.tutors.approve');
     Route::patch('/tutors/{tutor}/reject', [TutorRegistrationcOntroller::class, 'reject'])->name('admin.tutors.reject');
