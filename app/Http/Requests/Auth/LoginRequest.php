@@ -2,6 +2,8 @@
 
 namespace App\Http\Requests\Auth;
 
+use App\Models\TutorRegistration;
+use App\Models\User;
 use Illuminate\Auth\Events\Lockout;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
@@ -41,7 +43,19 @@ class LoginRequest extends FormRequest
     {
         $this->ensureIsNotRateLimited();
 
-        if (! Auth::attempt($this->only('email', 'password'), $this->boolean('remember'))) {
+        $user = User::where('email', $this->email)->first();
+
+        if ($user && $user->role_id === 2) {
+            $registration = TutorRegistration::where('user_id', $user->id)->first();
+
+            if ($registration && $registration->status === 'pending') {
+                throw ValidationException::withMessages([
+                    'email' => 'Your tutor registration is ' . $registration->status . '.',
+                ]);
+            }
+        }
+
+        if (! Auth::attempt($this->only('email', 'password'))) {
             RateLimiter::hit($this->throttleKey());
 
             throw ValidationException::withMessages([

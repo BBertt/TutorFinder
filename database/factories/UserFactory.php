@@ -30,6 +30,7 @@ class UserFactory extends Factory
             'email_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'),
             'role_id' => 1, // Default to a role_id, you might want to change this
+            'phone_number' => fake()->phoneNumber(),
             'gender' => fake()->randomElement(['male', 'female']),
             'date_of_birth' => fake()->dateTimeThisCentury(),
             'profile_image_path' => null,

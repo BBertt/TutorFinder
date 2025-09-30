@@ -23,9 +23,13 @@ class User extends Authenticatable
         'email',
         'password',
         'role_id',
+        'phone_number',
         'gender',
         'date_of_birth',
         'profile_image_path',
+        'identification_image_path',
+        'certification_image_path',
+        'bio'
     ];
 
     /**
@@ -57,5 +61,13 @@ class User extends Authenticatable
     public function role()
     {
         return $this->belongsTo(Role::class);
+    }
+
+    public function reviews() {
+        return $this->hasMany(TutorReview::class, 'tutor_id', 'id');
+    }
+    
+    public function tutorRegistration() {
+        return $this->hasOne(TutorRegistration::class, 'user_id', 'id');
     }
 }
