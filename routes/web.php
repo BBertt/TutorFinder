@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\CourseCartController;
+use App\Http\Controllers\CourseController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TutorReviewController;
 use App\Http\Controllers\UserController;
@@ -32,7 +34,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::post('/profile', [ProfileController::class, 'update'])->name('profile.update');
 
-    
+    Route::get('/courses', [CourseController::class, 'index'])->name('courses.index');
+    Route::get('/courses/{course}', [CourseController::class, 'show'])->name('courses.show');
+
+    Route::post('/cart', [CourseCartController::class, 'store'])->name('cart.store');
 });
 
 Route::middleware('admin')->group(function() {

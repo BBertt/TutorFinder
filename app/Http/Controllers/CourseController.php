@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Course;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class CourseController extends Controller
 {
@@ -12,7 +13,12 @@ class CourseController extends Controller
      */
     public function index()
     {
-        //
+        $courses = Course::with('user')->withAvg('reviews', 'rating')->latest()
+        ->paginate(6);
+
+    return Inertia::render('Courses/CourseList', [
+        'courses' => $courses,
+    ]);
     }
 
     /**
@@ -36,7 +42,11 @@ class CourseController extends Controller
      */
     public function show(Course $course)
     {
-        //
+        $course->load('user', 'category', 'reviews.user', 'sections.lessons');
+
+        return Inertia::render('Courses/CourseDetails', [
+            'course' => $course,
+        ]);
     }
 
     /**
