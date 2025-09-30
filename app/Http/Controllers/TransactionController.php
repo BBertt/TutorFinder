@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\CourseCart;
 use App\Models\TransactionHeader;
 use App\Models\TransactionDetail;
+use Inertia\Inertia;
 use Xendit\Configuration;
 use Xendit\Invoice\InvoiceApi;
 
@@ -73,5 +74,18 @@ class TransactionController extends Controller
     {
         // Handle failed payment
         return response()->json(['message' => 'Payment failed.']);
+    }
+
+    public function showCheckoutPage()
+    {
+        $user = Auth::user();
+        $cartItems = CourseCart::where('user_id', $user->id)->with('course')->get();
+
+        return Inertia::render('Transaction/Checkout', [
+            'cartItems' => $cartItems,
+            'auth' => [
+                'user' => auth()->user()->load('role'),
+            ],
+        ]);
     }
 }
