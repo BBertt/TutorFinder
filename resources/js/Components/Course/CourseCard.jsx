@@ -1,5 +1,5 @@
 import React from "react";
-import { Link } from "@inertiajs/react";
+import { Link, router } from "@inertiajs/react";
 import StarIcon from "@/Components/Course/StarIcon";
 
 export default function CourseCard({ course }) {
@@ -7,6 +7,12 @@ export default function CourseCard({ course }) {
     const averageRating = course.reviews_avg_rating
         ? parseFloat(course.reviews_avg_rating).toFixed(1)
         : "-";
+
+    const handleTutorClick = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        router.visit(route("tutors.show", course.user.id));
+    };
 
     return (
         <>
@@ -30,7 +36,12 @@ export default function CourseCard({ course }) {
                             {course.title}
                         </h3>
                         <p className="text-sm text-gray-500 mt-1">
-                            {authorName}
+                            <span
+                                onClick={handleTutorClick}
+                                className="hover:underline cursor-pointer"
+                            >
+                                {authorName}
+                            </span>
                         </p>
                         <div className="flex items-center justify-between mt-3">
                             <span className="text-lg font-bold text-gray-800">

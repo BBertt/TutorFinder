@@ -2,23 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Course;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
-class CourseController extends Controller
+class TutorController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $courses = Course::with('user')->withAvg('reviews', 'rating')->latest()
-        ->paginate(6);
-
-        return Inertia::render('Courses/CourseList', [
-            'courses' => $courses,
-        ]);
+        //
     }
 
     /**
@@ -40,19 +35,26 @@ class CourseController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Course $course)
+    public function show(User $tutor)
     {
-        $course->load('user', 'category', 'reviews.user', 'sections.lessons');
+        if ($tutor->role_id !== 2) {
+            abort(404);
+        }
 
-        return Inertia::render('Courses/CourseDetails', [
-            'course' => $course,
+        $tutor->load([
+            'courses' => fn ($q) => $q->with('user')->withAvg('reviews', 'rating')->latest(),
+            'reviews' => fn ($q) => $q->with('reviewer')->latest()
+        ]);
+
+        return Inertia::render('Tutor/TutorProfile', [
+            'tutor' => $tutor
         ]);
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Course $course)
+    public function edit(User $user)
     {
         //
     }
@@ -60,7 +62,7 @@ class CourseController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Course $course)
+    public function update(Request $request, User $user)
     {
         //
     }
@@ -68,7 +70,7 @@ class CourseController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Course $course)
+    public function destroy(User $user)
     {
         //
     }

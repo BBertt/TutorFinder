@@ -3,6 +3,7 @@
 use App\Http\Controllers\CourseCartController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\TutorController;
 use App\Http\Controllers\TutorReviewController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\TutorRegistrationController;
@@ -34,10 +35,15 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::post('/profile', [ProfileController::class, 'update'])->name('profile.update');
 
+    // Courses
     Route::get('/courses', [CourseController::class, 'index'])->name('courses.index');
     Route::get('/courses/{course}', [CourseController::class, 'show'])->name('courses.show');
 
+    // Cart
     Route::post('/cart', [CourseCartController::class, 'store'])->name('cart.store');
+
+    // Tutor Profile
+    Route::get('/tutors/{tutor}', [TutorController::class, 'show'])->name('tutors.show');
 });
 
 Route::middleware('admin')->group(function() {
