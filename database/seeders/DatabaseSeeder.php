@@ -44,6 +44,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             CategorySeeder::class,
             CourseSeeder::class,
+            CourseCartSeeder::class,
         ]);
     }
 }

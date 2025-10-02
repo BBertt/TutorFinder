@@ -31,7 +31,7 @@ class CourseSeeder extends Seeder
                 'description' => 'This is a sample course description.',
                 'student_outcome' => 'Learn new skills.',
                 'requirements' => 'No prior knowledge required.',
-                'price' => rand(10, 100),
+                'price' => rand(100000, 300000),
                 'status' => 'approved',
                 'thumbnail_image' => 'thumbnails/sample.jpg',
                 'intro_video' => 'videos/sample.mp4',
