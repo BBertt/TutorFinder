@@ -7,16 +7,17 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\CourseCart;
 use App\Models\TransactionHeader;
 use App\Models\TransactionDetail;
+use App\Models\User;
 use Inertia\Inertia;
 use Xendit\Configuration;
 use Xendit\Invoice\InvoiceApi;
+use Xendit\Invoice\CreateInvoiceRequest;
 
 class TransactionController extends Controller
 {
     public function checkout(CheckoutRequest $request)
     {
-        $config = new Configuration();
-        $config->setApiKey(env('XENDIT_API_KEY'));
+        Configuration::setXenditKey(env('XENDIT_API_KEY'));
 
         $user = Auth::user();
         $cartItemIds = $request->validated()['course_cart_ids'];
@@ -39,8 +40,9 @@ class TransactionController extends Controller
             'failure_redirect_url' => route('transaction.failure'),
         ];
 
-        $apiInstance = resolve(InvoiceApi::class);
-        $invoice = $apiInstance->createInvoice($params);
+        $createInvoiceRequest = new CreateInvoiceRequest($params);
+        $apiInstance = new InvoiceApi();
+        $invoice = $apiInstance->createInvoice($createInvoiceRequest);
 
         $transactionHeader = TransactionHeader::create([
             'user_id' => $user->id,
@@ -78,13 +80,13 @@ class TransactionController extends Controller
 
     public function showCheckoutPage()
     {
-        $user = Auth::user();
+        $user = User::with('role')->find(Auth::id());
         $cartItems = CourseCart::where('user_id', $user->id)->with('course')->get();
 
         return Inertia::render('Transaction/Checkout', [
             'cartItems' => $cartItems,
             'auth' => [
-                'user' => auth()->user()->load('role'),
+                'user' => $user,
             ],
         ]);
     }
