@@ -19,8 +19,8 @@ class ProfileUpdateRequest extends FormRequest
             'profileImage' => ['nullable', 'image', 'mimes:jpg,jpeg,png'],
             'firstName' => ['required', 'string'],
             'lastName' => ['required', 'string'],
-            'phoneNumber' => ['required', 'string', 'regex:/^[0-9]+$/'],
-            'dateOfBirth' => ['required', 'date', 'before_or_equal:today'],
+            'phoneNumber' => ['nullable', 'string', 'regex:/^[0-9]+$/'],
+            'dateOfBirth' => ['nullable', 'date', 'before_or_equal:today'],
             'bio' => ['nullable', 'string']
         ];
     }

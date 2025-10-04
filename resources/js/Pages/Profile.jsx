@@ -7,7 +7,9 @@ const Profile = () => {
 
     const [profileImage, setProfileImage] = useState(
         auth.user.profile_image_path
-            ? `/storage/${auth.user.profile_image_path}`
+            ? (auth.user.profile_image_path.startsWith('http')
+                ? auth.user.profile_image_path
+                : `/storage/${auth.user.profile_image_path}`)
             : "/assets/icons/profile.svg"
     );
     const [firstNameError, setFirstNameError] = useState("");
@@ -159,14 +161,6 @@ const Profile = () => {
                         onChange={(e) => {
                             setData("phoneNumber", e.target.value);
                             clearErrors("phoneNumber");
-
-                            if (!e.target.value) {
-                                setPhoneNumberError(
-                                    "The phone number field is required."
-                                );
-                            } else {
-                                setPhoneNumberError("");
-                            }
                         }}
                         name="phoneNumber"
                         placeholder="081234567890"
