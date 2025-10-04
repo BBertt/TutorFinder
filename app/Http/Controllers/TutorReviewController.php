@@ -11,7 +11,7 @@ class TutorReviewController extends Controller
     {
         $reviews = User::withAvg('reviews', 'rating')->orderByDesc('reviews_avg_rating')->take(2)->get();
         
-        return Inertia::render('Landing', [
+        return Inertia::render('Landing/Landing', [
             'reviews' => $reviews
         ]);
     }
