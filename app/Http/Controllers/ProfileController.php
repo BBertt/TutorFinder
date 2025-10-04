@@ -13,51 +13,77 @@ use Inertia\Response;
 
 class ProfileController extends Controller
 {
+    public function edit() {
+        return Inertia::render('Profile', [
+            'auth' => [
+                'user' => auth()->user()->load('role'),
+            ],
+        ]);
+    }
+
+    public function update(ProfileUpdateRequest $request) : RedirectResponse {
+        $user = $request->user();
+
+        if ($request->hasFile('profileImage')) {
+            $user->profile_image_path = $request->file('profileImage')->store('profile');
+        }
+
+        $user->first_name = $request->firstName;
+        $user->last_name = $request->lastName;
+        $user->phone_number = $request->phoneNumber;
+        $user->date_of_birth = $request->dateOfBirth;
+        $user->bio = $request->bio;
+
+        $user->save();
+
+        return back()->with('success', 'Profile updated!');
+    }
+
     /**
      * Display the user's profile form.
      */
-    public function edit(Request $request): Response
-    {
-        return Inertia::render('Profile/Edit', [
-            'mustVerifyEmail' => $request->user() instanceof MustVerifyEmail,
-            'status' => session('status'),
-        ]);
-    }
+    // public function edit(Request $request): Response
+    // {
+    //     return Inertia::render('Profile/Edit', [
+    //         'mustVerifyEmail' => $request->user() instanceof MustVerifyEmail,
+    //         'status' => session('status'),
+    //     ]);
+    // }
 
     /**
      * Update the user's profile information.
      */
-    public function update(ProfileUpdateRequest $request): RedirectResponse
-    {
-        $request->user()->fill($request->validated());
+    // public function update(ProfileUpdateRequest $request): RedirectResponse
+    // {
+    //     $request->user()->fill($request->validated());
 
-        if ($request->user()->isDirty('email')) {
-            $request->user()->email_verified_at = null;
-        }
+    //     if ($request->user()->isDirty('email')) {
+    //         $request->user()->email_verified_at = null;
+    //     }
 
-        $request->user()->save();
+    //     $request->user()->save();
 
-        return Redirect::route('profile.edit');
-    }
+    //     return Redirect::route('profile.edit');
+    // }
 
     /**
      * Delete the user's account.
      */
-    public function destroy(Request $request): RedirectResponse
-    {
-        $request->validate([
-            'password' => ['required', 'current_password'],
-        ]);
+    // public function destroy(Request $request): RedirectResponse
+    // {
+    //     $request->validate([
+    //         'password' => ['required', 'current_password'],
+    //     ]);
 
-        $user = $request->user();
+    //     $user = $request->user();
 
-        Auth::logout();
+    //     Auth::logout();
 
-        $user->delete();
+    //     $user->delete();
 
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
+    //     $request->session()->invalidate();
+    //     $request->session()->regenerateToken();
 
-        return Redirect::to('/');
-    }
+    //     return Redirect::to('/');
+    // }
 }

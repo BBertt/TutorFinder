@@ -21,7 +21,7 @@ return new class extends Migration
             $table->text('requirements');
             $table->decimal('price', 10, 2);
             $table->string('status', 50);
-            $table->string('thumbnail_image');
+            $table->string('thumbnail_image')->nullable();
             $table->string('intro_video')->nullable();
             $table->timestamps();
         });

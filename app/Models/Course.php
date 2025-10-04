@@ -36,4 +36,9 @@ class Course extends Model
     {
         return $this->hasMany(CourseSection::class);
     }
+
+    public function reviews()
+    {
+        return $this->hasMany(CourseReview::class);
+    }
 }

@@ -1,173 +1,324 @@
-import InputError from '@/Components/InputError';
-import InputLabel from '@/Components/InputLabel';
-import PrimaryButton from '@/Components/PrimaryButton';
-import TextInput from '@/Components/TextInput';
-import GuestLayout from '@/Layouts/GuestLayout';
-import { Head, Link, useForm } from '@inertiajs/react';
+import AuthPagesLayout from "@/Layouts/AuthPagesLayout";
 
-export default function Register() {
-    const { data, setData, post, processing, errors, reset } = useForm({
-        first_name: '',
-        last_name: '',
-        email: '',
-        password: '',
-        password_confirmation: '',
-        gender: '',
-        date_of_birth: '',
+import { useForm, Link } from "@inertiajs/react";
+import { useState } from "react";
+
+const Register = () => {
+    const { data, setData, post, processing, errors, clearErrors } = useForm({
+        firstName: "",
+        lastName: "",
+        email: "",
+        password: "",
+        confirmPassword: "",
+        phoneNumber: "",
+        gender: "",
+        dateOfBirth: "",
     });
 
-    const submit = (e) => {
-        e.preventDefault();
+    const [firstNameError, setFirstNameError] = useState("");
+    const [lastNameError, setLastNameError] = useState("");
+    const [emailError, setEmailError] = useState("");
+    const [passwordError, setPasswordError] = useState("");
+    const [confirmPasswordError, setConfirmPasswordError] = useState("");
+    const [phoneNumberError, setPhoneNumberError] = useState("");
 
-        post(route('register'), {
-            onFinish: () => reset('password', 'password_confirmation'),
-        });
+    const submit = (e) => {
+        e.preventDefault(e);
+        post("/register");
     };
 
     return (
-        <GuestLayout>
-            <Head title="Register" />
+        <div className="w-full max-w-xs flex flex-col gap-6">
+            <div className="text-center">
+                <h1 className="text-5xl font-bold">Create an Account</h1>
+            </div>
 
-            <form onSubmit={submit}>
+            <form onSubmit={submit} className="flex flex-col gap-6">
+                <div className="flex gap-3">
+                    <div>
+                        <label
+                            htmlFor="firstName"
+                            className="text-sm font-extrabold"
+                        >
+                            First Name
+                        </label>
+                        <input
+                            type="text"
+                            value={data.firstName}
+                            onChange={(e) => {
+                                setData("firstName", e.target.value);
+                                clearErrors("firstName");
+
+                                if (!e.target.value) {
+                                    setFirstNameError(
+                                        "The first name field is required."
+                                    );
+                                } else {
+                                    setFirstNameError("");
+                                }
+                            }}
+                            name="firstName"
+                            placeholder="John"
+                            className="px-4 py-2 rounded-full text-black w-full"
+                        />
+                        {(firstNameError || errors.firstName) && (
+                            <p className="text-red-500 text-sm mt-1">
+                                {firstNameError || errors.firstName}
+                            </p>
+                        )}
+                    </div>
+                    <div>
+                        <label
+                            htmlFor="lastName"
+                            className="text-sm font-extrabold"
+                        >
+                            Last Name
+                        </label>
+                        <input
+                            type="text"
+                            value={data.lastName}
+                            onChange={(e) => {
+                                setData("lastName", e.target.value);
+                                clearErrors("lastName");
+
+                                if (!e.target.value) {
+                                    setLastNameError(
+                                        "The last name field is required."
+                                    );
+                                } else {
+                                    setLastNameError("");
+                                }
+                            }}
+                            name="lastName"
+                            placeholder="Doe"
+                            className="px-4 py-2 rounded-full text-black w-full"
+                        />
+                        {(lastNameError || errors.lastName) && (
+                            <p className="text-red-500 text-sm mt-1">
+                                {lastNameError || errors.lastName}
+                            </p>
+                        )}
+                    </div>
+                </div>
+
                 <div>
-                    <InputLabel htmlFor="first_name" value="First Name" />
-
-                    <TextInput
-                        id="first_name"
-                        name="first_name"
-                        value={data.first_name}
-                        className="mt-1 block w-full"
-                        autoComplete="given-name"
-                        isFocused={true}
-                        onChange={(e) => setData('first_name', e.target.value)}
-                        required
-                    />
-
-                    <InputError message={errors.first_name} className="mt-2" />
-                </div>
-
-                <div className="mt-4">
-                    <InputLabel htmlFor="last_name" value="Last Name" />
-
-                    <TextInput
-                        id="last_name"
-                        name="last_name"
-                        value={data.last_name}
-                        className="mt-1 block w-full"
-                        autoComplete="family-name"
-                        onChange={(e) => setData('last_name', e.target.value)}
-                        required
-                    />
-
-                    <InputError message={errors.last_name} className="mt-2" />
-                </div>
-
-                <div className="mt-4">
-                    <InputLabel htmlFor="email" value="Email" />
-
-                    <TextInput
-                        id="email"
+                    <label htmlFor="email" className="text-sm font-extrabold">
+                        Email
+                    </label>
+                    <input
                         type="email"
-                        name="email"
                         value={data.email}
-                        className="mt-1 block w-full"
-                        autoComplete="username"
-                        onChange={(e) => setData('email', e.target.value)}
-                        required
-                    />
+                        onChange={(e) => {
+                            setData("email", e.target.value);
+                            clearErrors("email");
 
-                    <InputError message={errors.email} className="mt-2" />
+                            if (!e.target.value) {
+                                setEmailError("The email field is required.");
+                            } else {
+                                setEmailError("");
+                            }
+                        }}
+                        name="email"
+                        placeholder="example@email.com"
+                        className="px-4 py-2 rounded-full text-black w-full"
+                    />
+                    {(emailError || errors.email) && (
+                        <p className="text-red-500 text-sm mt-1">
+                            {emailError || errors.email}
+                        </p>
+                    )}
                 </div>
 
-                <div className="mt-4">
-                    <InputLabel htmlFor="gender" value="Gender" />
-
-                    <select
-                        id="gender"
-                        name="gender"
-                        value={data.gender}
-                        className="mt-1 block w-full"
-                        onChange={(e) => setData('gender', e.target.value)}
+                <div>
+                    <label
+                        htmlFor="password"
+                        className="text-sm font-extrabold"
                     >
-                        <option value="">Select Gender</option>
-                        <option value="male">Male</option>
-                        <option value="female">Female</option>
-                        <option value="other">Other</option>
-                    </select>
-
-                    <InputError message={errors.gender} className="mt-2" />
-                </div>
-
-                <div className="mt-4">
-                    <InputLabel htmlFor="date_of_birth" value="Date of Birth" />
-
-                    <TextInput
-                        id="date_of_birth"
-                        type="date"
-                        name="date_of_birth"
-                        value={data.date_of_birth}
-                        className="mt-1 block w-full"
-                        onChange={(e) => setData('date_of_birth', e.target.value)}
-                    />
-
-                    <InputError message={errors.date_of_birth} className="mt-2" />
-                </div>
-
-                <div className="mt-4">
-                    <InputLabel htmlFor="password" value="Password" />
-
-                    <TextInput
-                        id="password"
+                        Password
+                    </label>
+                    <input
                         type="password"
-                        name="password"
                         value={data.password}
-                        className="mt-1 block w-full"
-                        autoComplete="new-password"
-                        onChange={(e) => setData('password', e.target.value)}
-                        required
-                    />
+                        onChange={(e) => {
+                            setData("password", e.target.value);
+                            clearErrors("password");
 
-                    <InputError message={errors.password} className="mt-2" />
+                            if (!e.target.value) {
+                                setPasswordError(
+                                    "The password field is required."
+                                );
+                            } else {
+                                setPasswordError("");
+                            }
+                        }}
+                        name="password"
+                        placeholder="••••••••"
+                        className="px-4 py-2 rounded-full text-black w-full"
+                    />
+                    {(passwordError || errors.password) && (
+                        <p className="text-red-500 text-sm mt-1">
+                            {passwordError || errors.password}
+                        </p>
+                    )}
                 </div>
 
-                <div className="mt-4">
-                    <InputLabel
-                        htmlFor="password_confirmation"
-                        value="Confirm Password"
-                    />
-
-                    <TextInput
-                        id="password_confirmation"
-                        type="password"
-                        name="password_confirmation"
-                        value={data.password_confirmation}
-                        className="mt-1 block w-full"
-                        autoComplete="new-password"
-                        onChange={(e) =>
-                            setData('password_confirmation', e.target.value)
-                        }
-                        required
-                    />
-
-                    <InputError
-                        message={errors.password_confirmation}
-                        className="mt-2"
-                    />
-                </div>
-
-                <div className="mt-4 flex items-center justify-end">
-                    <Link
-                        href={route('login')}
-                        className="rounded-md text-sm text-gray-600 underline hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                <div>
+                    <label
+                        htmlFor="confirmPassword"
+                        className="text-sm font-extrabold"
                     >
-                        Already registered?
-                    </Link>
+                        Confirm Password
+                    </label>
+                    <input
+                        type="password"
+                        value={data.confirmPassword}
+                        onChange={(e) => {
+                            setData("confirmPassword", e.target.value);
+                            clearErrors("confirmPassword");
 
-                    <PrimaryButton className="ms-4" disabled={processing}>
-                        Register
-                    </PrimaryButton>
+                            if (!e.target.value) {
+                                setConfirmPasswordError(
+                                    "The confirm password field is required."
+                                );
+                            } else {
+                                setConfirmPasswordError("");
+                            }
+                        }}
+                        name="confirmPassword"
+                        placeholder="••••••••"
+                        className="px-4 py-2 rounded-full text-black w-full"
+                    />
+                    {(confirmPasswordError || errors.confirmPassword) && (
+                        <p className="text-red-500 text-sm mt-1">
+                            {confirmPasswordError || errors.confirmPassword}
+                        </p>
+                    )}
                 </div>
+
+                <div>
+                    <label
+                        htmlFor="phoneNumber"
+                        className="text-sm font-extrabold"
+                    >
+                        Phone Number
+                    </label>
+                    <input
+                        type="text"
+                        value={data.phoneNumber}
+                        onChange={(e) => {
+                            setData("phoneNumber", e.target.value);
+                            clearErrors("phoneNumber");
+
+                            if (!e.target.value) {
+                                setPhoneNumberError(
+                                    "The phone number field is required."
+                                );
+                            } else {
+                                setPhoneNumberError("");
+                            }
+                        }}
+                        name="phoneNumber"
+                        placeholder="081234567890"
+                        className="px-4 py-2 rounded-full text-black w-full"
+                    />
+                    {(phoneNumberError || errors.phoneNumber) && (
+                        <p className="text-red-500 text-sm mt-1">
+                            {phoneNumberError || errors.phoneNumber}
+                        </p>
+                    )}
+                </div>
+
+                <div className="flex gap-3">
+                    <div>
+                        <label className="text-sm font-extrabold">Gender</label>
+
+                        <div className="flex items-center gap-4 mt-2">
+                            <label className="flex items-center gap-2">
+                                <input
+                                    type="radio"
+                                    name="gender"
+                                    value="male"
+                                    checked={data.gender === "male"}
+                                    onChange={(e) => {
+                                        setData("gender", e.target.value);
+                                        clearErrors("gender");
+                                    }}
+                                />
+                                Male
+                            </label>
+
+                            <label className="flex items-center gap-2">
+                                <input
+                                    type="radio"
+                                    name="gender"
+                                    value="female"
+                                    checked={data.gender === "female"}
+                                    onChange={(e) => {
+                                        setData("gender", e.target.value);
+                                        clearErrors("gender");
+                                    }}
+                                />
+                                Female
+                            </label>
+                        </div>
+
+                        {errors.gender && (
+                            <p className="text-red-500 text-sm mt-1">
+                                {errors.gender}
+                            </p>
+                        )}
+                    </div>
+                    <div>
+                        <label
+                            htmlFor="dateOfBirth"
+                            className="text-sm font-extrabold"
+                        >
+                            Date of Birth
+                        </label>
+                        <input
+                            type="date"
+                            value={data.dateOfBirth}
+                            onChange={(e) => {
+                                setData("dateOfBirth", e.target.value);
+                                clearErrors("dateOfBirth");
+                            }}
+                            name="dateOfBirth"
+                            className="px-4 py-2 rounded-full text-black w-full"
+                        />
+                        {errors.dateOfBirth && (
+                            <p className="text-red-500 text-sm mt-1">
+                                {errors.dateOfBirth}
+                            </p>
+                        )}
+                    </div>
+                </div>
+
+                <button
+                    type="submit"
+                    disabled={processing}
+                    className="p-2 font-extrabold rounded-full bg-[#3D3D3D] hover:bg-[#000000] w-full"
+                >
+                    Create Account
+                </button>
             </form>
-        </GuestLayout>
+
+            <div className="flex flex-col items-center gap-6">
+                <div className="flex items-center w-full">
+                    <div className="w-1/2 border-t border-white"></div>
+                    <span className="px-3 text-sm">OR</span>
+                    <div className="w-1/2 border-t border-white"></div>
+                </div>
+                <Link
+                    href="/login"
+                    className="p-2 text-center text-[#4F6D40] font-extrabold rounded-full bg-[#FFFFFF] hover:bg-[#3D3D3D] hover:text-white w-full"
+                >
+                    Sign In
+                </Link>
+            </div>
+        </div>
     );
-}
+};
+
+Register.layout = (page) => <AuthPagesLayout children={page} />;
+
+export default Register;

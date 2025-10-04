@@ -13,8 +13,9 @@ return new class extends Migration
     {
         Schema::create('tutor_registrations', function (Blueprint $table) {
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->string('status', 50);
+            $table->string('status', 50)->default('pending');
             $table->primary('user_id');
+            $table->timestamps();
         });
     }
 

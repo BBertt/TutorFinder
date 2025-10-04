@@ -1,6 +1,12 @@
 <?php
 
+use App\Http\Controllers\CourseCartController;
+use App\Http\Controllers\CourseController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\TutorController;
+use App\Http\Controllers\TutorReviewController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\TutorRegistrationController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -22,10 +28,37 @@ Route::get('/home', function () {
     return Inertia::render('Home');
 })->middleware(['auth', 'verified'])->name('home');
 
+Route::get('/landing', [TutorReviewController::class, 'show'])
+->middleware('guest')->name('landing');
+
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::post('/profile', [ProfileController::class, 'update'])->name('profile.update');
+
+    // Courses
+    Route::get('/courses', [CourseController::class, 'index'])->name('courses.index');
+    Route::get('/courses/{course}', [CourseController::class, 'show'])->name('courses.show');
+
+    // Cart
+    Route::post('/cart', [CourseCartController::class, 'store'])->name('cart.store');
+
+    // Tutor Profile
+    Route::get('/tutors/{tutor}', [TutorController::class, 'show'])->name('tutors.show');
+});
+
+Route::middleware('admin')->group(function() {
+    Route::get('/dashboard', function() {
+        return Inertia::render('Admin/Dashboard');
+    })->name('dashboard');
+
+    Route::get('/users', [UserController::class, 'index'])->name('admin.users');
+    Route::get('/users/{user}/edit', [UserController::class, 'edit'])->name('admin.users.edit');
+    Route::post('/users/{user}', [UserController::class, 'update'])->name('admin.users.update');
+    Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('admin.users.destroy');
+
+    Route::get('/tutors', [TutorRegistrationController::class, 'index'])->name('admin.tutors');
+    Route::patch('/tutors/{tutor}/approve', [TutorRegistrationController::class, 'approve'])->name('admin.tutors.approve');
+    Route::patch('/tutors/{tutor}/reject', [TutorRegistrationcOntroller::class, 'reject'])->name('admin.tutors.reject');
 });
 
 require __DIR__.'/auth.php';
