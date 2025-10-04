@@ -32,6 +32,10 @@ Route::get('/home', function () {
     return Inertia::render('Home');
 })->middleware(['auth', 'verified'])->name('home');
 
+Route::get('/', function () {
+    return redirect('/landing');
+});
+
 Route::get('/landing', [TutorReviewController::class, 'show'])
 ->middleware('guest')->name('landing');
 
