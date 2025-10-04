@@ -83,7 +83,9 @@ const AppNavbar = ({ logoSrc }) => {
                                     className="w-7 h-7 rounded-full"
                                     src={
                                         auth.user.profile_image_path
-                                            ? `/storage/${auth.user.profile_image_path}`
+                                            ? (auth.user.profile_image_path.startsWith('http')
+                                                ? auth.user.profile_image_path
+                                                : `/storage/${auth.user.profile_image_path}`)
                                             : "/assets/icons/profile.svg"
                                     }
                                     alt="Profile"

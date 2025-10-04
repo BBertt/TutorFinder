@@ -29,7 +29,9 @@ class User extends Authenticatable
         'profile_image_path',
         'identification_image_path',
         'certification_image_path',
-        'bio'
+        'bio',
+        'google_id',
+        'email_verified_at',
     ];
 
     /**
