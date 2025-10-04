@@ -3,13 +3,17 @@
 use App\Http\Controllers\CourseCartController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\TransactionController;
+use App\Http\Controllers\TutorRegistrationController;
 use App\Http\Controllers\TutorController;
 use App\Http\Controllers\TutorReviewController;
 use App\Http\Controllers\UserController;
-use App\Http\Controllers\TutorRegistrationController;
+use App\Http\Controllers\WebhookController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+
+Route::post('/webhooks/xendit', [WebhookController::class, 'handleXendit'])->name('webhooks.xendit');
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
@@ -33,6 +37,9 @@ Route::get('/landing', [TutorReviewController::class, 'show'])
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
     Route::post('/profile', [ProfileController::class, 'update'])->name('profile.update');
 
     // Courses
@@ -44,6 +51,13 @@ Route::middleware('auth')->group(function () {
 
     // Tutor Profile
     Route::get('/tutors/{tutor}', [TutorController::class, 'show'])->name('tutors.show');
+
+    // Transaction
+    Route::get('/checkout', [TransactionController::class, 'showCheckoutPage'])->name('checkout.show');
+    Route::post('/checkout', [TransactionController::class, 'checkout'])->name('checkout');
+
+    Route::get('/transaction/success', [TransactionController::class, 'success'])->name('transaction.success');
+    Route::get('/transaction/failure', [TransactionController::class, 'failure'])->name('transaction.failure');
 });
 
 Route::middleware('admin')->group(function() {
@@ -60,5 +74,8 @@ Route::middleware('admin')->group(function() {
     Route::patch('/tutors/{tutor}/approve', [TutorRegistrationController::class, 'approve'])->name('admin.tutors.approve');
     Route::patch('/tutors/{tutor}/reject', [TutorRegistrationcOntroller::class, 'reject'])->name('admin.tutors.reject');
 });
+
+Route::get('/transaction/success', [TransactionController::class, 'success'])->name('transaction.success');
+Route::get('/transaction/failure', [TransactionController::class, 'failure'])->name('transaction.failure');
 
 require __DIR__.'/auth.php';

@@ -25,7 +25,7 @@ class CourseFactory extends Factory
             'description' => $this->faker->paragraph(6),
             'student_outcome' => $this->faker->paragraph(4),
             'requirements' => $this->faker->paragraph(3),
-            'price' => $this->faker->randomFloat(2, 20, 200),
+            'price' => $this->faker->randomFloat(2, 100000, 200000),
             'status' => 'published',
             'thumbnail_image' => 'assets/images/landing/books.png',
             'intro_video' => 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
