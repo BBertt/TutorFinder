@@ -11,8 +11,10 @@ class TransactionHeader extends Model
 
     protected $fillable = [
         'user_id',
-        'transaction_date',
         'status',
+        'xendit_invoice_id',
+        'external_id',
+        'total_amount',
     ];
 
     public function user()
