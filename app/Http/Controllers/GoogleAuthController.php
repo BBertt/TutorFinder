@@ -26,25 +26,20 @@ class GoogleAuthController extends Controller
         try {
             $googleUser = Socialite::driver('google')->user();
 
-            // Find user by google_id first
             $user = User::where('google_id', $googleUser->getId())->first();
 
             if ($user) {
-                // If user exists with google_id, update their info
                 $user->update([
                     'first_name' => $googleUser->user['given_name'],
                     'last_name' => $googleUser->user['family_name'],
                     'profile_image_path' => $googleUser->getAvatar(),
                 ]);
             } else {
-                // If no user with google_id, find by email
                 $user = User::where('email', $googleUser->getEmail())->first();
 
                 if ($user) {
-                    // If user exists with email, update their google_id
                     $user->update(['google_id' => $googleUser->getId()]);
                 } else {
-                    // If no user exists at all, create a new one
                     $user = User::create([
                         'google_id' => $googleUser->getId(),
                         'first_name' => $googleUser->user['given_name'],
@@ -57,13 +52,11 @@ class GoogleAuthController extends Controller
                 }
             }
 
-            // Log the user in
             Auth::login($user);
 
             return redirect()->route('dashboard');
 
         } catch (\Exception $e) {
-            // Log the actual error for debugging
             Log::error('Google Auth Callback Error: ' . $e->getMessage());
             return redirect('/')->with('error', 'Login with Google failed. Please try again.');
         }
