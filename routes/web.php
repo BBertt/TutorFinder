@@ -2,12 +2,15 @@
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TransactionController;
+use App\Http\Controllers\TutorRegistrationController;
 use App\Http\Controllers\TutorReviewController;
 use App\Http\Controllers\UserController;
-use App\Http\Controllers\TutorRegistrationController;
+use App\Http\Controllers\WebhookController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+
+Route::post('/webhooks/xendit', [WebhookController::class, 'handleXendit'])->name('webhooks.xendit');
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
