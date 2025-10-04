@@ -32,8 +32,12 @@ Route::get('/home', function () {
     return Inertia::render('Home');
 })->middleware(['auth', 'verified'])->name('home');
 
-Route::get('/landing', [TutorReviewController::class, 'show'])
-->middleware('guest')->name('landing');
+Route::middleware('guest')->group(function() {
+    Route::get('/landing', [TutorReviewController::class, 'show'])->name('landing');
+    Route::get('/about', function() {
+        return Inertia::render('Landing/About');
+    })->name('about');
+});
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
