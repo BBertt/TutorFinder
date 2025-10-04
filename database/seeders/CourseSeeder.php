@@ -2,11 +2,15 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
-use Illuminate\Database\Seeder;
-use App\Models\Course;
-use App\Models\User;
 use App\Models\Category;
+use App\Models\Course;
+use App\Models\CourseCart;
+use App\Models\CourseEnrollment;
+use App\Models\CourseLesson;
+use App\Models\CourseReview;
+use App\Models\CourseSection;
+use App\Models\User;
+use Illuminate\Database\Seeder;
 
 class CourseSeeder extends Seeder
 {
@@ -15,27 +19,57 @@ class CourseSeeder extends Seeder
      */
     public function run(): void
     {
-        $users = User::all();
-        $categories = Category::all();
 
-        if ($users->isEmpty() || $categories->isEmpty()) {
-            $this->command->info('Please seed users and categories first.');
-            return;
-        }
+        $categories = Category::factory()->count(5)->create();
 
-        for ($i = 0; $i < 5; $i++) {
-            Course::create([
-                'user_id' => $users->random()->id,
-                'category_id' => $categories->random()->id,
-                'title' => 'Sample Course ' . ($i + 1),
-                'description' => 'This is a sample course description.',
-                'student_outcome' => 'Learn new skills.',
-                'requirements' => 'No prior knowledge required.',
-                'price' => rand(100000, 300000),
-                'status' => 'approved',
-                'thumbnail_image' => 'thumbnails/sample.jpg',
-                'intro_video' => 'videos/sample.mp4',
-            ]);
-        }
+        $tutors = User::where('role_id', 2)->get();
+        $students = User::where('role_id', 3)->get();
+
+
+        Course::factory()
+            ->count(10)
+            ->sequence(fn ($sequence) => [
+                'user_id' => $tutors->random()->id,
+                'category_id' => $categories->random()->id
+            ])
+            ->create()
+            ->each(function ($course) use ($students) {
+
+                CourseSection::factory()
+                    ->count(rand(3, 5))
+                    ->for($course)
+                    ->create()
+                    ->each(function ($section) {
+                        CourseLesson::factory()
+                            ->count(rand(4, 8))
+                            ->for($section)
+                            ->create();
+                    });
+                $enrolledStudents = $students->random(rand(1, $students->count()));
+                foreach ($enrolledStudents as $student) {
+                    CourseEnrollment::create([
+                        'user_id' => $student->id,
+                        'course_id' => $course->id,
+                        'enrollment_date' => now(),
+                    ]);
+                }
+
+
+                $reviewingStudents = $enrolledStudents->random(rand(1, $enrolledStudents->count()));
+                 foreach ($reviewingStudents as $student) {
+                    CourseReview::factory()->create([
+                         'user_id' => $student->id,
+                         'course_id' => $course->id,
+                    ]);
+                }
+
+                $cartStudents = $students->random(rand(1, $students->count()));
+                 foreach ($cartStudents as $student) {
+                    CourseCart::create([
+                         'user_id' => $student->id,
+                         'course_id' => $course->id,
+                    ]);
+                }
+            });
     }
 }

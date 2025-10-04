@@ -16,7 +16,7 @@ class CourseLesson extends Model
         'video_url',
     ];
 
-    public function section()
+    public function courseSection()
     {
         return $this->belongsTo(CourseSection::class);
     }

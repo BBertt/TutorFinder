@@ -19,16 +19,16 @@ class CourseFactory extends Factory
     public function definition(): array
     {
         return [
-            'user_id' => User::factory(),
-            'category_id' => Category::factory(),
-            'title' => $this->faker->sentence,
-            'description' => $this->faker->paragraph,
-            'student_outcome' => $this->faker->paragraph,
-            'requirements' => $this->faker->paragraph,
-            'price' => $this->faker->randomFloat(2, 10, 100),
-            'status' => 'approved',
-            'thumbnail_image' => 'thumbnails/sample.jpg',
-            'intro_video' => 'videos/sample.mp4',
+            'user_id' => User::all()->random()->id,
+            'category_id' => Category::all()->random()->id,
+            'title' => $this->faker->sentence(4),
+            'description' => $this->faker->paragraph(6),
+            'student_outcome' => $this->faker->paragraph(4),
+            'requirements' => $this->faker->paragraph(3),
+            'price' => $this->faker->randomFloat(2, 20, 200),
+            'status' => 'published',
+            'thumbnail_image' => 'assets/images/landing/books.png',
+            'intro_video' => 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
         ];
     }
 }
