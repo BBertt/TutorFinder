@@ -65,11 +65,12 @@ const Users = () => {
                                 <td className="border p-2">
                                     {user.phone_number}
                                 </td>
-                                <td className="border p-2">{user.gender}</td>
+                                <td className="border p-2">{user.gender ? user.gender : "-"}</td>
                                 <td className="border p-2">
-                                    {new Date(
+                                    {user.date_of_birth ? new Date(
                                         user.date_of_birth
-                                    ).toLocaleDateString("en-GB")}
+                                    ).toLocaleDateString("en-GB") : "-"
+                                    }
                                 </td>
                                 <td className="border p-2">{user.role.name}</td>
                                 <td className="border p-2">
