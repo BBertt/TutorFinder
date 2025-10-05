@@ -6,11 +6,7 @@ const Profile = () => {
     const { auth, flash } = usePage().props;
 
     const [profileImage, setProfileImage] = useState(
-        auth.user.profile_image_path
-            ? (auth.user.profile_image_path.startsWith('http')
-                ? auth.user.profile_image_path
-                : `/storage/${auth.user.profile_image_path}`)
-            : "/assets/icons/profile.svg"
+        auth.user.profile_image_url || '/assets/icons/profile.svg'
     );
     const [firstNameError, setFirstNameError] = useState("");
     const [lastNameError, setLastNameError] = useState("");

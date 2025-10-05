@@ -6,11 +6,7 @@ const UserEdit = () => {
     const { user, flash } = usePage().props;
 
     const [profileImage, setProfileImage] = useState(
-        user.profile_image_path
-            ? (user.profile_image_path.startsWith('http')
-                ? user.profile_image_path
-                : `/storage/${user.profile_image_path}`)
-            : "/assets/icons/profile.svg"
+        user.profile_image_url || '/assets/icons/profile.svg'
     );
     const [firstNameError, setFirstNameError] = useState("");
     const [lastNameError, setLastNameError] = useState("");
