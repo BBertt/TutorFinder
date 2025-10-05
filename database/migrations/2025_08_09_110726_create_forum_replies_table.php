@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->foreignId('forum_id')->constrained()->onDelete('cascade');
             $table->foreignId('parent_id')->nullable()->constrained('forum_replies')->onDelete('cascade');
-            $table->string('description');
+            $table->text('description');
             $table->integer('likes');
             $table->integer('dislikes');
             $table->timestamps();

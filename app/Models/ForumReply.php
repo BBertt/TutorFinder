@@ -33,7 +33,7 @@ class ForumReply extends Model
         return $this->belongsTo(ForumReply::class, 'parent_id');
     }
 
-    public function replies()
+    public function children()
     {
         return $this->hasMany(ForumReply::class, 'parent_id');
     }
