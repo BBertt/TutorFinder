@@ -13,6 +13,7 @@ use App\Http\Controllers\TutorReviewController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\WebhookController;
 use App\Http\Controllers\GoogleAuthController;
+use App\Http\Controllers\Tutor\CourseController as TutorCourseController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -21,6 +22,10 @@ Route::get('/auth/google/redirect', [GoogleAuthController::class, 'redirect'])->
 Route::get('/auth/google/callback', [GoogleAuthController::class, 'callback'])->name('google.auth.callback');
 
 Route::post('/webhooks/xendit', [WebhookController::class, 'handleXendit'])->name('webhooks.xendit');
+
+Route::middleware(['auth', 'verified', 'tutor'])->prefix('tutor')->name('tutor.')->group(function () {
+    Route::resource('courses', TutorCourseController::class);
+});
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
