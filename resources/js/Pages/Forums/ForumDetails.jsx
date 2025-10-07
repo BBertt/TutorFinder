@@ -21,7 +21,9 @@ function ForumDetails({ forum }) {
 
             <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
                 <div className="bg-white p-8 rounded-lg shadow-md">
-                    <ReplyCard reply={forum} /> <hr className="my-8" />
+                    <ReplyCard reply={forum} type="forum" />
+
+                    <hr className="my-8" />
                     <h2 className="text-2xl font-bold mb-6">Replies</h2>
                     <div className="space-y-6">
                         {forum.replies.map((reply) => (

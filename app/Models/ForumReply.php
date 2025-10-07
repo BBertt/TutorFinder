@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 
 class ForumReply extends Model
 {
@@ -36,5 +37,15 @@ class ForumReply extends Model
     public function children()
     {
         return $this->hasMany(ForumReply::class, 'parent_id');
+    }
+
+    public function votes()
+    {
+        return $this->morphMany(ForumVote::class, 'voteable');
+    }
+
+    public function userVote()
+    {
+        return $this->morphOne(ForumVote::class, 'voteable')->where('user_id', Auth::id());
     }
 }

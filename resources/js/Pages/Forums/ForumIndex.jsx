@@ -10,16 +10,15 @@ function ForumIndex({ forums, topStudents, topTutors }) {
     return (
         <>
             <Head title="Forum" />
-            <section className="bg-primary text-white">
-                <div className="container mx-auto px-4 py-12 text-center">
+
+            <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+                <section className="bg-primary text-white rounded-lg p-8 text-center mb-12">
                     <h1 className="text-4xl font-bold">TutorFinder Forum</h1>
                     <p className="mt-2 text-lg opacity-90">
                         Concerned about something? Go ask the experts!
                     </p>
-                </div>
-            </section>
+                </section>
 
-            <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
                 <div className="grid lg:grid-cols-3 gap-8">
                     <div className="lg:col-span-2 space-y-6">
                         {forums.data.map((post) => (
@@ -28,27 +27,27 @@ function ForumIndex({ forums, topStudents, topTutors }) {
                     </div>
 
                     <aside className="space-y-6">
-                        <div className="bg-white p-6 rounded-lg shadow-md">
-                            <h3 className="font-bold text-lg mb-4">
+                        <div className="bg-white p-6 rounded-lg border border-gray-200 flex flex-col items-center">
+                            <h3 className="font-bold text-lg mb-4 text-center">
                                 Have concerns in your mind?
                             </h3>
                             <Link
                                 href={route("forums.create")}
-                                className="w-full text-center bg-primary text-white py-2 rounded-lg block hover:bg-opacity-90"
+                                className="w-1/2 text-center bg-primary text-white py-2 rounded-full block hover:bg-opacity-90 font-bold"
                             >
                                 Create Forum!
                             </Link>
                         </div>
-                        <div className="bg-white p-6 rounded-lg shadow-md">
-                            <h3 className="font-bold text-xl mb-4">
+                        <div className="bg-white p-6 rounded-lg border border-gray-200">
+                            <h3 className="font-bold text-xl mb-4 text-center">
                                 Top Contributors
                             </h3>
                             <div className="flex border-b mb-4">
                                 <button
                                     onClick={() => setActiveTab("students")}
-                                    className={`py-2 px-4 ${
+                                    className={`w-1/2 py-2 text-center ${
                                         activeTab === "students"
-                                            ? "border-b-2 border-primary font-semibold"
+                                            ? "border-b-2 border-primary font-semibold text-primary"
                                             : "text-gray-500"
                                     }`}
                                 >
@@ -56,9 +55,9 @@ function ForumIndex({ forums, topStudents, topTutors }) {
                                 </button>
                                 <button
                                     onClick={() => setActiveTab("tutors")}
-                                    className={`py-2 px-4 ${
+                                    className={`w-1/2 py-2 text-center ${
                                         activeTab === "tutors"
-                                            ? "border-b-2 border-primary font-semibold"
+                                            ? "border-b-2 border-primary font-semibold text-primary"
                                             : "text-gray-500"
                                     }`}
                                 >

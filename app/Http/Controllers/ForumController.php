@@ -14,7 +14,7 @@ class ForumController extends Controller
 {
      public function index()
     {
-        $forums = Forum::with('user', 'replies')->latest()->paginate(10);
+        $forums = Forum::with('user', 'replies', 'userVote')->latest()->paginate(10);
 
         $baseQuery = User::query()
             ->select('users.id', 'users.first_name', 'users.last_name', 'users.profile_image_path', DB::raw('SUM(COALESCE(forums.likes, 0) + COALESCE(forum_replies.likes, 0)) as total_likes'))
@@ -36,7 +36,7 @@ class ForumController extends Controller
 
     public function show(Forum $forum)
     {
-        $forum->load(['user', 'replies.user', 'replies.children.user']);
+        $forum->load(['user', 'userVote', 'replies.user', 'replies.userVote']);
         return Inertia::render('Forums/ForumDetails', [
             'forum' => $forum
         ]);

@@ -1,6 +1,7 @@
 import React from "react";
+import VoteButtons from "./VoteButtons";
 
-const ReplyCard = ({ reply }) => {
+const ReplyCard = ({ reply, type = "reply" }) => {
     const authorName = `${reply.user.first_name} ${reply.user.last_name}`;
     return (
         <div className="flex items-start space-x-4">
@@ -16,10 +17,9 @@ const ReplyCard = ({ reply }) => {
             <div>
                 <p className="font-bold">{authorName}</p>
                 <p className="text-gray-700 mt-1">{reply.description}</p>
-                <div className="flex items-center space-x-4 mt-2 text-sm text-gray-500">
-                    <span>{reply.likes} Likes</span>
-                    <span>{reply.dislikes} Dislikes</span>
-                    <button className="font-semibold hover:underline">
+                <div className="flex items-center space-x-4 mt-2">
+                    <VoteButtons item={reply} type={type} />
+                    <button className="text-sm font-semibold text-gray-500 hover:underline">
                         Reply
                     </button>
                 </div>

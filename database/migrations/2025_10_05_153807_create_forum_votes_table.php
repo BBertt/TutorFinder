@@ -11,14 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('forums', function (Blueprint $table) {
+        Schema::create('forum_votes', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->string('title');
-            $table->text('description');
-            $table->integer('likes')->default(0);
-            $table->integer('dislikes')->default(0);
+            $table->morphs('voteable');
+            $table->tinyInteger('vote');
             $table->timestamps();
+            $table->unique(['user_id', 'voteable_id', 'voteable_type']);
         });
     }
 
@@ -27,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('forums');
+        Schema::dropIfExists('forum_votes');
     }
 };
