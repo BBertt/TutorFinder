@@ -83,6 +83,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/forums/{forum}/replies', [ForumReplyController::class, 'store'])->name('forums.replies.store');
     Route::post('/votes/{type}/{id}', [ForumVoteController::class, 'store'])->name('votes.store');
     Route::get('/transactions', [TransactionController::class, 'index'])->name('transactions.index');
+    Route::get('/transactions/failure', [TransactionController::class, 'failure'])->name('transactions.failure');
 });
 
 Route::middleware('admin')->group(function() {

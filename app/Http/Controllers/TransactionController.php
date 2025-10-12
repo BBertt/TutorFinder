@@ -37,7 +37,7 @@ class TransactionController extends Controller
             'description' => 'Course Purchase',
             'amount' => $totalPrice,
             'success_redirect_url' => route('transactions.index'),
-            'failure_redirect_url' => route('transactions.index'),
+            'failure_redirect_url' => route('transactions.failure'),
         ];
 
         $createInvoiceRequest = new CreateInvoiceRequest($params);
@@ -78,6 +78,13 @@ class TransactionController extends Controller
             'auth' => [
                 'user' => $user,
             ],
+        ]);
+    }
+
+    public function failure()
+    {
+        return Inertia::render('Transaction/Failure', [
+            'auth' => ['user' => Auth::user()]
         ]);
     }
 }
