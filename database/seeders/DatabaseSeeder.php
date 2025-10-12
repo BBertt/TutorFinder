@@ -17,6 +17,7 @@ class DatabaseSeeder extends Seeder
             CategorySeeder::class,
             CourseSeeder::class,
             CourseCartSeeder::class,
+            ForumSeeder::class,
         ]);
     }
 }

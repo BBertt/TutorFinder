@@ -2,6 +2,9 @@
 
 use App\Http\Controllers\CourseCartController;
 use App\Http\Controllers\CourseController;
+use App\Http\Controllers\ForumController;
+use App\Http\Controllers\ForumReplyController;
+use App\Http\Controllers\ForumVoteController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\TutorRegistrationController;
@@ -68,6 +71,17 @@ Route::middleware('auth')->group(function () {
 
     // Transaction
     Route::post('/cart/checkout', [TransactionController::class, 'checkout'])->name('checkout');
+
+    // Forum
+    Route::get('/forums', [ForumController::class, 'index'])->name('forums.index');
+
+    Route::get('/forums/create', [ForumController::class, 'create'])->name('forums.create');
+    Route::post('/forums', [ForumController::class, 'store'])->name('forums.store');
+
+    Route::get('/forums/{forum}', [ForumController::class, 'show'])->name('forums.show');
+
+    Route::post('/forums/{forum}/replies', [ForumReplyController::class, 'store'])->name('forums.replies.store');
+    Route::post('/votes/{type}/{id}', [ForumVoteController::class, 'store'])->name('votes.store');
 });
 
 Route::middleware('admin')->group(function() {
