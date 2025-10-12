@@ -13,8 +13,8 @@ export default function TopContributorList({ contributors }) {
                         className="w-10 h-10 rounded-full"
                         src={
                             contributor.profile_image_path
-                                ? `/${contributor.profile_image_path}`
-                                : `https://ui-avatars.com/api/?name=${contributor.first_name}+${contributor.last_name}&background=random`
+                                ? contributor.profile_image_path
+                                : "/assets/icons/profile.svg"
                         }
                         alt={`${contributor.first_name} ${contributor.last_name}`}
                     />

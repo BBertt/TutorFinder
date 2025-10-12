@@ -51,7 +51,7 @@ class User extends Authenticatable
      *
      * @var array
      */
-    protected $appends = ['profile_image_url'];
+    protected $appends = ['profile_image_url', 'identification_image_url', 'certification_image_url'];
 
     /**
      * Get the full URL for the user's profile image.
@@ -63,6 +63,36 @@ class User extends Authenticatable
                 return $this->profile_image_path;
             }
             return Storage::url($this->profile_image_path);
+        }
+
+        return null;
+    }
+
+    /**
+     * Get the full URL for the user's identification image.
+     */
+    public function getIdentificationImageUrlAttribute(): ?string
+    {
+        if ($this->identification_image_path) {
+            if (str_starts_with($this->identification_image_path, 'http')) {
+                return $this->identification_image_path;
+            }
+            return Storage::url($this->identification_image_path);
+        }
+
+        return null;
+    }
+
+    /**
+     * Get the full URL for the user's identification image.
+     */
+    public function getCertificationImageUrlAttribute(): ?string
+    {
+        if ($this->certification_image_path) {
+            if (str_starts_with($this->certification_image_path, 'http')) {
+                return $this->certification_image_path;
+            }
+            return Storage::url($this->certification_image_path);
         }
 
         return null;
