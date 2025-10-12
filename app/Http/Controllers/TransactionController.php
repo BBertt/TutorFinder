@@ -87,4 +87,19 @@ class TransactionController extends Controller
             'auth' => ['user' => Auth::user()]
         ]);
     }
+
+    public function adminIndex(User $user)
+    {
+        $transactions = TransactionHeader::where('user_id', $user->id)
+                                        ->with('details.course.user')
+                                        ->latest()
+                                        ->get();
+
+
+        return Inertia::render('Admin/Transaction/Index', [
+            'transactions' => $transactions,
+            'viewedUser' => $user,
+            'auth' => ['user' => Auth::user()]
+        ]);
+    }
 }

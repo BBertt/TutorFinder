@@ -8,7 +8,7 @@ const Dashboard = () => {
 
             <div className="w-full flex flex-wrap justify-evenly items-center text-white">
                 <Link
-                    href="/tutors"
+                    href={route('admin.tutors')}
                     className="max-w-md w-full p-10 bg-primary rounded-xl hover:bg-secondary text-center"
                 >
                     <h2 className="text-xl font-bold mb-2">
@@ -18,11 +18,19 @@ const Dashboard = () => {
                 </Link>
 
                 <Link
-                    href="/users"
+                    href={route('admin.users')}
                     className="max-w-md w-full p-10 bg-secondary rounded-xl hover:bg-[#000000] text-center"
                 >
                     <h2 className="text-xl font-bold mb-2">Manage Users</h2>
                     <p>Manage all users in the system.</p>
+                </Link>
+
+                <Link
+                    href={route('admin.transactions')}
+                    className="max-w-md w-full p-10 bg-primary rounded-xl hover:bg-secondary text-center"
+                >
+                    <h2 className="text-xl font-bold mb-2">History</h2>
+                    <p>View users transactions history</p>
                 </Link>
             </div>
         </div>

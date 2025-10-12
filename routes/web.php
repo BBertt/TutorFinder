@@ -99,5 +99,7 @@ Route::middleware('admin')->group(function() {
     Route::get('/tutors', [TutorRegistrationController::class, 'index'])->name('admin.tutors');
     Route::patch('/tutors/{tutor}/approve', [TutorRegistrationController::class, 'approve'])->name('admin.tutors.approve');
     Route::patch('/tutors/{tutor}/reject', [TutorRegistrationController::class, 'reject'])->name('admin.tutors.reject');
+    Route::get('/users/transactions', [UserController::class, 'index'])->name('admin.transactions');
+    Route::get('/users/{user}/transactions', [TransactionController::class, 'adminIndex'])->name('admin.transactions.index');
 });
 require __DIR__.'/auth.php';
