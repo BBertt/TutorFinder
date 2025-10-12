@@ -25,7 +25,19 @@ class CourseCartController extends Controller
             'course_id' => $course->id,
         ]);
 
-        return Redirect::back()->with('success', 'Course added to cart!');
+        return redirect()->back()->with('success', 'Course added to cart successfully.');
+    }
+
+    public function destroy(CourseCart $cartItem)
+    {
+        // Ensure the user owns the cart item
+        if ($cartItem->user_id !== Auth::id()) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $cartItem->delete();
+
+        return redirect()->back()->with('success', 'Item removed from cart.');
     }
 
     public function show()

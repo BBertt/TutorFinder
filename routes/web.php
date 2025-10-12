@@ -64,12 +64,10 @@ Route::middleware('auth')->group(function () {
     // Cart
     Route::get('/cart', [CourseCartController::class, 'show'])->name('cart.show');
     Route::post('/cart', [CourseCartController::class, 'store'])->name('cart.store');
+    Route::delete('/cart/{cartItem}', [CourseCartController::class, 'destroy'])->name('cart.destroy');
 
     // Transaction
     Route::post('/cart/checkout', [TransactionController::class, 'checkout'])->name('checkout');
-
-    Route::get('/transaction/success', [TransactionController::class, 'success'])->name('transaction.success');
-    Route::get('/transaction/failure', [TransactionController::class, 'failure'])->name('transaction.failure');
 });
 
 Route::middleware('admin')->group(function() {

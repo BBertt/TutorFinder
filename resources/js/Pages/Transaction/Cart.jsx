@@ -1,10 +1,13 @@
 import Layout from "@/Layouts/Layout";
-import { Head } from "@inertiajs/react";
+import { Head, router } from "@inertiajs/react";
 import { useState } from 'react';
 import axios from 'axios';
+import ConfirmDeleteModal from "@/Components/ConfirmDeleteModal";
 
 const Checkout = ({ cartItems }) => {
     const [processing, setProcessing] = useState(false);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [itemToDelete, setItemToDelete] = useState(null);
 
     const cartItemIds = cartItems.map(item => item.id);
     const totalPrice = cartItems.reduce((acc, item) => acc + parseFloat(item.course.price), 0);
@@ -43,6 +46,25 @@ const Checkout = ({ cartItems }) => {
             }
         }
         setProcessing(false);
+    };
+
+    const openConfirmModal = (item) => {
+        setItemToDelete(item);
+        setIsModalOpen(true);
+    };
+
+    const closeConfirmModal = () => {
+        setItemToDelete(null);
+        setIsModalOpen(false);
+    };
+
+    const handleRemoveItem = () => {
+        if (itemToDelete) {
+            router.delete(route('cart.destroy', itemToDelete.id), {
+                preserveScroll: true,
+                onSuccess: () => closeConfirmModal(),
+            });
+        }
     };
 
     return (
@@ -85,7 +107,7 @@ const Checkout = ({ cartItems }) => {
                                             </p>
                                         </div>
                                         <div className="ml-4">
-                                            <button className="text-red-500 hover:text-red-700">
+                                            <button onClick={() => openConfirmModal(item)} className="text-red-500 hover:text-red-700">
                                                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                                             </button>
                                         </div>
@@ -127,6 +149,12 @@ const Checkout = ({ cartItems }) => {
                     </div>
                 )}
             </div>
+            <ConfirmDeleteModal
+                isOpen={isModalOpen}
+                onClose={closeConfirmModal}
+                onConfirm={handleRemoveItem}
+                itemName={itemToDelete?.course?.title}
+            />
         </>
     );
 };
