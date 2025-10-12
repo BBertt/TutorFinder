@@ -83,7 +83,7 @@ const AppNavbar = ({ logoSrc }) => {
 
                     <div className="hidden md:flex items-center space-x-10">
                         <Link
-                            href="/shop"
+                            href="/cart"
                             className="text-secondary hover:text-primary"
                         >
                             <img

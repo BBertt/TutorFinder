@@ -58,18 +58,16 @@ Route::middleware('auth')->group(function () {
     Route::get('/courses', [CourseController::class, 'index'])->name('courses.index');
     Route::get('/courses/{course}', [CourseController::class, 'show'])->name('courses.show');
 
-    // Cart
-    Route::post('/cart', [CourseCartController::class, 'store'])->name('cart.store');
-
     // Tutor Profile
     Route::get('/tutors/{tutor}', [TutorController::class, 'show'])->name('tutors.show');
 
-    // Transaction
-    Route::get('/checkout', [TransactionController::class, 'showCheckoutPage'])->name('checkout.show');
-    Route::post('/checkout', [TransactionController::class, 'checkout'])->name('checkout');
+    // Cart
+    Route::get('/cart', [CourseCartController::class, 'show'])->name('cart.show');
+    Route::post('/cart', [CourseCartController::class, 'store'])->name('cart.store');
+    Route::delete('/cart/{cartItem}', [CourseCartController::class, 'destroy'])->name('cart.destroy');
 
-    Route::get('/transaction/success', [TransactionController::class, 'success'])->name('transaction.success');
-    Route::get('/transaction/failure', [TransactionController::class, 'failure'])->name('transaction.failure');
+    // Transaction
+    Route::post('/cart/checkout', [TransactionController::class, 'checkout'])->name('checkout');
 
     // Forum
     Route::get('/forums', [ForumController::class, 'index'])->name('forums.index');

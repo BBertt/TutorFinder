@@ -77,17 +77,4 @@ class TransactionController extends Controller
         // Handle failed payment
         return response()->json(['message' => 'Payment failed.']);
     }
-
-    public function showCheckoutPage()
-    {
-        $user = User::with('role')->find(Auth::id());
-        $cartItems = CourseCart::where('user_id', $user->id)->with('course')->get();
-
-        return Inertia::render('Transaction/Checkout', [
-            'cartItems' => $cartItems,
-            'auth' => [
-                'user' => $user,
-            ],
-        ]);
-    }
 }
