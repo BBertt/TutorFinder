@@ -6,7 +6,7 @@ const Profile = () => {
     const { auth, flash } = usePage().props;
 
     const [profileImage, setProfileImage] = useState(
-        auth.user.profile_image_url || '/assets/icons/profile.svg'
+        auth.user.profile_image_url || "/assets/icons/profile.svg"
     );
     const [firstNameError, setFirstNameError] = useState("");
     const [lastNameError, setLastNameError] = useState("");
@@ -156,17 +156,11 @@ const Profile = () => {
                         value={data.phoneNumber}
                         onChange={(e) => {
                             setData("phoneNumber", e.target.value);
-                            clearErrors("phoneNumber");
                         }}
                         name="phoneNumber"
                         placeholder="081234567890"
                         className="px-4 py-2 rounded-full text-black w-full"
                     />
-                    {(phoneNumberError || errors.phoneNumber) && (
-                        <p className="text-red-500 text-sm mt-1">
-                            {phoneNumberError || errors.phoneNumber}
-                        </p>
-                    )}
                 </div>
 
                 <div>
@@ -181,16 +175,10 @@ const Profile = () => {
                         value={data.dateOfBirth}
                         onChange={(e) => {
                             setData("dateOfBirth", e.target.value);
-                            clearErrors("dateOfBirth");
                         }}
                         name="dateOfBirth"
                         className="px-4 py-2 rounded-full text-black w-full"
                     />
-                    {errors.dateOfBirth && (
-                        <p className="text-red-500 text-sm mt-1">
-                            {errors.dateOfBirth}
-                        </p>
-                    )}
                 </div>
 
                 {/* Bio hanya muncul kalau role tutor */}

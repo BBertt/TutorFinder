@@ -13,7 +13,7 @@ export default function TutorReviewCard({ review }) {
                         src={
                             review.reviewer.profile_image_path
                                 ? `/${review.reviewer.profile_image_path}`
-                                : `https://ui-avatars.com/api/?name=${reviewerName}&background=random`
+                                : "/assets/icons/profile.svg"
                         }
                         alt={reviewerName}
                     />

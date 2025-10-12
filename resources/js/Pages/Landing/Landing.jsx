@@ -1,13 +1,22 @@
-import { Link, usePage } from "@inertiajs/react";
+import { Link, usePage, useForm } from "@inertiajs/react";
 import GuestNavbar from "@/Components/Landing/GuestNavbar";
 
 const Landing = () => {
     const { reviews } = usePage().props;
+    const { data, setData, get } = useForm({
+        search: "",
+    });
+
+    const handleSearch = (e) => {
+        e.preventDefault();
+        get("/courses");
+        setData("search", "");
+    };
 
     return (
         <div className="flex flex-col">
             <GuestNavbar />
-            <section className="bg-primary text-white py-16 flex flex-col items-center justify-between">
+            <section className="bg-primary text-white py-16 flex flex-col">
                 <div className="flex justify-between items-center w-full">
                     <img
                         className="w-40 h-40 object-cover"
@@ -17,16 +26,25 @@ const Landing = () => {
                         <h1 className="text-4xl font-extrabold">
                             Find the Right Course and Tutor For You!
                         </h1>
-                        <div className="flex">
+                        <form className="flex" onSubmit={handleSearch}>
                             <input
-                                type="text"
+                                id="search"
+                                name="search"
+                                type="Search"
+                                value={data.search}
+                                onChange={(e) => {
+                                    setData("search", e.target.value);
+                                }}
                                 placeholder="What would you like to learn?"
                                 className="px-4 py-2 text-black rounded-lg w-full"
                             />
-                            <button className="bg-[#3D3D3D] px-6 py-2 rounded-lg font-bold">
+                            <button
+                                type="submit"
+                                className="bg-[#3D3D3D] px-6 py-2 rounded-lg font-bold"
+                            >
                                 Search
                             </button>
-                        </div>
+                        </form>
                         <div className="mt-6 flex flex-col items-center">
                             <p className="font-bold text-lg">
                                 Come Teach with us
@@ -59,7 +77,7 @@ const Landing = () => {
                     ].map((text, idx) => (
                         <div
                             key={idx}
-                            className="flex-1 flex flex-col gap-3 max-w-xs p-6 rounded-lg shadow-md border"
+                            className="flex flex-col flex-wrap flex-1 gap-3 max-w-xs p-6 rounded-lg shadow-md border"
                         >
                             <h3 className="text-xl font-bold">
                                 Step {idx + 1}
@@ -68,7 +86,7 @@ const Landing = () => {
                             <img
                                 className="w-32 h-32 mx-auto object-cover"
                                 src="/assets/images/landing/books.png"
-                                alt="books"
+                                alt="Books"
                             />
                         </div>
                     ))}
@@ -82,28 +100,31 @@ const Landing = () => {
                 <h2 className="text-3xl font-extrabold text-center mb-12">
                     Top Tutor of the Week
                 </h2>
-                <div className="flex justify-evenly items-center gap-8">
+                <div className="flex justify-between gap-8">
                     {reviews.map((tutor) => (
-                        <div
+                        <Link
                             key={tutor.id}
-                            className="bg-secondary rounded-xl p-6 flex gap-4 items-center"
+                            href={`/tutors/${tutor.id}`}
+                            className="flex-1"
                         >
-                            <img
-                                className="w-24 h-24 rounded-full"
-                                src={
-                                    tutor?.profile_image_path
-                                        ? `/storage/${tutor.profile_image_path}`
-                                        : "/assets/icons/profile.svg"
-                                }
-                                alt=""
-                            />
-                            <div>
-                                <h3 className="font-bold">
-                                    {tutor.first_name} {tutor.last_name}
-                                </h3>
-                                <p className="text-sm mt-2">{tutor.bio}</p>
+                            <div className="bg-secondary rounded-xl p-6 flex gap-4 items-center">
+                                <img
+                                    className="w-24 h-24 rounded-full"
+                                    src={
+                                        tutor?.profile_image_url
+                                            ? tutor?.profile_image_url
+                                            : "/assets/icons/profile.svg"
+                                    }
+                                    alt="Profile"
+                                />
+                                <div>
+                                    <h3 className="font-bold">
+                                        {tutor.first_name} {tutor.last_name}
+                                    </h3>
+                                    <p className="text-sm mt-2">{tutor.bio}</p>
+                                </div>
                             </div>
-                        </div>
+                        </Link>
                     ))}
                 </div>
             </section>

@@ -13,6 +13,7 @@ use App\Http\Controllers\TutorReviewController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\WebhookController;
 use App\Http\Controllers\GoogleAuthController;
+use App\Http\Controllers\HomeController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -34,10 +35,6 @@ Route::get('/', function () {
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
-
-Route::get('/home', function () {
-    return Inertia::render('Home');
-})->middleware(['auth', 'verified'])->name('home');
 
 Route::get('/', function () {
     return redirect('/landing');
@@ -82,6 +79,9 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/forums/{forum}/replies', [ForumReplyController::class, 'store'])->name('forums.replies.store');
     Route::post('/votes/{type}/{id}', [ForumVoteController::class, 'store'])->name('votes.store');
+
+    // Home
+    Route::get('/home', [HomeController::class, 'index'])->name('home');
 });
 
 Route::middleware('admin')->group(function() {
