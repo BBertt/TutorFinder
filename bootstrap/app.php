@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Middleware\EnsureRoleIsAdmin;
+use App\Http\Middleware\EnsureRoleIsTutor;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -21,7 +22,8 @@ return Application::configure(basePath: dirname(__DIR__))
             \Illuminate\Http\Middleware\AddLinkHeadersForPreloadedAssets::class,
         ]);
         $middleware->alias([
-            'admin' => EnsureRoleIsAdmin::class
+            'admin' => EnsureRoleIsAdmin::class,
+            'tutor' => EnsureRoleIsTutor::class,
         ]);
         //
     })

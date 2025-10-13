@@ -14,6 +14,9 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\WebhookController;
 use App\Http\Controllers\GoogleAuthController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\Tutor\CourseController as TutorCourseController;
+use App\Http\Controllers\Tutor\CourseLessonController;
+use App\Http\Controllers\Tutor\CourseSectionController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -22,6 +25,21 @@ Route::get('/auth/google/redirect', [GoogleAuthController::class, 'redirect'])->
 Route::get('/auth/google/callback', [GoogleAuthController::class, 'callback'])->name('google.auth.callback');
 
 Route::post('/webhooks/xendit', [WebhookController::class, 'handleXendit'])->name('webhooks.xendit');
+
+Route::middleware(['auth', 'verified', 'tutor'])->prefix('tutor')->name('tutor.')->group(function () {
+
+    Route::resource('courses', TutorCourseController::class);
+    Route::patch('courses/{course}/publish', [TutorCourseController::class, 'publish'])->name('courses.publish');
+
+    Route::post('courses/{course}/sections', [CourseSectionController::class, 'store'])->name('courses.sections.store');
+    Route::patch('sections/{section}', [CourseSectionController::class, 'update'])->name('sections.update');
+    Route::delete('sections/{section}', [CourseSectionController::class, 'destroy'])->name('sections.destroy');
+
+    Route::post('sections/{section}/lessons', [CourseLessonController::class, 'store'])->name('sections.lessons.store');
+    Route::patch('sections/{section}/lessons/{lesson}', [CourseLessonController::class, 'update'])->name('sections.lessons.update');
+    Route::delete('sections/{section}/lessons/{lesson}', [CourseLessonController::class, 'destroy'])->name('sections.lessons.destroy');
+
+});
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
