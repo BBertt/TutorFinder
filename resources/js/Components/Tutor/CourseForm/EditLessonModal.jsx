@@ -1,8 +1,7 @@
 import React, { useEffect } from "react";
-import { useForm, router } from "@inertiajs/react"; // Make sure router is imported
+import { useForm, router } from "@inertiajs/react";
 
 export default function EditLessonModal({ lessonData, isOpen, onClose }) {
-    // The useForm hook is still perfect for managing state and errors.
     const {
         data,
         setData,
@@ -31,22 +30,17 @@ export default function EditLessonModal({ lessonData, isOpen, onClose }) {
         e.preventDefault();
         if (!lessonData) return;
 
-        // --- THIS IS THE FIX ---
-        // We use the global `router.post()` function. It takes three arguments:
-        // 1. The URL.
-        // 2. The DATA payload. This MUST include the `_method: 'patch'` key.
-        // 3. The OPTIONS object.
         router.post(
             route("tutor.sections.lessons.update", {
                 section: lessonData.section.id,
                 lesson: lessonData.lesson.id,
             }),
             {
-                ...data, // All the form data (title, description, video file)
-                _method: "patch", // This correctly spoofs the request method to PATCH
+                ...data,
+                _method: "patch",
             },
             {
-                forceFormData: true, // This is essential for file uploads
+                forceFormData: true,
                 preserveScroll: true,
                 onSuccess: () => {
                     reset();

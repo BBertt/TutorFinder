@@ -52,15 +52,11 @@ export default function CourseForm({ categories }) {
 
     const [currentStep, setCurrentStep] = useState(1);
 
-    // --- THE FIX ---
-    // This hook runs once when the component loads (or reloads after a redirect).
     useEffect(() => {
-        // If we are on an edit page AND we just came from the create action,
-        // set the step to 2.
         if (isEditing && flash.from_create) {
             setCurrentStep(2);
         }
-    }, []); // The empty array ensures this only runs once on mount.
+    }, []);
 
     const { data, setData, post, processing, errors } = useForm({
         title: course?.title || "",

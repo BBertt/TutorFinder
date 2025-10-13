@@ -12,7 +12,6 @@ export default function CourseSectionLessonForm({ course }) {
     const [selectedSection, setSelectedSection] = useState(null);
     const [selectedLessonData, setSelectedLessonData] = useState(null);
 
-    // Add 'description' to the useForm hook for adding new sections
     const { data, setData, post, processing, reset, errors } = useForm({
         title: "",
         description: "",
@@ -83,7 +82,6 @@ export default function CourseSectionLessonForm({ course }) {
                                     <p className="font-semibold text-lg">
                                         Section {index + 1}: {section.title}
                                     </p>
-                                    {/* Display the section description here */}
                                     {section.description && (
                                         <p className="text-sm text-gray-500 mt-1">
                                             {section.description}
@@ -210,7 +208,6 @@ export default function CourseSectionLessonForm({ course }) {
                             </p>
                         )}
                     </div>
-                    {/* Add the description textarea to the form */}
                     <div>
                         <textarea
                             value={data.description}
