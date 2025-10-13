@@ -22,7 +22,7 @@ class Course extends Model
         'thumbnail_image',
         'intro_video',
     ];
-    protected $appends = ['thumbnail_image_url'];
+    protected $appends = ['thumbnail_image_url', 'intro_video_url'];
 
     public function user()
     {
@@ -51,5 +51,13 @@ class Course extends Model
         }
 
         return '/assets/images/landing/books.png';
+    }
+
+     public function getIntroVideoUrlAttribute()
+    {
+        if ($this->intro_video) {
+            return Storage::url($this->intro_video);
+        }
+        return null;
     }
 }
