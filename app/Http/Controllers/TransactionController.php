@@ -36,8 +36,8 @@ class TransactionController extends Controller
             'payer_email' => $user->email,
             'description' => 'Course Purchase',
             'amount' => $totalPrice,
-            'success_redirect_url' => route('transaction.success'),
-            'failure_redirect_url' => route('transaction.failure'),
+            'success_redirect_url' => route('transactions.index'),
+            'failure_redirect_url' => route('transactions.failure'),
         ];
 
         $createInvoiceRequest = new CreateInvoiceRequest($params);
@@ -65,16 +65,41 @@ class TransactionController extends Controller
         return response()->json(['invoice_url' => $invoice['invoice_url']]);
     }
 
-    public function success()
+    public function index()
     {
-        // Handle successful payment
-        // You can update the transaction status and enroll the user in the course
-        return response()->json(['message' => 'Payment successful.']);
+        $user = Auth::user();
+        $transactions = TransactionHeader::where('user_id', $user->id)
+                                        ->with('details.course.user')
+                                        ->latest()
+                                        ->get();
+
+        return Inertia::render('Transaction/Index', [
+            'transactions' => $transactions,
+            'auth' => [
+                'user' => $user,
+            ],
+        ]);
     }
 
     public function failure()
     {
-        // Handle failed payment
-        return response()->json(['message' => 'Payment failed.']);
+        return Inertia::render('Transaction/Failure', [
+            'auth' => ['user' => Auth::user()]
+        ]);
+    }
+
+    public function adminIndex(User $user)
+    {
+        $transactions = TransactionHeader::where('user_id', $user->id)
+                                        ->with('details.course.user')
+                                        ->latest()
+                                        ->get();
+
+
+        return Inertia::render('Admin/Transaction/Index', [
+            'transactions' => $transactions,
+            'viewedUser' => $user,
+            'auth' => ['user' => Auth::user()]
+        ]);
     }
 }
