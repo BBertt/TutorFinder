@@ -14,9 +14,12 @@ function Home() {
                 <h1 className="text-2xl font-extrabold">
                     Welcome back, {user.first_name}!
                 </h1>
-                <h2 className="text-xl font-extrabold mb-12">
-                    Let's continue to learn what you have started!
-                </h2>
+                <Link
+                    href={route("purchased-courses.index")}
+                    className="mt-4 inline-block text-lg font-semibold hover:text-primary"
+                >
+                    Your Courses
+                </Link>
             </section>
 
             {/* Course Section */}
