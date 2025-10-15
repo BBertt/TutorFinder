@@ -19,7 +19,7 @@ function TutorProfile({ tutor }) {
                             src={
                                 tutor.profile_image_path
                                     ? `/${tutor.profile_image_path}`
-                                    : `https://ui-avatars.com/api/?name=${tutorName}&background=random&size=160`
+                                    : "/assets/icons/profile.svg"
                             }
                             alt={tutorName}
                         />

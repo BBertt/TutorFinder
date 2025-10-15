@@ -30,8 +30,8 @@ export default function ForumPostCard({ post }) {
                     className="w-12 h-12 rounded-full"
                     src={
                         post.user.profile_image_path
-                            ? `/${post.user.profile_image_path}`
-                            : `https://ui-avatars.com/api/?name=${authorName}&background=random`
+                            ? post.user.profile_image_path
+                            : "/assets/icons/profile.svg"
                     }
                     alt={authorName}
                 />

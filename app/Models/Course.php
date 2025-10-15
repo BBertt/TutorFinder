@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 
 class Course extends Model
 {
@@ -21,6 +22,7 @@ class Course extends Model
         'thumbnail_image',
         'intro_video',
     ];
+    protected $appends = ['thumbnail_image_url', 'intro_video_url'];
 
     public function user()
     {
@@ -40,5 +42,22 @@ class Course extends Model
     public function reviews()
     {
         return $this->hasMany(CourseReview::class);
+    }
+
+    public function getThumbnailImageUrlAttribute()
+    {
+        if ($this->thumbnail_image) {
+            return Storage::url($this->thumbnail_image);
+        }
+
+        return '/assets/images/landing/books.png';
+    }
+
+     public function getIntroVideoUrlAttribute()
+    {
+        if ($this->intro_video) {
+            return Storage::url($this->intro_video);
+        }
+        return null;
     }
 }

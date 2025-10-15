@@ -9,8 +9,8 @@ const ReplyCard = ({ reply, type = "reply" }) => {
                 className="w-12 h-12 rounded-full"
                 src={
                     reply.user.profile_image_path
-                        ? `/${reply.user.profile_image_path}`
-                        : `https://ui-avatars.com/api/?name=${authorName}&background=random`
+                        ? reply.user.profile_image_path
+                        : "/assets/icons/profile.svg"
                 }
                 alt={authorName}
             />
