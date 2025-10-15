@@ -101,6 +101,8 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/forums/{forum}/replies', [ForumReplyController::class, 'store'])->name('forums.replies.store');
     Route::post('/votes/{type}/{id}', [ForumVoteController::class, 'store'])->name('votes.store');
+    Route::get('/transactions', [TransactionController::class, 'index'])->name('transactions.index');
+    Route::get('/transactions/failure', [TransactionController::class, 'failure'])->name('transactions.failure');
 
     // Home
     Route::get('/home', [HomeController::class, 'index'])->name('home');
@@ -119,9 +121,7 @@ Route::middleware('admin')->group(function() {
     Route::get('/tutors', [TutorRegistrationController::class, 'index'])->name('admin.tutors');
     Route::patch('/tutors/{tutor}/approve', [TutorRegistrationController::class, 'approve'])->name('admin.tutors.approve');
     Route::patch('/tutors/{tutor}/reject', [TutorRegistrationController::class, 'reject'])->name('admin.tutors.reject');
+    Route::get('/users/transactions', [UserController::class, 'index'])->name('admin.transactions');
+    Route::get('/users/{user}/transactions', [TransactionController::class, 'adminIndex'])->name('admin.transactions.index');
 });
-
-Route::get('/transaction/success', [TransactionController::class, 'success'])->name('transaction.success');
-Route::get('/transaction/failure', [TransactionController::class, 'failure'])->name('transaction.failure');
-
 require __DIR__.'/auth.php';

@@ -137,6 +137,13 @@ const AppNavbar = ({ logoSrc }) => {
                                         Profile
                                     </Link>
                                     <Link
+                                        href="/transactions"
+                                        className="block px-4 py-2 text-secondary hover:bg-primary hover:text-white rounded-md"
+                                        onClick={() => setOpen(false)}
+                                    >
+                                        Transaction History
+                                    </Link>
+                                    <Link
                                         href="/logout"
                                         method="post"
                                         as="button"
