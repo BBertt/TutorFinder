@@ -13,6 +13,7 @@ use App\Http\Controllers\TutorReviewController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\WebhookController;
 use App\Http\Controllers\GoogleAuthController;
+use App\Http\Controllers\ChatController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -84,6 +85,11 @@ Route::middleware('auth')->group(function () {
     Route::post('/votes/{type}/{id}', [ForumVoteController::class, 'store'])->name('votes.store');
     Route::get('/transactions', [TransactionController::class, 'index'])->name('transactions.index');
     Route::get('/transactions/failure', [TransactionController::class, 'failure'])->name('transactions.failure');
+
+    Route::get('/chat', [ChatController::class, 'index'])->name('chat.index');
+    Route::get('/chat/{receiver}', [ChatController::class, 'show'])->name('chat.show');
+    Route::post('/chat/{receiver}', [ChatController::class, 'store'])->name('chat.store');
+    Route::get('/api/chat/{receiver}/messages', [ChatController::class, 'getMessages'])->name('chat.getMessages');
 });
 
 Route::middleware('admin')->group(function() {
