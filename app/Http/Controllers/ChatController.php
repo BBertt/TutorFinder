@@ -15,6 +15,7 @@ class ChatController extends Controller
     public function index()
     {
         $user = Auth::user();
+        /** @var \App\Models\User $user */
         $contacts = collect();
 
         if ($user->role->name === 'tutor') {
@@ -27,6 +28,7 @@ class ChatController extends Controller
             $contacts = User::whereIn('id', $tutorIds)->get();
         }
 
+
         return Inertia::render('Chat/Index', [
             'contacts' => $contacts,
             'receiver' => null,
@@ -37,6 +39,7 @@ class ChatController extends Controller
     public function show(User $receiver)
     {
         $user = Auth::user();
+        /** @var \App\Models\User $user */
         $contacts = collect();
 
         if ($user->role->name === 'tutor') {
@@ -71,13 +74,13 @@ class ChatController extends Controller
             'message' => 'required|string',
         ]);
 
-        Chat::create([
+        $chat = Chat::create([
             'sender_id' => Auth::id(),
             'receiver_id' => $receiver->id,
             'message' => $request->message,
         ]);
 
-        return back();
+        return response()->json($chat);
     }
 
     public function getMessages(User $receiver)

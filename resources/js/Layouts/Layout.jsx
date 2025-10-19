@@ -65,7 +65,7 @@ const AppNavbar = ({ logoSrc }) => {
                             />
                         </Link>
                         <Link
-                            href="/messages"
+                            href="/chat"
                             className="text-secondary hover:text-primary"
                         >
                             <img
