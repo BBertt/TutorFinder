@@ -13,6 +13,8 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
 use Inertia\Inertia;
 use Inertia\Response;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\OtpMail;
 
 class RegisteredUserController extends Controller
 {
@@ -45,6 +47,8 @@ class RegisteredUserController extends Controller
 
         event(new Registered($user));
 
-        return redirect(route('login', absolute: false))->with('success', 'Registration successful!');
+        Auth::login($user);
+
+        return redirect(route('dashboard', absolute: false));
     }
 }
