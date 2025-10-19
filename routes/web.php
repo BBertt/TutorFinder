@@ -13,6 +13,7 @@ use App\Http\Controllers\TutorReviewController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\WebhookController;
 use App\Http\Controllers\GoogleAuthController;
+use App\Http\Controllers\ChatController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PurchasedCoursesController;
 use App\Http\Controllers\Tutor\CourseController as TutorCourseController;
@@ -104,6 +105,12 @@ Route::middleware('auth')->group(function () {
     Route::get('/transactions', [TransactionController::class, 'index'])->name('transactions.index');
     Route::get('/transactions/failure', [TransactionController::class, 'failure'])->name('transactions.failure');
 
+    // Messages
+    Route::get('/chat', [ChatController::class, 'index'])->name('chat.index');
+    Route::get('/chat/{receiver}', [ChatController::class, 'show'])->name('chat.show');
+    Route::post('/chat/{receiver}', [ChatController::class, 'store'])->name('chat.store');
+    Route::get('/api/chat/{receiver}/messages', [ChatController::class, 'getMessages'])->name('chat.getMessages');
+    Route::delete('/chat/messages/{message}', [ChatController::class, 'destroy'])->name('chat.destroy');
     // Home
     Route::get('/home', [HomeController::class, 'index'])->name('home');
 });
