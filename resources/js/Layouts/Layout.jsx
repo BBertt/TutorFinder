@@ -1,9 +1,20 @@
 import React, { useState } from "react";
-import { Link, usePage } from "@inertiajs/react";
+import { Link, usePage, useForm } from "@inertiajs/react";
 
 const AppNavbar = ({ logoSrc }) => {
+    const { categories } = usePage().props;
     const [open, setOpen] = useState(false);
+    const [dropdown, setDropdown] = useState(false);
     const { auth } = usePage().props;
+    const { data, setData, get } = useForm({
+        search: "",
+    });
+
+    const handleSearch = (e) => {
+        e.preventDefault();
+        get("/courses");
+        setData("search", "");
+    };
 
     return (
         <nav className="bg-accent shadow-sm sticky top-0 z-50">
@@ -20,27 +31,54 @@ const AppNavbar = ({ logoSrc }) => {
                     </div>
 
                     <div className="hidden md:block flex-1 max-w-xl mx-4">
-                        <div className="relative flex items-center">
+                        <form
+                            className="relative flex items-center"
+                            onSubmit={handleSearch}
+                        >
                             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                 <img
                                     className="w-4 h-4"
                                     src="/assets/icons/magnifying-glass.svg"
-                                    alt="search"
+                                    alt="Search"
                                 />
                             </div>
                             <input
                                 id="search"
                                 name="search"
+                                value={data.search}
+                                onChange={(e) =>
+                                    setData("search", e.target.value)
+                                }
                                 className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-full leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-green-700 focus:border-green-700 sm:text-sm"
                                 placeholder="Search..."
-                                type="search"
+                                type="Search"
                             />
-                            <img
-                                className="w-7 h-7"
-                                src="/assets/icons/arrow-down.svg"
-                                alt="search"
-                            />
-                        </div>
+                            <div className="relative ml-2">
+                                <img
+                                    className="w-7 h-7 cursor-pointer"
+                                    src="/assets/icons/arrow-down.svg"
+                                    alt="Filter"
+                                    onClick={() => setDropdown(!dropdown)}
+                                />
+
+                                {dropdown && (
+                                    <div className="absolute right-0 mt-2 w-64 bg-white rounded-md border border-gray-200 z-1">
+                                        {categories.map((category) => (
+                                            <Link
+                                                key={category.id}
+                                                href={`/courses?category=${category.id}`}
+                                                className="block px-4 py-2 text-secondary hover:bg-primary hover:text-white rounded-md"
+                                                onClick={() =>
+                                                    setDropdown(false)
+                                                }
+                                            >
+                                                {category.name}
+                                            </Link>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                        </form>
                     </div>
 
                     <div className="hidden md:flex items-center space-x-10">
@@ -51,7 +89,7 @@ const AppNavbar = ({ logoSrc }) => {
                             <img
                                 className="w-7 h-7"
                                 src="/assets/icons/cart.svg"
-                                alt="search"
+                                alt="Cart"
                             />
                         </Link>
                         <Link
@@ -61,7 +99,7 @@ const AppNavbar = ({ logoSrc }) => {
                             <img
                                 className="w-7 h-7"
                                 src="/assets/icons/forum.svg"
-                                alt="search"
+                                alt="Forums"
                             />
                         </Link>
                         <Link
@@ -71,7 +109,7 @@ const AppNavbar = ({ logoSrc }) => {
                             <img
                                 className="w-7 h-7"
                                 src="/assets/icons/messages.svg"
-                                alt="search"
+                                alt="Messages"
                             />
                         </Link>
                         <div className="relative">
@@ -81,7 +119,10 @@ const AppNavbar = ({ logoSrc }) => {
                             >
                                 <img
                                     className="w-7 h-7 rounded-full"
-                                    src={auth.user.profile_image_url || '/assets/icons/profile.svg'}
+                                    src={
+                                        auth.user.profile_image_url ||
+                                        "/assets/icons/profile.svg"
+                                    }
                                     alt="Profile"
                                 />
                             </div>

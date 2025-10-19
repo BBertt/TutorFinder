@@ -41,7 +41,7 @@ const About = () => {
                             <img
                                 className="w-32 h-32 mx-auto object-cover"
                                 src="/assets/images/landing/books.png"
-                                alt="books"
+                                alt="Books"
                             />
                         </div>
                     ))}

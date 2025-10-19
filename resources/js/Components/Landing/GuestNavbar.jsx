@@ -20,13 +20,13 @@ const GuestNavbar = () => {
                     {/* Menu */}
                     <div className="hidden md:flex items-center space-x-10 font-extrabold">
                         <Link
-                            href="#"
+                            href="/courses"
                             className="text-[#3D3D3D] hover:text-[#4F6D40]"
                         >
                             Find a Course and Tutor
                         </Link>
                         <Link
-                            href="#"
+                            href="forums"
                             className="text-[#3D3D3D] hover:text-[#4F6D40]"
                         >
                             Forum

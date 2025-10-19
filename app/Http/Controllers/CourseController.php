@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Course;
+use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -13,8 +14,21 @@ class CourseController extends Controller
      */
     public function index()
     {
-        $courses = Course::with('user')->withAvg('reviews', 'rating')->latest()
-        ->paginate(6);
+        $query = Course::with('user')->withAvg('reviews', 'rating');
+
+        if(request('search')) {
+            $query->where('title', 'like', '%' . request('search') . '%')
+                  ->orWhereHas('user', function (Builder $query) {
+                    $query->where('first_name', 'like', '%' . request('search') . '%')
+                          ->orWhere('last_name', 'like', '%' . request('search') . '%');
+                    });
+        }
+        
+        if (request('category')) {
+            $query->where('category_id', '=', request('category'));
+        }
+
+        $courses = $query->latest()->paginate(6);
 
         return Inertia::render('Courses/CourseList', [
             'courses' => $courses,

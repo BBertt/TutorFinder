@@ -56,7 +56,7 @@ const Tutors = () => {
                                         className="flex justify-center items-center"
                                         onClick={() =>
                                             setImage(
-                                                `/storage/${tutor.identification_image_path}`
+                                                tutor.identification_image_url
                                             )
                                         }
                                     >
@@ -72,7 +72,7 @@ const Tutors = () => {
                                         className="flex justify-center items-center"
                                         onClick={() =>
                                             setImage(
-                                                `/storage/${tutor.certification_image_path}`
+                                                tutor.certification_image_url
                                             )
                                         }
                                     >
