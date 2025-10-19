@@ -18,8 +18,8 @@ class ForumReplyFactory extends Factory
     {
         return [
             'description' => $this->faker->paragraph(3),
-            'likes' => $this->faker->numberBetween(0, 200),
-            'dislikes' => $this->faker->numberBetween(0, 20),
+            // 'likes' => $this->faker->numberBetween(0, 200),
+            // 'dislikes' => $this->faker->numberBetween(0, 20),
         ];
     }
 }

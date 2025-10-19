@@ -19,8 +19,8 @@ class ForumFactory extends Factory
         return [
             'title' => $this->faker->sentence(8),
             'description' => $this->faker->paragraph(5),
-            'likes' => $this->faker->numberBetween(0, 500),
-            'dislikes' => $this->faker->numberBetween(0, 50),
+            // 'likes' => $this->faker->numberBetween(0, 500),
+            // 'dislikes' => $this->faker->numberBetween(0, 50),
         ];
     }
 }
