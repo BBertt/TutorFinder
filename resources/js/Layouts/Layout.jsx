@@ -234,14 +234,14 @@ const AppFooter = ({ logoSrc }) => {
     );
 };
 
-export default function AuthenticatedLayout({ children }) {
+export default function AuthenticatedLayout({ children, showFooter = true }) {
     const logoSrc = "/assets/logo.png";
 
     return (
         <div className="flex flex-col min-h-screen bg-white">
             <AppNavbar logoSrc={logoSrc} />
             <main className="flex-grow">{children}</main>
-            <AppFooter logoSrc={logoSrc} />
+            {showFooter && <AppFooter logoSrc={logoSrc} />}
         </div>
     );
 }

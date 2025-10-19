@@ -68,10 +68,10 @@ const Chat = ({ contacts, receiver, messages: initialMessages }) => {
 
     return (
         <AuthenticatedLayout>
-            <div className="container mx-auto flex flex-col">
-                <div className="flex-grow flex border border-gray-200 rounded-lg shadow-lg">
+            <div className="container mx-auto py-8">
+                <div className="flex border border-gray-200 rounded-lg shadow-lg" style={{ height: 'calc(100vh - 220px)' }}>
                     {/* Contacts List */}
-                    <div className="w-1/4 bg-gray-50 border-r border-gray-200 flex flex-col z-10">
+                    <div className="w-1/4 bg-gray-50 border-r border-gray-200 flex flex-col">
                         <div className="p-4 font-bold text-lg border-b border-gray-200">Contacts</div>
                         <ul className="flex-1 overflow-y-auto">
                             {contacts.map((contact) => (
@@ -80,7 +80,7 @@ const Chat = ({ contacts, receiver, messages: initialMessages }) => {
                                     className={`p-4 cursor-pointer hover:bg-gray-200 ${receiver?.id === contact.id ? 'bg-gray-300 font-semibold' : ''}`}
                                     onClick={() => handleContactClick(contact.id)}
                                 >
-                                    {contact.first_name} {contact.last_name}
+                                    {contact.email}
                                 </li>
                             ))}
                         </ul>
@@ -90,7 +90,7 @@ const Chat = ({ contacts, receiver, messages: initialMessages }) => {
                     <div className="w-3/4 flex flex-col bg-white">
                         {receiver ? (
                             <>
-                                <div className="p-4 font-bold text-lg border-b border-gray-200 bg-gray-50">Chat with {receiver.first_name} {receiver.last_name}</div>
+                                <div className="p-4 font-bold text-lg border-b border-gray-200 bg-gray-50">Chat with {receiver.email}</div>
                                 <div className="flex-1 p-4 overflow-y-auto">
                                     {messages.map((message, index) => (
                                         <div
@@ -99,8 +99,8 @@ const Chat = ({ contacts, receiver, messages: initialMessages }) => {
                                         >
                                             <div
                                                 className={`max-w-md p-3 rounded-xl shadow-md ${message.sender_id === auth.user.id
-                                                        ? 'bg-primary text-white'
-                                                        : 'bg-gray-200 text-black'
+                                                    ? 'bg-primary text-white'
+                                                    : 'bg-gray-200 text-black'
                                                     }`}>
                                                 <p className="text-sm">{message.message}</p>
                                                 <span className="text-xs opacity-75 mt-1 block text-right">{new Date(message.created_at).toLocaleTimeString()}</span>
