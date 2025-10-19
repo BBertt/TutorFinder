@@ -35,6 +35,18 @@ const Chat = ({ contacts, receiver, messages: initialMessages }) => {
         });
     };
 
+    const handleDeleteMessage = (messageId) => {
+        if (!confirm('Are you sure you want to delete this message?')) return;
+
+        axios.delete(route('chat.destroy', { message: messageId }))
+            .then(() => {
+                setMessages(prevMessages => prevMessages.filter(m => m.id !== messageId));
+            })
+            .catch(error => {
+                console.error('Failed to delete message:', error);
+            });
+    };
+
     const handleSendMessage = async (e) => {
         e.preventDefault();
         if (newMessage.trim() === '' || !receiver) return;
@@ -52,12 +64,8 @@ const Chat = ({ contacts, receiver, messages: initialMessages }) => {
         try {
             axios.post(route('chat.store', { receiver: receiver.id }), {
                 message: newMessage,
-            }).then(response => {
-                // The message is already added optimistically.
-                // You might want to update the message with the one from the server
-                // if it contains more data (e.g., persisted ID, timestamp)
-            }).catch(error => {
-                // If the message failed to send, remove it from the list
+            }).then(() => {
+            }).catch(() => {
                 setMessages(prevMessages => prevMessages.filter(m => m.id !== tempMessage.id));
             });
         } catch (error) {
@@ -105,6 +113,13 @@ const Chat = ({ contacts, receiver, messages: initialMessages }) => {
                                                 <p className="text-sm">{message.message}</p>
                                                 <span className="text-xs opacity-75 mt-1 block text-right">{new Date(message.created_at).toLocaleTimeString()}</span>
                                             </div>
+                                            {message.sender_id === auth.user.id && (
+                                                <button onClick={() => handleDeleteMessage(message.id)} className="ml-2 text-red-500">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                                        <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm4 0a1 1 0 012 0v6a1 1 0 11-2 0V8z" clipRule="evenodd" />
+                                                    </svg>
+                                                </button>
+                                            )}
                                         </div>
                                     ))}
                                 </div>

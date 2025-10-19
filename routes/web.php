@@ -90,6 +90,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/chat/{receiver}', [ChatController::class, 'show'])->name('chat.show');
     Route::post('/chat/{receiver}', [ChatController::class, 'store'])->name('chat.store');
     Route::get('/api/chat/{receiver}/messages', [ChatController::class, 'getMessages'])->name('chat.getMessages');
+    Route::delete('/chat/messages/{message}', [ChatController::class, 'destroy'])->name('chat.destroy');
 });
 
 Route::middleware('admin')->group(function() {

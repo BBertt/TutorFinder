@@ -98,4 +98,15 @@ class ChatController extends Controller
 
         return response()->json($messages);
     }
+
+    public function destroy(Chat $message)
+    {
+        if ($message->sender_id !== Auth::id()) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
+        $message->delete();
+
+        return response()->json(['success' => 'Message deleted']);
+    }
 }
