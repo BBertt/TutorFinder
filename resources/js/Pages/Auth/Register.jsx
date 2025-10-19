@@ -106,7 +106,7 @@ const Register = () => {
                         Email
                     </label>
                     <input
-                        type="email"
+                        type="text"
                         value={data.email}
                         onChange={(e) => {
                             setData("email", e.target.value);
@@ -114,6 +114,12 @@ const Register = () => {
 
                             if (!e.target.value) {
                                 setEmailError("The email field is required.");
+                            } else if (
+                                !/^[^@\s]+@[^@\s]+$/.test(e.target.value)
+                            ) {
+                                setEmailError(
+                                    "Please enter a valid email address."
+                                );
                             } else {
                                 setEmailError("");
                             }
@@ -134,7 +140,8 @@ const Register = () => {
                         htmlFor="password"
                         className="text-sm font-extrabold"
                     >
-                        Password
+                        Password (at least 8 characters, include capital
+                        letters, numbers, and special characters)
                     </label>
                     <input
                         type="password"
