@@ -46,8 +46,8 @@ class CourseController extends Controller
             'requirements' => 'required|string',
             'price' => 'required|numeric|min:0',
             'category_id' => 'required|exists:categories,id',
-            'thumbnail_image' => 'required|image|mimes:jpeg,png,jpg|max:2048',
-            'intro_video' => 'nullable|mimetypes:video/mp4,video/quicktime|max:20480',
+            'thumbnail_image' => 'required|image|mimes:jpeg,png,jpg',
+            'intro_video' => 'nullable|mimetypes:video/mp4,video/quicktime',
         ]);
 
         $course = new Course($request->except(['thumbnail_image', 'intro_video']));
@@ -104,8 +104,8 @@ class CourseController extends Controller
             'requirements' => 'required|string',
             'price' => 'required|numeric|min:0',
             'category_id' => 'required|exists:categories,id',
-            'thumbnail_image' => 'nullable|image|max:2048',
-            'intro_video' => 'nullable|mimetypes:video/mp4,video/quicktime|max:20480',
+            'thumbnail_image' => 'nullable|image',
+            'intro_video' => 'nullable|mimetypes:video/mp4,video/quicktime',
         ]);
 
         $course->title = $request->title;

@@ -20,10 +20,8 @@ class CourseCartSeeder extends Seeder
         }
 
         foreach ($users as $user) {
-            // Give each user between 1 and 3 random courses in their cart
             $coursesToCart = $courses->random(rand(1, min(3, $courses->count())));
             foreach ($coursesToCart as $course) {
-                // Use a where clause to avoid creating duplicate cart items
                 CourseCart::firstOrCreate([
                     'user_id' => $user->id,
                     'course_id' => $course->id,

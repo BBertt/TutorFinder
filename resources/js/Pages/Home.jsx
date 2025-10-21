@@ -7,6 +7,13 @@ import ForumPostCard from "@/Components/Forums/ForumPostCard";
 function Home() {
     const { user, courses, tutors, forums } = usePage().props;
 
+    const getCourses = () => {
+        if (user.role_id === 2) {
+            return route("tutor.courses.index");
+        }
+        return route("my-courses.index");
+    };
+
     return (
         <div className="flex flex-col">
             {/* Learn course blm */}
@@ -15,7 +22,7 @@ function Home() {
                     Welcome back, {user.first_name}!
                 </h1>
                 <Link
-                    href={route("purchased-courses.index")}
+                    href={getCourses()}
                     className="mt-4 inline-block text-lg font-semibold hover:text-primary"
                 >
                     Your Courses

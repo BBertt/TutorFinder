@@ -15,6 +15,7 @@ class CourseController extends Controller
     public function index()
     {
         $query = Course::with('user')->withAvg('reviews', 'rating');
+        $query->where('status', 'published');
 
         if(request('search')) {
             $query->where('title', 'like', '%' . request('search') . '%')
@@ -23,7 +24,7 @@ class CourseController extends Controller
                           ->orWhere('last_name', 'like', '%' . request('search') . '%');
                     });
         }
-        
+
         if (request('category')) {
             $query->where('category_id', '=', request('category'));
         }

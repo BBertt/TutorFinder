@@ -26,7 +26,7 @@ const GuestNavbar = () => {
                             Find a Course and Tutor
                         </Link>
                         <Link
-                            href="forums"
+                            href="/forums"
                             className="text-[#3D3D3D] hover:text-[#4F6D40]"
                         >
                             Forum
