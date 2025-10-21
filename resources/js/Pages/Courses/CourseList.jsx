@@ -1,12 +1,15 @@
 import React from "react";
 import Layout from "@/Layouts/Layout";
-import { Head } from "@inertiajs/react";
+import { Head, usePage } from "@inertiajs/react";
 import CourseCard from "@/Components/Course/CourseCard";
+import Breadcrumb from "@/Components/Course/Breadcrumb";
 
 function CourseList({ courses }) {
     const params = new URLSearchParams(window.location.search);
     const searchParam = params.get("search");
     const categoryParam = params.get("category");
+    const { categories } = usePage().props;
+    const category = categories.find((c) => c.id == categoryParam);
 
     return (
         <>
@@ -19,7 +22,26 @@ function CourseList({ courses }) {
                     <h1 className="text-4xl font-bold">Web Development</h1>
                 </div>
             </div> */}
+            {categoryParam && <Breadcrumb category={category} />}
+
             <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+                <h1 className="text-2xl font-extrabold mb-6">
+                    {searchParam ? (
+                        <>
+                            Showing results for{" "}
+                            <span className="text-primary">
+                                "{searchParam}"
+                            </span>
+                        </>
+                    ) : categoryParam ? (
+                        <>
+                            Explore courses in{" "}
+                            <span className="text-primary capitalize">
+                                {category.name}
+                            </span>
+                        </>
+                    ) : null}
+                </h1>
                 {(searchParam || categoryParam) &&
                     courses.data.length === 0 && (
                         <h2 className="text-xl font-extrabold mb-12">

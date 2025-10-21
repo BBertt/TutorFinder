@@ -16,6 +16,8 @@ const AppNavbar = ({ logoSrc }) => {
         setData("search", "");
     };
 
+    const { url } = usePage();
+
     return (
         <nav className="bg-accent shadow-sm sticky top-0 z-50">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -56,7 +58,11 @@ const AppNavbar = ({ logoSrc }) => {
                             <div className="relative ml-2">
                                 <img
                                     className="w-7 h-7 cursor-pointer"
-                                    src="/assets/icons/arrow-down.svg"
+                                    src={
+                                        dropdown
+                                            ? "/assets/icons/arrow-down-primary.svg"
+                                            : "/assets/icons/arrow-down-secondary.svg"
+                                    }
                                     alt="Filter"
                                     onClick={() => setDropdown(!dropdown)}
                                 />
@@ -82,33 +88,36 @@ const AppNavbar = ({ logoSrc }) => {
                     </div>
 
                     <div className="hidden md:flex items-center space-x-10">
-                        <Link
-                            href="/cart"
-                            className="text-secondary hover:text-primary"
-                        >
+                        <Link href="/cart">
                             <img
                                 className="w-7 h-7"
-                                src="/assets/icons/cart.svg"
+                                src={
+                                    url.startsWith("/cart")
+                                        ? "/assets/icons/cart-primary.svg"
+                                        : "/assets/icons/cart-secondary.svg"
+                                }
                                 alt="Cart"
                             />
                         </Link>
-                        <Link
-                            href="/forums"
-                            className="text-secondary hover:text-primary"
-                        >
+                        <Link href="/forums">
                             <img
                                 className="w-7 h-7"
-                                src="/assets/icons/forum.svg"
+                                src={
+                                    url.startsWith("/forums")
+                                        ? "/assets/icons/forum-primary.svg"
+                                        : "/assets/icons/forum-secondary.svg"
+                                }
                                 alt="Forums"
                             />
                         </Link>
-                        <Link
-                            href="/chat"
-                            className="text-secondary hover:text-primary"
-                        >
+                        <Link href="/chat">
                             <img
                                 className="w-7 h-7"
-                                src="/assets/icons/messages.svg"
+                                src={
+                                    url.startsWith("/chat")
+                                        ? "/assets/icons/messages-primary.svg"
+                                        : "/assets/icons/messages-secondary.svg"
+                                }
                                 alt="Messages"
                             />
                         </Link>
@@ -135,6 +144,13 @@ const AppNavbar = ({ logoSrc }) => {
                                         onClick={() => setOpen(false)}
                                     >
                                         Profile
+                                    </Link>
+                                    <Link
+                                        href="/purchased-courses"
+                                        className="block px-4 py-2 text-secondary hover:bg-primary hover:text-white rounded-md"
+                                        onClick={() => setOpen(false)}
+                                    >
+                                        Your Courses
                                     </Link>
                                     <Link
                                         href="/transactions"
