@@ -1,6 +1,7 @@
 import React from "react";
 import Layout from "@/Layouts/Layout";
 import { Head, router } from "@inertiajs/react";
+import Breadcrumb from "@/Components/Course/Breadcrumb";
 
 function CourseDetails({ course }) {
     const handleAddToCart = (e) => {
@@ -19,6 +20,8 @@ function CourseDetails({ course }) {
             <Head title={course.title} />
 
             <div className="bg-primary text-white">
+                <Breadcrumb category={course.category} course={course} />
+
                 <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-16 grid md:grid-cols-2 gap-12 items-center">
                     <div>
                         <p className="text-xl font-semibold">

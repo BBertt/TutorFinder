@@ -220,6 +220,10 @@ const Register = () => {
                                 setPhoneNumberError(
                                     "The phone number field is required."
                                 );
+                            } else if (!/^\d+$/.test(e.target.value)) {
+                                setPhoneNumberError(
+                                    "Please enter a valid phone number."
+                                );
                             } else {
                                 setPhoneNumberError("");
                             }

@@ -195,11 +195,17 @@ const TutorRegister = () => {
                         onChange={(e) => {
                             setData("phoneNumber", e.target.value);
                             clearErrors("phoneNumber");
-                            setPhoneNumberError(
-                                e.target.value
-                                    ? ""
-                                    : "The phone number field is required."
-                            );
+                            if (!e.target.value) {
+                                setPhoneNumberError(
+                                    "The phone number field is required."
+                                );
+                            } else if (!/^\d+$/.test(e.target.value)) {
+                                setPhoneNumberError(
+                                    "Please enter a valid phone number."
+                                );
+                            } else {
+                                setPhoneNumberError("");
+                            }
                         }}
                         name="phoneNumber"
                         placeholder="081234567890"
