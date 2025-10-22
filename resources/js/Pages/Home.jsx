@@ -11,7 +11,7 @@ function Home() {
         if (user.role_id === 2) {
             return route("tutor.courses.index");
         }
-        return route("my-courses.index");
+        return route("purchased-courses.index");
     };
 
     return (
