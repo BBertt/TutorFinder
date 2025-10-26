@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Course;
 use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
 class CourseController extends Controller
@@ -61,6 +62,24 @@ class CourseController extends Controller
 
         return Inertia::render('Courses/CourseDetails', [
             'course' => $course,
+        ]);
+    }
+
+    public function learn(Course $course)
+    {
+        $course->load('sections.lessons', 'user');
+
+        $user = Auth::user();
+        /** @var \App\Models\User $user */
+
+        $progress = $user->progress()->where('course_id', $course->id)->get();
+
+        $lastWatched = $progress->sortByDesc('updated_at')->first();
+
+        return Inertia::render('Courses/LearnCourse', [
+            'course' => $course,
+            'progress' => $progress,
+            'last_watched_lesson_id' => $lastWatched ? $lastWatched->course_lesson_id : null,
         ]);
     }
 

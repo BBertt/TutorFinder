@@ -16,6 +16,7 @@ use App\Http\Controllers\GoogleAuthController;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PurchasedCoursesController;
+use App\Http\Controllers\CourseProgressController;
 use App\Http\Controllers\Tutor\CourseController as TutorCourseController;
 use App\Http\Controllers\Tutor\CourseLessonController;
 use App\Http\Controllers\Tutor\CourseSectionController;
@@ -77,6 +78,7 @@ Route::middleware('auth')->group(function () {
     // Courses
     Route::get('/courses', [CourseController::class, 'index'])->name('courses.index');
     Route::get('/courses/{course}', [CourseController::class, 'show'])->name('courses.show');
+    Route::get('/courses/{course}/learn', [CourseController::class, 'learn'])->name('courses.learn');
 
     // Purchased Courses
     Route::get('/purchased-courses', [PurchasedCoursesController::class, 'index'])->name('purchased-courses.index');
@@ -113,6 +115,8 @@ Route::middleware('auth')->group(function () {
     Route::delete('/chat/messages/{message}', [ChatController::class, 'destroy'])->name('chat.destroy');
     // Home
     Route::get('/home', [HomeController::class, 'index'])->name('home');
+
+    Route::post('/course-progress/{course_lesson_id}', [CourseProgressController::class, 'update'])->name('course-progress.update');
 });
 
 Route::middleware('admin')->group(function() {
