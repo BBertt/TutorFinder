@@ -62,7 +62,9 @@ function LearnCourse({ course, progress: initialProgress, last_watched_lesson_id
                 </div>
                 <div className="w-full md:w-3/4 p-4 overflow-y-auto">
                     <div>
-                        <VideoPlayer videoUrl={currentLesson.s3_video_url || currentLesson.video_url} onVideoEnded={handleVideoEnded} />
+                        {(currentLesson.s3_video_url || currentLesson.video_url) && (
+                            <VideoPlayer videoUrl={currentLesson.s3_video_url || currentLesson.video_url} onVideoEnded={handleVideoEnded} />
+                        )}
                         <div className="mt-4">
                             <h2 className="text-2xl font-bold">{currentLesson.title}</h2>
                             <div className="flex items-center mt-4">
