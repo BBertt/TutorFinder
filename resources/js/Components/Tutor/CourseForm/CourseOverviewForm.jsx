@@ -12,9 +12,14 @@ export default function CourseOverviewForm({
     const [videoPreview, setVideoPreview] = useState(null);
 
     useEffect(() => {
-        if (course?.thumbnail_image_url)
+        if (course?.thumbnail_image_url) {
             setThumbnailPreview(course.thumbnail_image_url);
+        } else {
+            setThumbnailPreview(null);
+        }
+
         if (course?.intro_video_url) setVideoPreview(course.intro_video_url);
+        else setVideoPreview(null);
     }, [course]);
 
     const onFileChange = (e, field, setPreview) => {
@@ -38,6 +43,7 @@ export default function CourseOverviewForm({
                     <input
                         type="text"
                         id="title"
+                        placeholder="Input your course title here..."
                         value={data.title}
                         onChange={(e) => setData("title", e.target.value)}
                         className="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
@@ -58,6 +64,7 @@ export default function CourseOverviewForm({
                     <textarea
                         id="description"
                         value={data.description}
+                        placeholder="Tell us about your courses..."
                         onChange={(e) => setData("description", e.target.value)}
                         rows="5"
                         className="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
@@ -77,6 +84,7 @@ export default function CourseOverviewForm({
                     </label>
                     <textarea
                         id="student_outcome"
+                        placeholder="What will they learn  from your course?"
                         value={data.student_outcome}
                         onChange={(e) =>
                             setData("student_outcome", e.target.value)
@@ -94,6 +102,7 @@ export default function CourseOverviewForm({
                     </label>
                     <textarea
                         id="requirements"
+                        placeholder="Input your course's requirements..."
                         value={data.requirements}
                         onChange={(e) =>
                             setData("requirements", e.target.value)
