@@ -67,10 +67,17 @@ class CourseController extends Controller
 
     public function learn(Course $course)
     {
-        $course->load('sections.lessons', 'user');
-
         $user = Auth::user();
         /** @var \App\Models\User $user */
+
+        // Check if the user is enrolled in the course
+        $isEnrolled = $user->enrollments()->where('course_id', $course->id)->exists();
+
+        if (!$isEnrolled) {
+            return redirect()->back()->with('error', 'You are not enrolled in this course.');
+        }
+
+        $course->load('sections.lessons', 'user');
 
         $progress = $user->progress()->where('course_id', $course->id)->get();
 
