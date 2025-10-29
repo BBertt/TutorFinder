@@ -83,10 +83,14 @@ class CourseController extends Controller
 
         $lastWatched = $progress->sortByDesc('updated_at')->first();
 
+        // Check if the user has reviewed this course
+        $hasReviewedByUser = $course->reviews()->where('user_id', $user->id)->exists();
+
         return Inertia::render('Courses/LearnCourse', [
             'course' => $course,
             'progress' => $progress,
             'last_watched_lesson_id' => $lastWatched ? $lastWatched->course_lesson_id : null,
+            'has_reviewed_by_user' => $hasReviewedByUser,
         ]);
     }
 

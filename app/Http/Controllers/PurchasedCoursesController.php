@@ -13,7 +13,9 @@ class PurchasedCoursesController extends Controller
         $user = Auth::user();
 
         $enrolledCourses = $user->enrollments()
-            ->with(['course.user', 'course.reviews'])
+            ->with(['course.user', 'course.reviews', 'course' => function ($query) {
+                $query->withAvg('reviews', 'rating');
+            }])
             ->latest()
             ->paginate(9);
 

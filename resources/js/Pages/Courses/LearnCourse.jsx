@@ -92,7 +92,7 @@ const RatingModal = ({ course, onClose }) => {
     );
 };
 
-function LearnCourse({ course, progress: initialProgress, last_watched_lesson_id }) {
+function LearnCourse({ course, progress: initialProgress, last_watched_lesson_id, has_reviewed_by_user }) {
     const findLessonDetails = (lessonId) => {
         let currentSectionIndex = -1;
         let currentLessonIndex = -1;
@@ -282,12 +282,12 @@ function LearnCourse({ course, progress: initialProgress, last_watched_lesson_id
                                 let buttonDisabled = !getNextLesson(); // Default disabled if no next lesson
                                 let buttonOnClick = handleNextLesson;
 
-                                if (isCurrentLessonLast && isCourseFullyCompleted && !course.has_reviewed_by_user) {
+                                if (isCurrentLessonLast && isCourseFullyCompleted && !has_reviewed_by_user) {
                                     buttonText = 'Review Course';
                                     buttonDisabled = false;
                                     buttonOnClick = () => setShowRatingModal(true);
-                                } else if (isCurrentLessonLast && isCourseFullyCompleted && course.has_reviewed_by_user) {
-                                    buttonText = 'Course Reviewed';
+                                } else if (isCurrentLessonLast && isCourseFullyCompleted && has_reviewed_by_user) {
+                                    buttonText = 'Course Completed!';
                                     buttonDisabled = true;
                                     buttonOnClick = () => { };
                                 } else if (isCurrentLessonLast) { // Last lesson, but not fully completed yet
