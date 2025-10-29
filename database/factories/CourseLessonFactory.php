@@ -17,7 +17,7 @@ class CourseLessonFactory extends Factory
     public function definition(): array
     {
         return [
-            'title' => 'Lesson: ' . $this->faker->sentence(5),
+            'title' => $this->faker->sentence(5),
             'description' => $this->faker->paragraph(3),
             'video_url' => 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
         ];

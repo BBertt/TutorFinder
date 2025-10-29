@@ -53,7 +53,7 @@ class CourseSeeder extends Seeder
             'intro_video' => 'assets/videos/laravel_intro.mp4',
             'thumbnail_image' => 'assets/images/dummy/laravel.png',
             'status' => 'published',
-            'price' => 15,
+            'price' => 150000,
         ],
         [
             'title' => 'Mobile App Development for Beginners',
@@ -72,7 +72,7 @@ class CourseSeeder extends Seeder
             'intro_video' => 'assets/videos/laravel_intro.mp4',
             'thumbnail_image' => 'assets/images/dummy/mobile_dev.png',
             'status' => 'published',
-            'price' => 20,
+            'price' => 200000,
 
         ],
         [
@@ -89,7 +89,7 @@ class CourseSeeder extends Seeder
             'intro_video' => 'assets/videos/laravel_intro.mp4',
             'thumbnail_image' => 'assets/images/dummy/data_science.png',
             'status' => 'published',
-            'price' => 10,
+            'price' => 100000,
         ],[
             'title' => 'Build Your Business | Transition from Work to Business',
             'description' => 'Transit your life from working undersome to working for your dream, learn the hacks of how to completely transform',
@@ -105,7 +105,7 @@ class CourseSeeder extends Seeder
             'intro_video' => 'assets/videos/laravel_intro.mp4',
             'thumbnail_image' => 'assets/images/dummy/business.png',
             'status' => 'published',
-            'price' => 30,
+            'price' => 300000,
         ],
         [
            'title' => 'Learn Figma 2025: From Basics to Your First Design Project',
@@ -126,7 +126,7 @@ class CourseSeeder extends Seeder
             'intro_video' => 'assets/videos/laravel_intro.mp4',
             'thumbnail_image' => 'assets/images/dummy/design.png',
             'status' => 'published',
-            'price' => 10,
+            'price' => 100000,
 
         ]];
 
