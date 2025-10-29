@@ -13,7 +13,7 @@ class CourseReviewController extends Controller
     {
         $request->validate([
             'rating' => 'required|integer|min:1|max:5',
-            'review' => 'nullable|string',
+            'comment' => 'nullable|string',
         ]);
 
         // Check if the user has already reviewed this course
@@ -29,7 +29,7 @@ class CourseReviewController extends Controller
         $courseReview->user_id = Auth::id();
         $courseReview->course_id = $course->id;
         $courseReview->rating = $request->rating;
-        $courseReview->review = $request->review;
+        $courseReview->comment = $request->comment;
         $courseReview->save();
 
         return response()->json(['message' => 'Course review submitted successfully.'], 201);

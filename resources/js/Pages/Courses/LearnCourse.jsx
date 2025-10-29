@@ -47,7 +47,7 @@ const RatingModal = ({ course, onClose }) => {
 
         if (courseRating > 0) {
             try {
-                await axios.post(`/courses/${course.id}/reviews`, { rating: courseRating, review: courseComment });
+                await axios.post(`/courses/${course.id}/reviews`, { rating: courseRating, comment: courseComment });
             } catch (error) {
                 console.error('Failed to submit course review', error);
             } finally {
