@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class Course extends Model
@@ -46,18 +47,33 @@ class Course extends Model
 
     public function getThumbnailImageUrlAttribute()
     {
-        if ($this->thumbnail_image) {
-            return Storage::url($this->thumbnail_image);
+        $path = $this->thumbnail_image;
+
+        if (!$path) {
+            return '/assets/images/landing/books.png';
         }
 
-        return '/assets/images/landing/books.png';
+        if (str_starts_with($path, 'course-thumbnails')) {
+            Log::debug("[Course.php] - Using storage path for thumbnail image: " . $path);
+            return Storage::url($path);
+        }
+
+        Log::debug("[Course.php] - Using raw path for thumbnail image: " . $path);
+        return '/' . ltrim($path, '/');
     }
 
      public function getIntroVideoUrlAttribute()
     {
-        if ($this->intro_video) {
-            return Storage::url($this->intro_video);
+        $path = $this->intro_video;
+
+        if (!$path) {
+            return null;
         }
-        return null;
+        if (str_starts_with($path, 'course-intros')) {
+            Log::debug("[Course.php] - Using storage path for intro video: " . $path);
+            return Storage::url($path);
+        }
+        Log::debug("[Course.php] - Using raw path for intro video: " . $path);
+        return '/' . ltrim($path, '/');
     }
 }

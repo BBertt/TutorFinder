@@ -23,7 +23,7 @@ class CourseSeeder extends Seeder
         $students = User::where('role_id', 3)->get();
 
         if ($tutors->isEmpty() || $students->isEmpty()) {
-            $this->command->error('Please ensure there isat least one tutor and one student before running the CourseSeeder.');
+            $this->command->error('Please ensure there is at least one tutor and one student before running the CourseSeeder.');
             return;
         }
 
