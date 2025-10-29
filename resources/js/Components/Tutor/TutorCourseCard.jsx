@@ -19,7 +19,7 @@ export default function TutorCourseCard({ course }) {
     return (
         <div className="bg-white rounded-lg shadow-sm overflow-hidden border border-gray-200 h-full flex flex-col">
             <img
-                src={`/${course.thumbnail_image}`}
+                src={course.thumbnail_image_url}
                 alt={course.title}
                 className="w-full h-48 object-cover"
             />

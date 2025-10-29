@@ -46,7 +46,7 @@ function CourseDetails({ course }) {
 
                     <div>
                         <img
-                            src={`/${course.thumbnail_image}`}
+                            src={course.thumbnail_image_url}
                             alt={course.title}
                             className="w-full rounded-lg shadow-2xl"
                             onError={(e) => {
