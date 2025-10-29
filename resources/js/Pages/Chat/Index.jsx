@@ -88,7 +88,7 @@ const Chat = ({ contacts, receiver, messages: initialMessages }) => {
                                     className={`p-4 cursor-pointer hover:bg-gray-200 ${receiver?.id === contact.id ? 'bg-gray-300 font-semibold' : ''}`}
                                     onClick={() => handleContactClick(contact.id)}
                                 >
-                                    {contact.email}
+                                    {contact.first_name} {contact.last_name}
                                 </li>
                             ))}
                         </ul>
@@ -98,7 +98,7 @@ const Chat = ({ contacts, receiver, messages: initialMessages }) => {
                     <div className="w-3/4 flex flex-col bg-white">
                         {receiver ? (
                             <>
-                                <div className="p-4 font-bold text-lg border-b border-gray-200 bg-gray-50">Chat with {receiver.email}</div>
+                                <div className="p-4 font-bold text-lg border-b border-gray-200 bg-gray-50">Chat with {receiver.first_name} {receiver.last_name}</div>
                                 <div className="flex-1 p-4 overflow-y-auto">
                                     {messages.map((message, index) => (
                                         <div
