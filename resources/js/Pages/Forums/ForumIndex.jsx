@@ -1,31 +1,51 @@
 import React, { useState } from "react";
 import Layout from "@/Layouts/Layout";
-import { Head, Link } from "@inertiajs/react";
+import { Head, Link, router } from "@inertiajs/react";
 import ForumPostCard from "@/Components/Forums/ForumPostCard";
 import TopContributorList from "@/Components/Forums/TopContributorList";
+import Pagination from "@/Components/Pagination";
+import SortDropdown from "@/Components/SortDropdown";
 
-function ForumIndex({ forums, topStudents, topTutors }) {
+function ForumIndex({ forums, topStudents, topTutors, filters }) {
     const [activeTab, setActiveTab] = useState("students");
+
+    const onSortChange = (newSort) => {
+        router.get(
+            route("forums.index"),
+            { sort: newSort },
+            {
+                preserveState: true,
+                preserveScroll: true,
+            }
+        );
+    };
 
     return (
         <>
             <Head title="Forum" />
+            <section className="bg-primary text-white rounded-lg p-8 text-center mb-12">
+                <h1 className="text-4xl font-bold">TutorFinder Forum</h1>
+                <p className="mt-2 text-lg opacity-90">
+                    Concerned about something? Go ask the experts!
+                </p>
+            </section>
 
             <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
-                <section className="bg-primary text-white rounded-lg p-8 text-center mb-12">
-                    <h1 className="text-4xl font-bold">TutorFinder Forum</h1>
-                    <p className="mt-2 text-lg opacity-90">
-                        Concerned about something? Go ask the experts!
-                    </p>
-                </section>
-
                 <div className="grid lg:grid-cols-3 gap-8">
                     <div className="lg:col-span-2 space-y-6">
+                        <div className="flex justify-start">
+                            <SortDropdown
+                                currentSort={filters.sort}
+                                onSortChange={onSortChange}
+                            />
+                        </div>
+
                         {forums.data.map((post) => (
                             <ForumPostCard key={post.id} post={post} />
                         ))}
-                    </div>
 
+                        <Pagination links={forums.links} />
+                    </div>
                     <aside className="space-y-6">
                         <div className="bg-white p-6 rounded-lg border border-gray-200 flex flex-col items-center">
                             <h3 className="font-bold text-lg mb-4 text-center">
@@ -73,6 +93,7 @@ function ForumIndex({ forums, topStudents, topTutors }) {
                             )}
                         </div>
                     </aside>
+                    ;
                 </div>
             </main>
         </>

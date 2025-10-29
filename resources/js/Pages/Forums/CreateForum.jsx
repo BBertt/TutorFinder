@@ -34,6 +34,7 @@ function CreateForum() {
                             <input
                                 id="title"
                                 type="text"
+                                placeholder="Write down your concern..."
                                 value={data.title}
                                 onChange={(e) =>
                                     setData("title", e.target.value)
@@ -61,6 +62,7 @@ function CreateForum() {
                                 onChange={(e) =>
                                     setData("description", e.target.value)
                                 }
+                                placeholder="Describe your concern here..."
                                 className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-primary focus:ring-primary"
                                 rows="8"
                                 required

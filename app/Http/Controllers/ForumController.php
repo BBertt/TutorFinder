@@ -12,9 +12,30 @@ use Inertia\Inertia;
 
 class ForumController extends Controller
 {
-     public function index()
+     public function index(Request $request)
     {
-        $forums = Forum::with('user', 'replies', 'userVote')->latest()->paginate(10);
+        $request->validate([
+            'sort' => 'nullable|in:newest,oldest,top_likes'
+        ]);
+
+        $sort = $request->input('sort', 'newest');
+
+        $forumsQuery = Forum::with('user', 'replies', 'userVote');
+
+        switch($sort){
+            case 'oldest':
+                $forumsQuery->orderBy('created_at', 'asc');
+                break;
+            case 'top_likes':
+                $forumsQuery->orderByDesc('likes');
+                break;
+            case 'newest':
+            default:
+                $forumsQuery->orderBy('created_at', 'desc');
+                break;
+        };
+
+        $forums = $forumsQuery->paginate(10)->withQueryString();
 
         $baseQuery = User::query()
             ->select('users.id', 'users.first_name', 'users.last_name', 'users.profile_image_path', DB::raw('SUM(COALESCE(forums.likes, 0) + COALESCE(forum_replies.likes, 0)) as total_likes'))
@@ -31,14 +52,32 @@ class ForumController extends Controller
             'forums' => $forums,
             'topStudents' => $topStudents,
             'topTutors' => $topTutors,
+            'filters' => ['sort' => $sort],
         ]);
     }
 
-    public function show(Forum $forum)
+    public function show(Request $request, Forum $forum)
     {
-        $forum->load(['user', 'userVote', 'replies.user', 'replies.userVote']);
+        $request->validate(['sort' => 'nullable|in:newest,oldest,top_likes']);
+        $sort = $request->input('sort', 'newest');
+
+        $forum->load(['user', 'userVote']);
+
+        $repliesQuery = $forum->replies()
+            ->with(['user', 'userVote', 'children.user', 'children.userVote']);
+
+        switch ($sort) {
+            case 'oldest': $repliesQuery->oldest(); break;
+            case 'top_likes': $repliesQuery->orderBy('likes', 'desc'); break;
+            case 'newest': default: $repliesQuery->latest(); break;
+        }
+
+        $replies = $repliesQuery->paginate(10, ['*'], 'repliesPage')->withQueryString();
+
         return Inertia::render('Forums/ForumDetails', [
-            'forum' => $forum
+            'forum' => $forum,
+            'replies' => $replies,
+            'filters' => ['sort' => $sort]
         ]);
     }
 
