@@ -29,6 +29,9 @@ Route::middleware('guest')->group(function () {
     Route::post('/tutor/register', [RegisteredTutorController::class, 'store'])
         ->name('tutor.register');
 
+    Route::post('email/resend-verification', [EmailVerificationNotificationController::class, 'resend'])
+        ->name('verification.resend');
+
     #########
 
     Route::get('forgot-password', [PasswordResetLinkController::class, 'create'])
@@ -42,15 +45,15 @@ Route::middleware('guest')->group(function () {
 
     Route::post('reset-password', [NewPasswordController::class, 'store'])
         ->name('password.store');
+
+    Route::get('verify-email/{id}/{hash}', VerifyEmailController::class)
+        ->middleware(['signed', 'throttle:6,1'])
+        ->name('verification.verify');
 });
 
 Route::middleware('auth')->group(function () {
     Route::get('verify-email', EmailVerificationPromptController::class)
         ->name('verification.notice');
-
-    Route::get('verify-email/{id}/{hash}', VerifyEmailController::class)
-        ->middleware(['signed', 'throttle:6,1'])
-        ->name('verification.verify');
 
     Route::post('email/verification-notification', [EmailVerificationNotificationController::class, 'store'])
         ->middleware('throttle:6,1')

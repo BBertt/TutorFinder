@@ -32,7 +32,10 @@ class GoogleAuthController extends Controller
                 $user = User::where('email', $googleUser->getEmail())->first();
 
                 if ($user) {
-                    $user->update(['google_id' => $googleUser->getId()]);
+                    $user->update([
+                        'google_id' => $googleUser->getId(),
+                        'email_verified_at' => now()
+                    ]);
                 } else {
                     $user = User::create([
                         'google_id' => $googleUser->getId(),
@@ -48,7 +51,11 @@ class GoogleAuthController extends Controller
 
             Auth::login($user);
 
-            return redirect()->route('dashboard');
+            if ($user->role->name === 'admin') {
+                return redirect()->route('dashboard');
+            }
+
+            return redirect()->route('home');
 
         } catch (\Exception $e) {
             Log::error('Google Auth Callback Error: ' . $e->getMessage());

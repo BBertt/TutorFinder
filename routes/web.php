@@ -57,6 +57,9 @@ Route::get('/dashboard', function () {
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::get('/', function () {
+    // if (auth()->check()) {
+    //     return redirect()->route('home');
+    // }
     return redirect('/landing');
 });
 Route::middleware('guest')->group(function() {
@@ -67,7 +70,7 @@ Route::middleware('guest')->group(function() {
 });
 
 
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
@@ -112,7 +115,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/chat', [ChatController::class, 'index'])->name('chat.index');
     Route::get('/chat/{receiver}', [ChatController::class, 'show'])->name('chat.show');
     Route::post('/chat/{receiver}', [ChatController::class, 'store'])->name('chat.store');
-    Route::get('/api/chat/{receiver}/messages', [ChatController::class, 'getMessages'])->name('chat.getMessages');
+    Route::get('/chat/{receiver}/messages', [ChatController::class, 'getMessages'])->name('chat.getMessages');
     Route::delete('/chat/messages/{message}', [ChatController::class, 'destroy'])->name('chat.destroy');
     // Home
     Route::get('/home', [HomeController::class, 'index'])->name('home');
