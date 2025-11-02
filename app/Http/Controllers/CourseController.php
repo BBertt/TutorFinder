@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Course;
 use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
 class CourseController extends Controller
@@ -59,8 +60,44 @@ class CourseController extends Controller
     {
         $course->load('user', 'category', 'reviews.user', 'sections.lessons');
 
+        $isEnrolled = false;
+        if (Auth::check()) {
+            $user = Auth::user();
+            $isEnrolled = $user->enrollments()->where('course_id', $course->id)->exists();
+        }
+
         return Inertia::render('Courses/CourseDetails', [
             'course' => $course,
+            'isEnrolled' => $isEnrolled,
+        ]);
+    }
+
+    public function learn(Course $course)
+    {
+        $user = Auth::user();
+        /** @var \App\Models\User $user */
+
+        // Check if the user is enrolled in the course
+        $isEnrolled = $user->enrollments()->where('course_id', $course->id)->exists();
+
+        if (!$isEnrolled) {
+            return redirect()->back()->with('error', 'You are not enrolled in this course.');
+        }
+
+        $course->load('sections.lessons', 'user');
+
+        $progress = $user->progress()->where('course_id', $course->id)->get();
+
+        $lastWatched = $progress->sortByDesc('updated_at')->first();
+
+        // Check if the user has reviewed this course
+        $hasReviewedByUser = $course->reviews()->where('user_id', $user->id)->exists();
+
+        return Inertia::render('Courses/LearnCourse', [
+            'course' => $course,
+            'progress' => $progress,
+            'last_watched_lesson_id' => $lastWatched ? $lastWatched->course_lesson_id : null,
+            'has_reviewed_by_user' => $hasReviewedByUser,
         ]);
     }
 

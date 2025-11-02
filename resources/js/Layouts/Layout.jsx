@@ -150,7 +150,7 @@ const AppNavbar = ({ logoSrc }) => {
                                         className="block px-4 py-2 text-secondary hover:bg-primary hover:text-white rounded-md"
                                         onClick={() => setOpen(false)}
                                     >
-                                        Your Courses
+                                        Purchased Courses
                                     </Link>
                                     <Link
                                         href="/transactions"
