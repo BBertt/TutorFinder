@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\RegisterRequest;
 use App\Models\User;
-use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -43,8 +42,10 @@ class RegisteredUserController extends Controller
             'role_id' => 3, // default role_id for user
         ]);
 
-        event(new Registered($user));
+        Auth::login($user);
 
-        return redirect(route('login', absolute: false))->with('success', 'Registration successful!');
+        $user->sendEmailVerificationNotification();
+
+        return redirect(route('verification.notice', absolute: false));
     }
 }

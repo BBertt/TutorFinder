@@ -45,6 +45,12 @@ class LoginRequest extends FormRequest
 
         $user = User::where('email', $this->email)->first();
 
+        if ($user && !$user->hasVerifiedEmail()) {
+            throw ValidationException::withMessages([
+                'email' => 'You must verify your email address before logging in.',
+            ]);
+        }
+
         if ($user && $user->role_id === 2) {
             $registration = TutorRegistration::where('user_id', $user->id)->first();
 

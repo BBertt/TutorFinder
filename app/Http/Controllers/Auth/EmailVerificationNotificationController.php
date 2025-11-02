@@ -3,8 +3,11 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\ValidationException;
 
 class EmailVerificationNotificationController extends Controller
 {
@@ -18,6 +21,34 @@ class EmailVerificationNotificationController extends Controller
         }
 
         $request->user()->sendEmailVerificationNotification();
+
+        return back()->with('status', 'verification-link-sent');
+    }
+
+    /**
+     * Resend verification email for unverified users (guest route).
+     */
+    public function resend(Request $request): RedirectResponse
+    {
+        $request->validate([
+            'email' => ['required', 'email', 'exists:users,email'],
+        ]);
+
+        $user = User::where('email', $request->email)->first();
+
+        if (!$user) {
+            throw ValidationException::withMessages([
+                'email' => 'No account found with this email address.',
+            ]);
+        }
+
+        if ($user->hasVerifiedEmail()) {
+            throw ValidationException::withMessages([
+                'email' => 'This email address is already verified. You can log in.',
+            ]);
+        }
+
+        $user->sendEmailVerificationNotification();
 
         return back()->with('status', 'verification-link-sent');
     }
