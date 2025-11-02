@@ -19,14 +19,13 @@ export default function TutorCourseCard({ course }) {
     return (
         <div className="bg-white rounded-lg shadow-sm overflow-hidden border border-gray-200 h-full flex flex-col">
             <img
-                src={course.thumbnail_image_url}
+                src={`/${course.thumbnail_image}`}
                 alt={course.title}
                 className="w-full h-48 object-cover"
             />
-
             <div className="p-4 flex-1 flex flex-col sm:flex-row items-start sm:justify-between">
-                <div className="flex-1 pr-4">
-                    <h3 className="text-lg font-semibold truncate text-gray-800">
+                <div className="flex-1 pr-0 sm:pr-4">
+                    <h3 className="text-lg font-semibold text-gray-800 line-clamp-2">
                         {course.title}
                     </h3>
                     <p className="text-sm text-gray-500 mt-1">{authorName}</p>
@@ -42,7 +41,7 @@ export default function TutorCourseCard({ course }) {
                             {averageRating}
                         </span>
                     </div>
-                    <div className="flex items-center space-x-2 w-full">
+                    <div className="flex items-center space-x-2 w-full pt-2">
                         <Link
                             href={route("tutor.courses.edit", course.id)}
                             className="flex-1 text-center px-4 py-1 text-sm bg-gray-200 text-gray-800 font-semibold rounded-md hover:bg-gray-300"

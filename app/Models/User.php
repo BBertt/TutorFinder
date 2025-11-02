@@ -134,4 +134,8 @@ class User extends Authenticatable implements MustVerifyEmail
     public function enrollments() {
         return $this->hasMany(CourseEnrollment::class);
     }
+
+    public function progress() {
+        return $this->hasMany(CourseProgress::class);
+    }
 }

@@ -99,16 +99,22 @@ const TutorRegister = () => {
                 <div>
                     <label className="text-sm font-extrabold">Email</label>
                     <input
-                        type="email"
+                        type="text"
                         value={data.email}
                         onChange={(e) => {
                             setData("email", e.target.value);
                             clearErrors("email");
-                            setEmailError(
-                                e.target.value
-                                    ? ""
-                                    : "The email field is required."
-                            );
+                            if (!e.target.value) {
+                                setEmailError("The email field is required.");
+                            } else if (
+                                !/^[^@\s]+@[^@\s]+$/.test(e.target.value)
+                            ) {
+                                setEmailError(
+                                    "Please enter a valid email address."
+                                );
+                            } else {
+                                setEmailError("");
+                            }
                         }}
                         name="email"
                         placeholder="example@email.com"
@@ -123,7 +129,10 @@ const TutorRegister = () => {
 
                 {/* Password */}
                 <div>
-                    <label className="text-sm font-extrabold">Password</label>
+                    <label className="text-sm font-extrabold">
+                        Password (at least 8 characters, include capital
+                        letters, numbers, and special characters)
+                    </label>
                     <input
                         type="password"
                         value={data.password}
@@ -186,11 +195,17 @@ const TutorRegister = () => {
                         onChange={(e) => {
                             setData("phoneNumber", e.target.value);
                             clearErrors("phoneNumber");
-                            setPhoneNumberError(
-                                e.target.value
-                                    ? ""
-                                    : "The phone number field is required."
-                            );
+                            if (!e.target.value) {
+                                setPhoneNumberError(
+                                    "The phone number field is required."
+                                );
+                            } else if (!/^\d+$/.test(e.target.value)) {
+                                setPhoneNumberError(
+                                    "Please enter a valid phone number."
+                                );
+                            } else {
+                                setPhoneNumberError("");
+                            }
                         }}
                         name="phoneNumber"
                         placeholder="081234567890"

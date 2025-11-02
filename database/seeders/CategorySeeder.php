@@ -18,7 +18,7 @@ class CategorySeeder extends Seeder
             ['name' => 'Mobile Development', 'description' => 'Courses related to mobile app development.'],
             ['name' => 'Data Science', 'description' => 'Courses related to data science.'],
             ['name' => 'Business', 'description' => 'Courses related to business and entrepreneurship.'],
-            ['name' => 'Design', 'description' => 'Courses related to design and user experience.'],
+            ['name' => 'UI/UX Design', 'description' => 'Courses related to design and user experience.'],
         ];
 
         foreach ($categories as $category) {

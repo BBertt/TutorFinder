@@ -160,11 +160,27 @@ const UserEdit = () => {
                         value={data.phoneNumber}
                         onChange={(e) => {
                             setData("phoneNumber", e.target.value);
+                            clearErrors("phoneNumber");
+
+                            if (e.target.value === "") {
+                                setPhoneNumberError("");
+                            } else if (!/^\d+$/.test(e.target.value)) {
+                                setPhoneNumberError(
+                                    "Please enter a valid phone number."
+                                );
+                            } else {
+                                setPhoneNumberError("");
+                            }
                         }}
                         name="phoneNumber"
                         placeholder="081234567890"
                         className="px-4 py-2 rounded-full text-black w-full"
                     />
+                    {(phoneNumberError || errors.phoneNumber) && (
+                        <p className="text-red-500 text-sm mt-1">
+                            {phoneNumberError || errors.phoneNumber}
+                        </p>
+                    )}
                 </div>
 
                 <div>

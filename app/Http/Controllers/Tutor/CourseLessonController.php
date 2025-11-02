@@ -36,7 +36,7 @@ class CourseLessonController extends Controller
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'required|string',
-            'video' => 'nullable|mimetypes:video/mp4,video/quicktime|max:20480',
+            'video' => 'nullable|mimetypes:video/mp4,video/quicktime',
         ]);
 
         if ($request->hasFile('video')) {
@@ -76,7 +76,7 @@ class CourseLessonController extends Controller
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'required|string',
-            'video' => 'nullable|mimetypes:video/mp4,video/quicktime|max:20480',
+            'video' => 'nullable|mimetypes:video/mp4,video/quicktime',
         ]);
 
         if($request->hasFile('video')){

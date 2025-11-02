@@ -1,8 +1,9 @@
 import React from "react";
 import Layout from "@/Layouts/Layout";
-import { Head, router } from "@inertiajs/react";
+import { Head, router, Link } from "@inertiajs/react";
+import Breadcrumb from "@/Components/Course/Breadcrumb";
 
-function CourseDetails({ course }) {
+function CourseDetails({ course, isEnrolled }) {
     const handleAddToCart = (e) => {
         e.preventDefault();
         router.post(
@@ -19,6 +20,8 @@ function CourseDetails({ course }) {
             <Head title={course.title} />
 
             <div className="bg-primary text-white">
+                <Breadcrumb category={course.category} course={course} />
+
                 <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-16 grid md:grid-cols-2 gap-12 items-center">
                     <div>
                         <p className="text-xl font-semibold">
@@ -30,15 +33,26 @@ function CourseDetails({ course }) {
                         <p className="mt-4 text-lg opacity-90">
                             {course.description}
                         </p>
-                        <p className="text-3xl font-bold mt-6">
-                            Rp {Number(course.price).toLocaleString("id-ID")}
-                        </p>
-                        <button
-                            onClick={handleAddToCart}
-                            className="mt-6 bg-white text-primary px-8 py-3 rounded-lg font-semibold hover:bg-gray-200 transition-colors"
-                        >
-                            Add to Cart
-                        </button>
+                        {!isEnrolled && (
+                            <p className="text-3xl font-bold mt-6">
+                                Rp {Number(course.price).toLocaleString("id-ID")}
+                            </p>
+                        )}
+                        {isEnrolled ? (
+                            <Link
+                                href={route("courses.learn", course.id)}
+                                className="mt-6 bg-white text-primary px-8 py-3 rounded-lg font-semibold hover:bg-gray-200 transition-colors inline-block text-center"
+                            >
+                                Learn
+                            </Link>
+                        ) : (
+                            <button
+                                onClick={handleAddToCart}
+                                className="mt-6 bg-white text-primary px-8 py-3 rounded-lg font-semibold hover:bg-gray-200 transition-colors"
+                            >
+                                Add to Cart
+                            </button>
+                        )}
                     </div>
 
                     <div>

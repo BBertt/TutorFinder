@@ -17,7 +17,7 @@ class CourseSectionFactory extends Factory
     public function definition(): array
     {
         return [
-            'title' => 'Section: ' . $this->faker->sentence(3),
+            'title' => $this->faker->sentence(3),
             'description' => $this->faker->paragraph(2),
         ];
     }

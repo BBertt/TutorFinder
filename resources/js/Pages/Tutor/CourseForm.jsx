@@ -118,7 +118,7 @@ export default function CourseForm({ categories }) {
                         <div className="flex items-center space-x-2">
                             <Link
                                 href={route("tutor.courses.index")}
-                                className="px-4 py-2 rounded-lg text-gray-700 bg-gray-200 hover:bg-gray-300 font-semibold"
+                                className="px-4 py-2 rounded-lg text-gray-700 bg-accent hover:bg-gray-300 font-semibold"
                             >
                                 Cancel
                             </Link>
@@ -126,7 +126,7 @@ export default function CourseForm({ categories }) {
                                 <button
                                     type="button"
                                     onClick={saveAndExit}
-                                    className="px-4 py-2 rounded-lg bg-gray-600 text-white font-semibold hover:bg-gray-700"
+                                    className="px-4 py-2 rounded-lg bg-secondary text-white font-semibold hover:bg-gray-700"
                                     disabled={processing}
                                 >
                                     Save Changes
@@ -135,7 +135,7 @@ export default function CourseForm({ categories }) {
                                 <button
                                     type="button"
                                     onClick={saveAndExit}
-                                    className="px-4 py-2 rounded-lg bg-gray-600 text-white font-semibold hover:bg-gray-700"
+                                    className="px-4 py-2 rounded-lg bg-secondary text-white font-semibold hover:bg-gray-700"
                                     disabled={processing}
                                 >
                                     Save to Draft
