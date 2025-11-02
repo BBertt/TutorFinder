@@ -25,7 +25,6 @@ return Application::configure(basePath: dirname(__DIR__))
             'admin' => EnsureRoleIsAdmin::class,
             'tutor' => EnsureRoleIsTutor::class,
         ]);
-        //
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

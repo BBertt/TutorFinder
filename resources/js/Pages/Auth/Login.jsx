@@ -4,7 +4,7 @@ import { useForm, Link, usePage } from "@inertiajs/react";
 import { useState } from "react";
 
 const Login = () => {
-    const { flash } = usePage().props;
+    const { flash, status } = usePage().props;
 
     const { data, setData, post, processing, errors, clearErrors } = useForm({
         email: "",
@@ -19,12 +19,20 @@ const Login = () => {
         post("/login");
     };
 
+    const resendVerification = (e) => {
+        e.preventDefault();
+        if (!data.email) return;
+        post(route('verification.resend'), { preserveScroll: true });
+    };
+
+    const needsVerification = (errors.email || "").toLowerCase().includes("verify your email");
+
     return (
         <div className="w-full max-w-xs flex flex-col gap-6">
             <div className="text-center">
-                {flash.success && (
+                {(flash.success || status === 'verification-link-sent') && (
                     <div className="bg-green-500 text-white px-4 py-2 rounded mb-4 w-full">
-                        {flash.success}
+                        {flash.success || 'A new verification link has been sent to your email.'}
                     </div>
                 )}
 
@@ -61,6 +69,16 @@ const Login = () => {
                         <p className="text-red-500 text-sm mt-1">
                             {emailError || errors.email}
                         </p>
+                    )}
+                    {needsVerification && (
+                        <button
+                            type="button"
+                            onClick={resendVerification}
+                            disabled={processing || !data.email}
+                            className="mt-2 text-sm underline text-[#4F6D40] hover:text-[#2f4d28]"
+                        >
+                            Resend verification email
+                        </button>
                     )}
                 </div>
 
