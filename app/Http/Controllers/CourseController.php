@@ -60,8 +60,15 @@ class CourseController extends Controller
     {
         $course->load('user', 'category', 'reviews.user', 'sections.lessons');
 
+        $isEnrolled = false;
+        if (Auth::check()) {
+            $user = Auth::user();
+            $isEnrolled = $user->enrollments()->where('course_id', $course->id)->exists();
+        }
+
         return Inertia::render('Courses/CourseDetails', [
             'course' => $course,
+            'isEnrolled' => $isEnrolled,
         ]);
     }
 
