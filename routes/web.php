@@ -17,7 +17,7 @@ use App\Http\Controllers\ChatController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PurchasedCoursesController;
 use App\Http\Controllers\CourseProgressController;
-use App\Http\Controllers\CourseReviewController; // NEW: Import CourseReviewController
+use App\Http\Controllers\CourseReviewController;
 use App\Http\Controllers\Tutor\CourseController as TutorCourseController;
 use App\Http\Controllers\Tutor\CourseLessonController;
 use App\Http\Controllers\Tutor\CourseSectionController;
