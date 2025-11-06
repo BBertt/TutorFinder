@@ -45,6 +45,11 @@ class Course extends Model
         return $this->hasMany(CourseReview::class);
     }
 
+    public function lessons()
+    {
+        return $this->hasManyThrough(CourseLesson::class, CourseSection::class);
+    }
+
     public function getThumbnailImageUrlAttribute()
     {
         $path = $this->thumbnail_image;

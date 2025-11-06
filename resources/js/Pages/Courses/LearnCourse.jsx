@@ -1,5 +1,5 @@
 import Layout from '@/Layouts/Layout';
-import { Head, Link } from '@inertiajs/react';
+import { Head, Link, usePage, router } from '@inertiajs/react';
 import React from 'react';
 import axios from 'axios';
 import VideoPlayer from '@/Components/VideoPlayer';
@@ -41,19 +41,23 @@ const RatingModal = ({ course, onClose }) => {
     const [courseComment, setCourseComment] = React.useState('');
     const [isSubmitting, setIsSubmitting] = React.useState(false);
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = (e) => {
         e.preventDefault();
         setIsSubmitting(true);
 
         if (courseRating > 0) {
-            try {
-                await axios.post(`/courses/${course.id}/reviews`, { rating: courseRating, comment: courseComment });
-            } catch (error) {
-                console.error('Failed to submit course review', error);
-            } finally {
-                setIsSubmitting(false);
-                onClose();
-            }
+            router.post(`/courses/${course.id}/reviews`, {
+                rating: courseRating,
+                comment: courseComment
+            }, {
+                onSuccess: () => {
+                    setIsSubmitting(false);
+                    onClose();
+                },
+                onError: () => {
+                    setIsSubmitting(false);
+                }
+            });
         } else {
             // If no rating is provided, just close the modal
             setIsSubmitting(false);
@@ -92,7 +96,14 @@ const RatingModal = ({ course, onClose }) => {
     );
 };
 
-function LearnCourse({ course, progress: initialProgress, last_watched_lesson_id, has_reviewed_by_user }) {
+    function LearnCourse({ course, progress: initialProgress, last_watched_lesson_id, has_reviewed_by_user }) {
+    const { flash } = usePage().props;
+    const [visibleFlash, setVisibleFlash] = React.useState(flash.success);
+
+    React.useEffect(() => {
+        setVisibleFlash(flash.success);
+    }, [flash.success]);
+
     const findLessonDetails = (lessonId) => {
         let currentSectionIndex = -1;
         let currentLessonIndex = -1;
@@ -126,6 +137,9 @@ function LearnCourse({ course, progress: initialProgress, last_watched_lesson_id
 
     const allLessons = React.useMemo(() => course.sections.flatMap(s => s.lessons), [course.sections]);
 
+    const isCourseFullyCompleted = React.useMemo(() => {
+        return allLessons.length > 0 && allLessons.every(l => isLessonCompleted(l.id));
+    }, [allLessons, progress]);
 
 
     const isSectionCompleted = (section) => {
@@ -196,11 +210,23 @@ function LearnCourse({ course, progress: initialProgress, last_watched_lesson_id
             const nextLesson = getNextLesson();
             if (nextLesson) {
                 setCurrentLesson(nextLesson);
-            } else {
-                // If it's the last lesson and all lessons are completed, show the rating modal.
-                // This logic will be handled in the button rendering part.
-                // For now, just ensure the progress is updated.
             }
+        });
+    };
+
+    const handleCompleteCourse = () => {
+        const newProgress = [...progress];
+        const progressIndex = newProgress.findIndex(p => p.course_lesson_id === currentLesson.id);
+        if (progressIndex > -1) {
+            newProgress[progressIndex].is_completed = true;
+        } else {
+            newProgress.push({ course_lesson_id: currentLesson.id, is_completed: true });
+        }
+        setProgress(newProgress);
+
+        router.post(`/course-progress/${currentLesson.id}`, {
+            course_id: course.id,
+            is_finishing: true,
         });
     };
 
@@ -213,6 +239,16 @@ function LearnCourse({ course, progress: initialProgress, last_watched_lesson_id
 
     return (
         <div>
+            {visibleFlash && (
+                <div className="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-4 flex justify-between items-center" role="alert">
+                    <p>{visibleFlash}</p>
+                    <button onClick={() => setVisibleFlash(null)} className="text-green-700">
+                        <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd"></path>
+                        </svg>
+                    </button>
+                </div>
+            )}
             {showRatingModal && <RatingModal course={course} onClose={() => setShowRatingModal(false)} />}
             <Head title={course.title} />
             <div className="flex flex-col md:flex-row h-[92vh]">
@@ -276,7 +312,6 @@ function LearnCourse({ course, progress: initialProgress, last_watched_lesson_id
                             </button>
                             {(() => {
                                 const isCurrentLessonLast = !getNextLesson();
-                                const isCourseFullyCompleted = allLessons.length > 0 && allLessons.every(l => isLessonCompleted(l.id));
 
                                 let buttonText = 'Next Lesson';
                                 let buttonDisabled = !getNextLesson(); // Default disabled if no next lesson
@@ -293,7 +328,7 @@ function LearnCourse({ course, progress: initialProgress, last_watched_lesson_id
                                 } else if (isCurrentLessonLast) { // Last lesson, but not fully completed yet
                                     buttonText = 'Complete Course';
                                     buttonDisabled = isLessonCompleted(currentLesson.id); // Disabled if the current lesson is already completed
-                                    buttonOnClick = handleNextLesson;
+                                    buttonOnClick = handleCompleteCourse;
                                 }
 
                                 return (
