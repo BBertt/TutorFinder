@@ -4,6 +4,7 @@ import { Head, Link, useForm, router, usePage } from "@inertiajs/react";
 import CourseOverviewForm from "@/Components/Tutor/CourseForm/CourseOverviewForm";
 import CourseSectionLessonForm from "@/Components/Tutor/CourseForm/CourseSectionLessonForm";
 import CourseReview from "@/Components/Tutor/CourseForm/CourseReview";
+import ConfirmationModal from "@/Components/Tutor/Modals/ConfirmationModal";
 
 const Stepper = ({ currentStep }) => {
     const steps = ["Overview", "Sections & Lessons", "Review"];
@@ -70,10 +71,15 @@ export default function CourseForm({ categories }) {
 
     const [processing, setProcessing] = useState(false);
 
+    const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
+    const [isPublishModalOpen, setIsPublishModalOpen] = useState(false);
+    const [frontendErrors, setFrontendErrors] = useState({});
+
     const submitCourse = (e, finalStatus) => {
         e.preventDefault();
         setProcessing(true);
-        clearErrors();
+        clearErrors(); // Clears backend errors
+        setFrontendErrors({}); // Clear frontend errors
 
         const url = isEditing
             ? route("tutor.courses.update", course.id)
@@ -147,6 +153,80 @@ export default function CourseForm({ categories }) {
     const publishCourse = (e) => submitCourse(e, "published");
     const saveDraft = (e) => submitCourse(e, "draft");
 
+    const performCancel = () => {
+        router.get(route("tutor.courses.index"));
+    };
+
+    const validateStep1 = () => {
+        const newErrors = {};
+
+        if (!data.title) newErrors.title = "The title field is required.";
+        if (!data.description)
+            newErrors.description = "The description field is required.";
+        if (!data.student_outcome)
+            newErrors.student_outcome =
+                "The 'What will they learn' field is required.";
+        if (!data.requirements)
+            newErrors.requirements = "The requirements field is required.";
+        if (!data.category_id)
+            newErrors.category_id = "The category field is required.";
+
+        if (
+            !isEditing &&
+            !data.thumbnail_image &&
+            !course?.thumbnail_image_url
+        ) {
+            newErrors.thumbnail_image = "The thumbnail image is required.";
+        }
+
+        setFrontendErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
+
+    const validateStep2 = () => {
+        const newErrors = {};
+
+        if (!data.sections || data.sections.length === 0) {
+            newErrors.sections_min = "You must add at least one section.";
+        } else {
+            const sectionWithoutLessons = data.sections.some(
+                (s) => s.lessons.length === 0
+            );
+            if (sectionWithoutLessons) {
+                newErrors.lessons_min =
+                    "Every section must have at least one lesson.";
+            }
+
+            const incompleteLesson = data.sections.some((section) =>
+                section.lessons.some(
+                    (lesson) => !lesson.title || !lesson.description
+                )
+            );
+            if (incompleteLesson) {
+                newErrors.lesson_content =
+                    "All lessons must have both a title and description.";
+            }
+        }
+
+        setFrontendErrors(newErrors);
+        return Object.keys(newErrors).length === 0; // Returns true if valid
+    };
+
+    const handleNextClick = () => {
+        clearErrors();
+        setFrontendErrors({});
+
+        if (currentStep === 1) {
+            if (validateStep1()) {
+                setCurrentStep(2);
+            }
+        } else if (currentStep === 2) {
+            if (validateStep2()) {
+                setCurrentStep(3);
+            }
+        }
+    };
+
     return (
         <>
             <Head
@@ -160,12 +240,14 @@ export default function CourseForm({ categories }) {
                             {isEditing ? course.title : "New Course"}
                         </h1>
                         <div className="flex items-center space-x-2">
-                            <Link
-                                href={route("tutor.courses.index")}
+                            <button
+                                type="button"
+                                onClick={() => setIsCancelModalOpen(true)}
                                 className="px-4 py-2 rounded-lg text-gray-700 bg-accent hover:bg-gray-300 font-semibold"
+                                disabled={processing}
                             >
                                 Cancel
-                            </Link>
+                            </button>
 
                             <button
                                 type="button"
@@ -175,17 +257,6 @@ export default function CourseForm({ categories }) {
                             >
                                 {isEditing ? "Save Changes" : "Save to Draft"}
                             </button>
-
-                            {currentStep === 3 && data.status === "draft" && (
-                                <button
-                                    type="button"
-                                    onClick={publishCourse}
-                                    className="px-4 py-2 rounded-lg bg-secondary text-white font-semibold hover:bg-opacity-90"
-                                    disabled={processing}
-                                >
-                                    Publish
-                                </button>
-                            )}
                         </div>
                     </div>
                 </div>
@@ -198,6 +269,7 @@ export default function CourseForm({ categories }) {
                     <div className={currentStep === 1 ? "block" : "hidden"}>
                         <CourseOverviewForm
                             {...{ data, setData, errors, course, categories }}
+                            frontendErrors={frontendErrors}
                         />
                     </div>
                     <div className={currentStep === 2 ? "block" : "hidden"}>
@@ -205,6 +277,7 @@ export default function CourseForm({ categories }) {
                             sections={data.sections}
                             setData={setData}
                             errors={errors}
+                            frontendErrors={frontendErrors} // Pass prop
                         />
                     </div>
                     <div className={currentStep === 3 ? "block" : "hidden"}>
@@ -226,18 +299,54 @@ export default function CourseForm({ categories }) {
                     >
                         Previous
                     </button>
-                    <button
-                        type="button"
-                        onClick={() =>
-                            setCurrentStep((s) => Math.min(3, s + 1))
-                        }
-                        disabled={currentStep === 3 || processing}
-                        className="px-6 py-2 rounded-lg bg-primary text-white font-semibold disabled:opacity-50"
-                    >
-                        Next
-                    </button>
+
+                    {currentStep < 3 && (
+                        <button
+                            type="button"
+                            onClick={handleNextClick} // Use new handler
+                            disabled={processing}
+                            className="px-6 py-2 rounded-lg bg-primary text-white font-semibold disabled:opacity-50"
+                        >
+                            Next
+                        </button>
+                    )}
+
+                    {currentStep === 3 && data.status === "draft" && (
+                        <button
+                            type="button"
+                            onClick={() => setIsPublishModalOpen(true)}
+                            className="px-6 py-2 rounded-lg bg-primary text-white font-semibold hover:bg-opacity-90"
+                            disabled={processing}
+                        >
+                            Publish
+                        </button>
+                    )}
                 </div>
             </main>
+
+            <ConfirmationModal
+                isOpen={isCancelModalOpen}
+                onClose={() => setIsCancelModalOpen(false)}
+                onConfirm={performCancel}
+                title="Confirm Cancel"
+                message="Are you sure you want to cancel? Any unsaved changes will be lost."
+                confirmText="Yes, Cancel"
+                cancelText="No"
+                confirmColor="bg-red-600"
+            />
+
+            <ConfirmationModal
+                isOpen={isPublishModalOpen}
+                onClose={() => setIsPublishModalOpen(false)}
+                onConfirm={(e) => {
+                    publishCourse(e);
+                    setIsPublishModalOpen(false);
+                }}
+                title="Confirm Publish"
+                message="Are you sure you want to publish this course? It will become visible to students."
+                confirmText="Yes, Publish"
+                cancelText="No"
+            />
         </>
     );
 }

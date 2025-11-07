@@ -6,6 +6,7 @@ export default function CourseOverviewForm({
     errors,
     course,
     categories,
+    frontendErrors = {}, // Accept the new prop
 }) {
     const [thumbnailPreview, setThumbnailPreview] = useState(null);
     const [videoPreview, setVideoPreview] = useState(null);
@@ -42,9 +43,9 @@ export default function CourseOverviewForm({
                         onChange={(e) => setData("title", e.target.value)}
                         className="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
                     />
-                    {errors.title && (
+                    {(errors.title || frontendErrors.title) && (
                         <p className="text-sm text-red-500 mt-1">
-                            {errors.title}
+                            {errors.title || frontendErrors.title}
                         </p>
                     )}
                 </div>
@@ -62,9 +63,9 @@ export default function CourseOverviewForm({
                         rows="5"
                         className="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
                     ></textarea>
-                    {errors.description && (
+                    {(errors.description || frontendErrors.description) && (
                         <p className="text-sm text-red-500 mt-1">
-                            {errors.description}
+                            {errors.description || frontendErrors.description}
                         </p>
                     )}
                 </div>
@@ -84,6 +85,13 @@ export default function CourseOverviewForm({
                         rows="5"
                         className="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
                     ></textarea>
+                    {(errors.student_outcome ||
+                        frontendErrors.student_outcome) && (
+                        <p className="text-sm text-red-500 mt-1">
+                            {errors.student_outcome ||
+                                frontendErrors.student_outcome}
+                        </p>
+                    )}
                 </div>
                 <div>
                     <label
@@ -101,6 +109,11 @@ export default function CourseOverviewForm({
                         rows="5"
                         className="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
                     ></textarea>
+                    {(errors.requirements || frontendErrors.requirements) && (
+                        <p className="text-sm text-red-500 mt-1">
+                            {errors.requirements || frontendErrors.requirements}
+                        </p>
+                    )}
                 </div>
             </div>
 
@@ -138,9 +151,11 @@ export default function CourseOverviewForm({
                             </span>
                         )}
                     </label>
-                    {errors.thumbnail_image && (
+                    {(errors.thumbnail_image ||
+                        frontendErrors.thumbnail_image) && (
                         <p className="text-sm text-red-500 mt-1">
-                            {errors.thumbnail_image}
+                            {errors.thumbnail_image ||
+                                frontendErrors.thumbnail_image}
                         </p>
                     )}
                 </div>
@@ -193,6 +208,11 @@ export default function CourseOverviewForm({
                         onChange={(e) => setData("price", e.target.value)}
                         className="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
                     />
+                    {errors.price && (
+                        <p className="text-sm text-red-500 mt-1">
+                            {errors.price}
+                        </p>
+                    )}
                 </div>
                 <div>
                     <label
@@ -214,6 +234,11 @@ export default function CourseOverviewForm({
                             </option>
                         ))}
                     </select>
+                    {(errors.category_id || frontendErrors.category_id) && (
+                        <p className="text-sm text-red-500 mt-1">
+                            {errors.category_id || frontendErrors.category_id}
+                        </p>
+                    )}
                 </div>
             </div>
         </div>

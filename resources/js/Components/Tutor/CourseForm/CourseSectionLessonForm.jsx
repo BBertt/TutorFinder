@@ -2,8 +2,14 @@ import React, { useState } from "react";
 import AddLessonModal from "./AddLessonModal";
 import EditSectionModal from "./EditSectionModal";
 import EditLessonModal from "./EditLessonModal";
+import ConfirmationModal from "@/Components/Tutor/Modals/ConfirmationModal";
 
-export default function CourseSectionLessonForm({ sections, setData, errors }) {
+export default function CourseSectionLessonForm({
+    sections,
+    setData,
+    errors,
+    frontendErrors = {}, // Accept the new prop
+}) {
     const [isLessonModalOpen, setLessonModalOpen] = useState(false);
     const [isEditSectionModalOpen, setEditSectionModalOpen] = useState(false);
     const [isEditLessonModalOpen, setEditLessonModalOpen] = useState(false);
@@ -13,6 +19,10 @@ export default function CourseSectionLessonForm({ sections, setData, errors }) {
 
     const [newSectionTitle, setNewSectionTitle] = useState("");
     const [newSectionDesc, setNewSectionDesc] = useState("");
+
+    // Add state and handlers for the delete modal
+    const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
+    const [deleteTarget, setDeleteTarget] = useState(null); // { type, sectionId, lessonId }
 
     const openModal = (modal, item) => {
         if (modal === "addLesson") {
@@ -57,13 +67,39 @@ export default function CourseSectionLessonForm({ sections, setData, errors }) {
         );
     };
 
-    const deleteSection = (sectionId) => {
-        if (confirm("Are you sure?")) {
+    // Update delete functions to use the modal
+    const openDeleteModal = (type, sectionId, lessonId = null) => {
+        setDeleteTarget({ type, sectionId, lessonId });
+        setDeleteModalOpen(true);
+    };
+
+    const performDelete = () => {
+        if (!deleteTarget) return;
+
+        const { type, sectionId, lessonId } = deleteTarget;
+
+        if (type === "section") {
             setData(
                 "sections",
                 sections.filter((s) => s.id !== sectionId)
             );
+        } else if (type === "lesson") {
+            setData(
+                "sections",
+                sections.map((s) =>
+                    s.id === sectionId
+                        ? {
+                              ...s,
+                              lessons: s.lessons.filter(
+                                  (l) => l.id !== lessonId
+                              ),
+                          }
+                        : s
+                )
+            );
         }
+        setDeleteModalOpen(false);
+        setDeleteTarget(null);
     };
 
     const addLesson = (sectionId, newLesson) => {
@@ -91,24 +127,6 @@ export default function CourseSectionLessonForm({ sections, setData, errors }) {
         );
     };
 
-    const deleteLesson = (sectionId, lessonId) => {
-        if (confirm("Are you sure?")) {
-            setData(
-                "sections",
-                sections.map((s) =>
-                    s.id === sectionId
-                        ? {
-                              ...s,
-                              lessons: s.lessons.filter(
-                                  (l) => l.id !== lessonId
-                              ),
-                          }
-                        : s
-                )
-            );
-        }
-    };
-
     return (
         <>
             <AddLessonModal
@@ -130,12 +148,40 @@ export default function CourseSectionLessonForm({ sections, setData, errors }) {
                 onSave={editLesson}
             />
 
+            <ConfirmationModal
+                isOpen={isDeleteModalOpen}
+                onClose={() => setDeleteModalOpen(false)}
+                onConfirm={performDelete}
+                title="Confirm Deletion"
+                message="Are you sure you want to delete this? This action cannot be undone."
+                confirmText="Yes, Delete"
+                cancelText="No"
+                confirmColor="bg-red-600"
+            />
+
             <div className="mt-8">
                 <h2 className="text-2xl font-bold mb-4">Sections & Lessons</h2>
                 <p className="text-gray-600 mb-6">
                     Structure your course by adding sections and the lessons
                     within them.
                 </p>
+
+                {/* Add the new error display block */}
+                {(frontendErrors.sections_min ||
+                    frontendErrors.lessons_min ||
+                    frontendErrors.lesson_content) && (
+                    <div className="p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-100 border border-red-300">
+                        {frontendErrors.sections_min && (
+                            <p>{frontendErrors.sections_min}</p>
+                        )}
+                        {frontendErrors.lessons_min && (
+                            <p>{frontendErrors.lessons_min}</p>
+                        )}
+                        {frontendErrors.lesson_content && (
+                            <p>{frontendErrors.lesson_content}</p>
+                        )}
+                    </div>
+                )}
 
                 <div className="space-y-4 mb-8">
                     {sections.map((section, index) => (
@@ -167,7 +213,10 @@ export default function CourseSectionLessonForm({ sections, setData, errors }) {
                                     <button
                                         type="button"
                                         onClick={() =>
-                                            deleteSection(section.id)
+                                            openDeleteModal(
+                                                "section",
+                                                section.id
+                                            )
                                         }
                                         className="px-4 py-1 text-sm bg-red-600 text-white font-semibold rounded-md hover:bg-red-700"
                                     >
@@ -198,7 +247,8 @@ export default function CourseSectionLessonForm({ sections, setData, errors }) {
                                             <button
                                                 type="button"
                                                 onClick={() =>
-                                                    deleteLesson(
+                                                    openDeleteModal(
+                                                        "lesson",
                                                         section.id,
                                                         lesson.id
                                                     )
