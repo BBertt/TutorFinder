@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Link, usePage, useForm } from "@inertiajs/react";
+import GuestNavbar from "@/Components/Landing/GuestNavbar";
 
 const AppNavbar = ({ logoSrc }) => {
     const { categories } = usePage().props;
@@ -291,12 +292,13 @@ const AppFooter = ({ logoSrc }) => {
     );
 };
 
-export default function AuthenticatedLayout({ children, showFooter = true }) {
+export default function Layout({ children, showFooter = true }) {
     const logoSrc = "/assets/logo.png";
+    const { auth } = usePage().props;
 
     return (
         <div className="flex flex-col min-h-screen bg-white">
-            <AppNavbar logoSrc={logoSrc} />
+            {auth.user ? <AppNavbar logoSrc={logoSrc} /> : <GuestNavbar />}
             <main className="flex-grow">{children}</main>
             {showFooter && <AppFooter logoSrc={logoSrc} />}
         </div>

@@ -1,13 +1,25 @@
 import React, { useState } from "react";
 import Layout from "@/Layouts/Layout";
-import { Head, Link, router } from "@inertiajs/react";
+import { Head, Link, router, usePage } from "@inertiajs/react";
 import ForumPostCard from "@/Components/Forums/ForumPostCard";
 import TopContributorList from "@/Components/Forums/TopContributorList";
 import Pagination from "@/Components/Pagination";
 import SortDropdown from "@/Components/SortDropdown";
+import LoginModal from "@/Components/LoginModal";
 
 function ForumIndex({ forums, topStudents, topTutors, filters }) {
     const [activeTab, setActiveTab] = useState("students");
+
+    const { auth } = usePage().props;
+
+    const [isLoginModalOpen, setLoginModalOpen] = useState(false);
+
+    const handleGuestClick = (e) => {
+        if (!auth.user) {
+            e.preventDefault();
+            setLoginModalOpen(true);
+        }
+    };
 
     const onSortChange = (newSort) => {
         router.get(
@@ -41,7 +53,12 @@ function ForumIndex({ forums, topStudents, topTutors, filters }) {
                         </div>
 
                         {forums.data.map((post) => (
-                            <ForumPostCard key={post.id} post={post} />
+                            <div
+                                key={post.id}
+                                onClickCapture={handleGuestClick}
+                            >
+                                <ForumPostCard post={post} />
+                            </div>
                         ))}
 
                         <Pagination links={forums.links} />
@@ -93,9 +110,13 @@ function ForumIndex({ forums, topStudents, topTutors, filters }) {
                             )}
                         </div>
                     </aside>
-                    ;
                 </div>
             </main>
+
+            <LoginModal
+                isOpen={isLoginModalOpen}
+                onClose={() => setLoginModalOpen(false)}
+            />
         </>
     );
 }
