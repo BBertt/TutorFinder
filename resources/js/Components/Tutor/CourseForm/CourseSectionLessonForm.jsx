@@ -1,10 +1,9 @@
 import React, { useState } from "react";
-import { router, useForm } from "@inertiajs/react";
 import AddLessonModal from "./AddLessonModal";
 import EditSectionModal from "./EditSectionModal";
 import EditLessonModal from "./EditLessonModal";
 
-export default function CourseSectionLessonForm({ course }) {
+export default function CourseSectionLessonForm({ sections, setData, errors }) {
     const [isLessonModalOpen, setLessonModalOpen] = useState(false);
     const [isEditSectionModalOpen, setEditSectionModalOpen] = useState(false);
     const [isEditLessonModalOpen, setEditLessonModalOpen] = useState(false);
@@ -12,10 +11,8 @@ export default function CourseSectionLessonForm({ course }) {
     const [selectedSection, setSelectedSection] = useState(null);
     const [selectedLessonData, setSelectedLessonData] = useState(null);
 
-    const { data, setData, post, processing, reset, errors } = useForm({
-        title: "",
-        description: "",
-    });
+    const [newSectionTitle, setNewSectionTitle] = useState("");
+    const [newSectionDesc, setNewSectionDesc] = useState("");
 
     const openModal = (modal, item) => {
         if (modal === "addLesson") {
@@ -29,39 +26,108 @@ export default function CourseSectionLessonForm({ course }) {
             setEditLessonModalOpen(true);
         }
     };
-
     const closeModal = () => {
         setLessonModalOpen(false);
         setEditSectionModalOpen(false);
         setEditLessonModalOpen(false);
-        setSelectedSection(null);
-        setSelectedLessonData(null);
     };
 
     const addSection = (e) => {
         e.preventDefault();
-        post(route("tutor.courses.sections.store", course.id), {
-            preserveScroll: true,
-            onSuccess: () => reset("title", "description"),
-        });
+        if (newSectionTitle.trim() === "") return;
+        const newSection = {
+            id: `temp_${Date.now()}`,
+            title: newSectionTitle,
+            description: newSectionDesc,
+            lessons: [],
+        };
+        setData("sections", [...sections, newSection]);
+        setNewSectionTitle("");
+        setNewSectionDesc("");
+    };
+
+    const editSection = (updatedSection) => {
+        setData(
+            "sections",
+            sections.map((s) =>
+                s.id === updatedSection.id || s.id === updatedSection.temp_id
+                    ? updatedSection
+                    : s
+            )
+        );
+    };
+
+    const deleteSection = (sectionId) => {
+        if (confirm("Are you sure?")) {
+            setData(
+                "sections",
+                sections.filter((s) => s.id !== sectionId)
+            );
+        }
+    };
+
+    const addLesson = (sectionId, newLesson) => {
+        setData(
+            "sections",
+            sections.map((s) =>
+                s.id === sectionId
+                    ? { ...s, lessons: [...s.lessons, newLesson] }
+                    : s
+            )
+        );
+    };
+
+    const editLesson = (updatedLesson) => {
+        setData(
+            "sections",
+            sections.map((s) => ({
+                ...s,
+                lessons: s.lessons.map((l) =>
+                    l.id === updatedLesson.id || l.id === updatedLesson.temp_id
+                        ? updatedLesson
+                        : l
+                ),
+            }))
+        );
+    };
+
+    const deleteLesson = (sectionId, lessonId) => {
+        if (confirm("Are you sure?")) {
+            setData(
+                "sections",
+                sections.map((s) =>
+                    s.id === sectionId
+                        ? {
+                              ...s,
+                              lessons: s.lessons.filter(
+                                  (l) => l.id !== lessonId
+                              ),
+                          }
+                        : s
+                )
+            );
+        }
     };
 
     return (
         <>
             <AddLessonModal
-                section={selectedSection}
                 isOpen={isLessonModalOpen}
+                section={selectedSection}
                 onClose={closeModal}
+                onSave={addLesson}
             />
             <EditSectionModal
-                section={selectedSection}
                 isOpen={isEditSectionModalOpen}
+                section={selectedSection}
                 onClose={closeModal}
+                onSave={editSection}
             />
             <EditLessonModal
-                lessonData={selectedLessonData}
                 isOpen={isEditLessonModalOpen}
+                lessonData={selectedLessonData}
                 onClose={closeModal}
+                onSave={editLesson}
             />
 
             <div className="mt-8">
@@ -72,7 +138,7 @@ export default function CourseSectionLessonForm({ course }) {
                 </p>
 
                 <div className="space-y-4 mb-8">
-                    {course.sections.map((section, index) => (
+                    {sections.map((section, index) => (
                         <div
                             key={section.id}
                             className="p-4 border rounded-lg bg-gray-50"
@@ -100,23 +166,15 @@ export default function CourseSectionLessonForm({ course }) {
                                     </button>
                                     <button
                                         type="button"
-                                        onClick={() => {
-                                            if (confirm("Are you sure?"))
-                                                router.delete(
-                                                    route(
-                                                        "tutor.sections.destroy",
-                                                        section.id
-                                                    ),
-                                                    { preserveScroll: true }
-                                                );
-                                        }}
+                                        onClick={() =>
+                                            deleteSection(section.id)
+                                        }
                                         className="px-4 py-1 text-sm bg-red-600 text-white font-semibold rounded-md hover:bg-red-700"
                                     >
                                         Delete
                                     </button>
                                 </div>
                             </div>
-
                             <div className="pl-6 mt-4 border-l-2 space-y-2">
                                 {section.lessons.map((lesson) => (
                                     <div
@@ -139,24 +197,12 @@ export default function CourseSectionLessonForm({ course }) {
                                             </button>
                                             <button
                                                 type="button"
-                                                onClick={() => {
-                                                    if (
-                                                        confirm("Are you sure?")
+                                                onClick={() =>
+                                                    deleteLesson(
+                                                        section.id,
+                                                        lesson.id
                                                     )
-                                                        router.delete(
-                                                            route(
-                                                                "tutor.sections.lessons.destroy",
-                                                                {
-                                                                    section:
-                                                                        section.id,
-                                                                    lesson: lesson.id,
-                                                                }
-                                                            ),
-                                                            {
-                                                                preserveScroll: true,
-                                                            }
-                                                        );
-                                                }}
+                                                }
                                                 className="text-red-500 text-xs font-semibold"
                                             >
                                                 Delete
@@ -181,7 +227,7 @@ export default function CourseSectionLessonForm({ course }) {
                             </div>
                         </div>
                     ))}
-                    {course.sections.length === 0 && (
+                    {sections.length === 0 && (
                         <div className="text-center py-12 border-2 border-dashed rounded-lg">
                             <h3 className="text-xl font-bold text-gray-700">
                                 Your course has no sections
@@ -197,37 +243,29 @@ export default function CourseSectionLessonForm({ course }) {
                     <div>
                         <input
                             type="text"
-                            value={data.title}
-                            onChange={(e) => setData("title", e.target.value)}
+                            value={newSectionTitle}
+                            onChange={(e) => setNewSectionTitle(e.target.value)}
                             placeholder="Add a new section title..."
                             className="w-full border-gray-300 rounded-md shadow-sm"
                         />
-                        {errors.title && (
+                        {errors["sections.0.title"] && (
                             <p className="text-red-500 text-sm mt-1">
-                                {errors.title}
+                                Section titles are required.
                             </p>
                         )}
                     </div>
                     <div>
                         <textarea
-                            value={data.description}
-                            onChange={(e) =>
-                                setData("description", e.target.value)
-                            }
+                            value={newSectionDesc}
+                            onChange={(e) => setNewSectionDesc(e.target.value)}
                             placeholder="Add an optional description for the section..."
                             rows="2"
                             className="w-full border-gray-300 rounded-md shadow-sm"
                         ></textarea>
-                        {errors.description && (
-                            <p className="text-red-500 text-sm mt-1">
-                                {errors.description}
-                            </p>
-                        )}
                     </div>
                     <div className="flex justify-end">
                         <button
                             type="submit"
-                            disabled={processing}
                             className="px-4 py-2 bg-primary text-white rounded-md font-semibold"
                         >
                             Add Section

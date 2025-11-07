@@ -1,16 +1,14 @@
 import React, { useEffect } from "react";
-import { useForm, router } from "@inertiajs/react";
+import { useForm } from "@inertiajs/react";
 
-export default function EditLessonModal({ lessonData, isOpen, onClose }) {
-    const {
-        data,
-        setData,
-        processing,
-        errors,
-        progress,
-        reset,
-        wasSuccessful,
-    } = useForm({
+export default function EditLessonModal({
+    lessonData,
+    isOpen,
+    onClose,
+    onSave,
+}) {
+    const { data, setData, processing, errors, reset } = useForm({
+        id: "",
         title: "",
         description: "",
         video: null,
@@ -19,6 +17,7 @@ export default function EditLessonModal({ lessonData, isOpen, onClose }) {
     useEffect(() => {
         if (lessonData?.lesson) {
             setData({
+                id: lessonData.lesson.id,
                 title: lessonData.lesson.title,
                 description: lessonData.lesson.description,
                 video: null,
@@ -28,26 +27,10 @@ export default function EditLessonModal({ lessonData, isOpen, onClose }) {
 
     const submit = (e) => {
         e.preventDefault();
-        if (!lessonData) return;
-
-        router.post(
-            route("tutor.sections.lessons.update", {
-                section: lessonData.section.id,
-                lesson: lessonData.lesson.id,
-            }),
-            {
-                ...data,
-                _method: "patch",
-            },
-            {
-                forceFormData: true,
-                preserveScroll: true,
-                onSuccess: () => {
-                    reset();
-                    onClose();
-                },
-            }
-        );
+        const updatedLesson = { ...lessonData.lesson, ...data };
+        onSave(updatedLesson);
+        reset();
+        onClose();
     };
 
     if (!isOpen) return null;
@@ -73,11 +56,6 @@ export default function EditLessonModal({ lessonData, isOpen, onClose }) {
                             onChange={(e) => setData("title", e.target.value)}
                             className="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
                         />
-                        {errors.title && (
-                            <p className="text-sm text-red-500 mt-1">
-                                {errors.title}
-                            </p>
-                        )}
                     </div>
                     <div className="mb-4">
                         <label
@@ -95,11 +73,6 @@ export default function EditLessonModal({ lessonData, isOpen, onClose }) {
                             rows="4"
                             className="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
                         ></textarea>
-                        {errors.description && (
-                            <p className="text-sm text-red-500 mt-1">
-                                {errors.description}
-                            </p>
-                        )}
                     </div>
                     <div className="mb-6">
                         <label
@@ -117,20 +90,6 @@ export default function EditLessonModal({ lessonData, isOpen, onClose }) {
                             }
                             className="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-white hover:file:bg-opacity-90 cursor-pointer"
                         />
-                        {progress && (
-                            <progress
-                                value={progress.percentage}
-                                max="100"
-                                className="w-full mt-2"
-                            >
-                                {progress.percentage}%
-                            </progress>
-                        )}
-                        {errors.video && (
-                            <p className="text-sm text-red-500 mt-1">
-                                {errors.video}
-                            </p>
-                        )}
                     </div>
                     <div className="flex justify-end space-x-2">
                         <button

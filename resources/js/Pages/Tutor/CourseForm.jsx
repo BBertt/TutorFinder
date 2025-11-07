@@ -50,15 +50,12 @@ export default function CourseForm({ categories }) {
     const { course, flash } = usePage().props;
     const isEditing = !!course;
 
-    const [currentStep, setCurrentStep] = useState(1);
+    const [currentStep, setCurrentStep] = useState(() => {
+        if (isEditing && flash.from_create) return 2;
+        return 1;
+    });
 
-    useEffect(() => {
-        if (isEditing && flash.from_create) {
-            setCurrentStep(2);
-        }
-    }, []);
-
-    const { data, setData, post, processing, errors } = useForm({
+    const { data, setData, errors, reset, clearErrors } = useForm({
         title: course?.title || "",
         description: course?.description || "",
         student_outcome: course?.student_outcome || "",
@@ -67,41 +64,88 @@ export default function CourseForm({ categories }) {
         category_id: course?.category_id || "",
         thumbnail_image: null,
         intro_video: null,
+        sections: course?.sections || [],
+        status: course?.status || "draft",
     });
 
-    const submitForm = (action, onSuccessCallback = () => {}) => {
+    const [processing, setProcessing] = useState(false);
+
+    const submitCourse = (e, finalStatus) => {
+        e.preventDefault();
+        setProcessing(true);
+        clearErrors();
+
         const url = isEditing
             ? route("tutor.courses.update", course.id)
             : route("tutor.courses.store");
 
-        router.post(
-            url,
-            { ...data, _method: isEditing ? "patch" : "post", action: action },
-            {
-                forceFormData: true,
-                preserveScroll: true,
-                onSuccess: onSuccessCallback,
-            }
-        );
-    };
+        const formData = new FormData();
 
-    const saveAndExit = () => {
-        submitForm("save_and_exit");
-    };
+        formData.append("title", data.title);
+        formData.append("description", data.description);
+        formData.append("student_outcome", data.student_outcome);
+        formData.append("requirements", data.requirements);
+        formData.append("price", data.price);
+        formData.append("category_id", data.category_id);
+        formData.append("status", finalStatus);
 
-    const saveAndContinue = () => {
-        submitForm("save_and_continue", () => {
-            if (isEditing) {
-                setCurrentStep((s) => Math.min(3, s + 1));
-            }
+        if (data.thumbnail_image instanceof File) {
+            formData.append("thumbnail_image", data.thumbnail_image);
+        }
+        if (data.intro_video instanceof File) {
+            formData.append("intro_video", data.intro_video);
+        }
+
+        if (data.sections.length > 0) {
+            data.sections.forEach((section, s_index) => {
+                formData.append(`sections[${s_index}][id]`, section.id || "");
+                formData.append(`sections[${s_index}][title]`, section.title);
+                formData.append(
+                    `sections[${s_index}][description]`,
+                    section.description || ""
+                );
+
+                if (!section.lessons || section.lessons.length === 0) {
+                    formData.append(`sections[${s_index}][lessons]`, "");
+                } else {
+                    section.lessons.forEach((lesson, l_index) => {
+                        formData.append(
+                            `sections[${s_index}][lessons][${l_index}][id]`,
+                            lesson.id || ""
+                        );
+                        formData.append(
+                            `sections[${s_index}][lessons][${l_index}][title]`,
+                            lesson.title
+                        );
+                        formData.append(
+                            `sections[${s_index}][lessons][${l_index}][description]`,
+                            lesson.description
+                        );
+                        if (lesson.video instanceof File) {
+                            formData.append(
+                                `sections[${s_index}][lessons][${l_index}][video]`,
+                                lesson.video
+                            );
+                        }
+                    });
+                }
+            });
+        }
+
+        if (isEditing) {
+            formData.append("_method", "patch");
+        }
+
+        router.post(url, formData, {
+            onFinish: () => setProcessing(false),
+            onError: (pageErrors) => {
+                console.log("Submission Errors:", pageErrors);
+            },
         });
     };
 
-    const publishCourse = () => {
-        if (confirm("Are you sure you want to publish this course?")) {
-            router.patch(route("tutor.courses.publish", course.id));
-        }
-    };
+    const publishCourse = (e) => submitCourse(e, "published");
+    const saveDraft = (e) => submitCourse(e, "draft");
 
     return (
         <>
@@ -122,37 +166,26 @@ export default function CourseForm({ categories }) {
                             >
                                 Cancel
                             </Link>
-                            {isEditing ? (
+
+                            <button
+                                type="button"
+                                onClick={saveDraft}
+                                className="px-4 py-2 rounded-lg bg-secondary text-white font-semibold hover:bg-gray-700"
+                                disabled={processing}
+                            >
+                                {isEditing ? "Save Changes" : "Save to Draft"}
+                            </button>
+
+                            {currentStep === 3 && data.status === "draft" && (
                                 <button
                                     type="button"
-                                    onClick={saveAndExit}
-                                    className="px-4 py-2 rounded-lg bg-secondary text-white font-semibold hover:bg-gray-700"
+                                    onClick={publishCourse}
+                                    className="px-4 py-2 rounded-lg bg-secondary text-white font-semibold hover:bg-opacity-90"
                                     disabled={processing}
                                 >
-                                    Save Changes
-                                </button>
-                            ) : (
-                                <button
-                                    type="button"
-                                    onClick={saveAndExit}
-                                    className="px-4 py-2 rounded-lg bg-secondary text-white font-semibold hover:bg-gray-700"
-                                    disabled={processing}
-                                >
-                                    Save to Draft
+                                    Publish
                                 </button>
                             )}
-                            {isEditing &&
-                                currentStep === 3 &&
-                                course.status === "draft" && (
-                                    <button
-                                        type="button"
-                                        onClick={publishCourse}
-                                        className="px-4 py-2 rounded-lg bg-secondary text-white font-semibold hover:bg-opacity-90"
-                                        disabled={processing}
-                                    >
-                                        Publish
-                                    </button>
-                                )}
                         </div>
                     </div>
                 </div>
@@ -168,31 +201,17 @@ export default function CourseForm({ categories }) {
                         />
                     </div>
                     <div className={currentStep === 2 ? "block" : "hidden"}>
-                        {isEditing ? (
-                            <CourseSectionLessonForm course={course} />
-                        ) : (
-                            <div className="text-center text-gray-500 py-12">
-                                <h3 className="text-xl font-bold">
-                                    Save Course to Continue
-                                </h3>
-                                <p>
-                                    Click "Next" to save your course overview
-                                    and proceed.
-                                </p>
-                            </div>
-                        )}
+                        <CourseSectionLessonForm
+                            sections={data.sections}
+                            setData={setData}
+                            errors={errors}
+                        />
                     </div>
                     <div className={currentStep === 3 ? "block" : "hidden"}>
-                        {isEditing ? (
-                            <CourseReview course={course} />
-                        ) : (
-                            <div className="text-center text-gray-500 py-12">
-                                <h3 className="text-xl font-bold">
-                                    Save Course to Continue
-                                </h3>
-                                <p>Please complete the previous steps first.</p>
-                            </div>
-                        )}
+                        <CourseReview
+                            courseData={data}
+                            existingCourse={course}
+                        />
                     </div>
                 </div>
 
@@ -209,11 +228,13 @@ export default function CourseForm({ categories }) {
                     </button>
                     <button
                         type="button"
-                        onClick={saveAndContinue}
+                        onClick={() =>
+                            setCurrentStep((s) => Math.min(3, s + 1))
+                        }
                         disabled={currentStep === 3 || processing}
                         className="px-6 py-2 rounded-lg bg-primary text-white font-semibold disabled:opacity-50"
                     >
-                        {processing ? "Saving..." : "Next"}
+                        Next
                     </button>
                 </div>
             </main>

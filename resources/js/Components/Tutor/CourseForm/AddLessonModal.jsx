@@ -1,24 +1,22 @@
 import React from "react";
 import { useForm } from "@inertiajs/react";
 
-export default function AddLessonModal({ section, isOpen, onClose }) {
-    const { data, setData, post, processing, errors, progress, reset } =
-        useForm({
-            title: "",
-            description: "",
-            video: null,
-        });
+export default function AddLessonModal({ section, isOpen, onClose, onSave }) {
+    const { data, setData, processing, reset } = useForm({
+        title: "",
+        description: "",
+        video: null,
+    });
 
     const submit = (e) => {
         e.preventDefault();
-        post(route("tutor.sections.lessons.store", section.id), {
-            forceFormData: true,
-            preserveScroll: true,
-            onSuccess: () => {
-                reset();
-                onClose();
-            },
-        });
+        const newLesson = {
+            id: `temp_lesson_${Date.now()}`,
+            ...data,
+        };
+        onSave(section.id, newLesson);
+        reset();
+        onClose();
     };
 
     if (!isOpen) return null;
@@ -45,11 +43,6 @@ export default function AddLessonModal({ section, isOpen, onClose }) {
                             className="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
                             placeholder="Enter Lesson Name"
                         />
-                        {errors.title && (
-                            <p className="text-sm text-red-500 mt-1">
-                                {errors.title}
-                            </p>
-                        )}
                     </div>
                     <div className="mb-4">
                         <label
@@ -68,11 +61,6 @@ export default function AddLessonModal({ section, isOpen, onClose }) {
                             className="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
                             placeholder="Enter Lesson Content/Description"
                         ></textarea>
-                        {errors.description && (
-                            <p className="text-sm text-red-500 mt-1">
-                                {errors.description}
-                            </p>
-                        )}
                     </div>
                     <div className="mb-6">
                         <label
@@ -90,20 +78,6 @@ export default function AddLessonModal({ section, isOpen, onClose }) {
                             }
                             className="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-white hover:file:bg-opacity-90 cursor-pointer"
                         />
-                        {progress && (
-                            <progress
-                                value={progress.percentage}
-                                max="100"
-                                className="w-full mt-2"
-                            >
-                                {progress.percentage}%
-                            </progress>
-                        )}
-                        {errors.video && (
-                            <p className="text-sm text-red-500 mt-1">
-                                {errors.video}
-                            </p>
-                        )}
                     </div>
                     <div className="flex justify-end space-x-2">
                         <button

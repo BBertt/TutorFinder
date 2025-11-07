@@ -4,7 +4,6 @@ export default function CourseOverviewForm({
     data,
     setData,
     errors,
-    progress,
     course,
     categories,
 }) {
@@ -12,14 +11,10 @@ export default function CourseOverviewForm({
     const [videoPreview, setVideoPreview] = useState(null);
 
     useEffect(() => {
-        if (course?.thumbnail_image_url) {
+        if (!data.thumbnail_image && course?.thumbnail_image_url)
             setThumbnailPreview(course.thumbnail_image_url);
-        } else {
-            setThumbnailPreview(null);
-        }
-
-        if (course?.intro_video_url) setVideoPreview(course.intro_video_url);
-        else setVideoPreview(null);
+        if (!data.intro_video && course?.intro_video_url)
+            setVideoPreview(course.intro_video_url);
     }, [course]);
 
     const onFileChange = (e, field, setPreview) => {
@@ -43,7 +38,6 @@ export default function CourseOverviewForm({
                     <input
                         type="text"
                         id="title"
-                        placeholder="Input your course title here..."
                         value={data.title}
                         onChange={(e) => setData("title", e.target.value)}
                         className="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
@@ -64,7 +58,6 @@ export default function CourseOverviewForm({
                     <textarea
                         id="description"
                         value={data.description}
-                        placeholder="Tell us about your courses..."
                         onChange={(e) => setData("description", e.target.value)}
                         rows="5"
                         className="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
@@ -84,7 +77,6 @@ export default function CourseOverviewForm({
                     </label>
                     <textarea
                         id="student_outcome"
-                        placeholder="What will they learn  from your course?"
                         value={data.student_outcome}
                         onChange={(e) =>
                             setData("student_outcome", e.target.value)
@@ -102,7 +94,6 @@ export default function CourseOverviewForm({
                     </label>
                     <textarea
                         id="requirements"
-                        placeholder="Input your course's requirements..."
                         value={data.requirements}
                         onChange={(e) =>
                             setData("requirements", e.target.value)
@@ -112,6 +103,7 @@ export default function CourseOverviewForm({
                     ></textarea>
                 </div>
             </div>
+
             <div className="space-y-6">
                 <div>
                     <label className="block text-sm font-medium text-gray-700">
@@ -130,7 +122,6 @@ export default function CourseOverviewForm({
                         }
                         className="hidden"
                     />
-
                     <label
                         htmlFor="thumbnail_image"
                         className="mt-1 w-full h-48 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center bg-gray-50 cursor-pointer hover:border-primary"
@@ -153,7 +144,6 @@ export default function CourseOverviewForm({
                         </p>
                     )}
                 </div>
-
                 <div>
                     <label className="block text-sm font-medium text-gray-700">
                         Intro Video
@@ -167,7 +157,6 @@ export default function CourseOverviewForm({
                         }
                         className="hidden"
                     />
-
                     <label
                         htmlFor="intro_video"
                         className="mt-1 w-full h-48 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center bg-gray-50 cursor-pointer hover:border-primary"
@@ -190,7 +179,6 @@ export default function CourseOverviewForm({
                         </p>
                     )}
                 </div>
-
                 <div>
                     <label
                         htmlFor="price"
@@ -205,11 +193,6 @@ export default function CourseOverviewForm({
                         onChange={(e) => setData("price", e.target.value)}
                         className="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
                     />
-                    {errors.price && (
-                        <p className="text-sm text-red-500 mt-1">
-                            {errors.price}
-                        </p>
-                    )}
                 </div>
                 <div>
                     <label
@@ -231,11 +214,6 @@ export default function CourseOverviewForm({
                             </option>
                         ))}
                     </select>
-                    {errors.category_id && (
-                        <p className="text-sm text-red-500 mt-1">
-                            {errors.category_id}
-                        </p>
-                    )}
                 </div>
             </div>
         </div>
