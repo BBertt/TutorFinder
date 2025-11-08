@@ -84,7 +84,12 @@ class CourseController extends Controller
             return redirect()->back()->with('error', 'You are not enrolled in this course.');
         }
 
-        $course->load('sections.lessons', 'user');
+        $course->load(
+            'user',
+            'sections.lessons',
+            'sections.quiz.questions.options',
+            'sections.quiz.attempts'
+        );
 
         $progress = $user->progress()->where('course_id', $course->id)->get();
 

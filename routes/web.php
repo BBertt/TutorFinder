@@ -18,6 +18,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PurchasedCoursesController;
 use App\Http\Controllers\CourseProgressController;
 use App\Http\Controllers\CourseReviewController;
+use App\Http\Controllers\QuizController;
 use App\Http\Controllers\Tutor\CourseController as TutorCourseController;
 use App\Http\Controllers\Tutor\CourseLessonController;
 use App\Http\Controllers\Tutor\CourseSectionController;
@@ -121,6 +122,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/home', [HomeController::class, 'index'])->name('home');
 
     Route::post('/course-progress/{course_lesson_id}', [CourseProgressController::class, 'update'])->name('course-progress.update');
+
+    Route::post('/quizzes/{quiz}/submit', [QuizController::class, 'submit'])->name('quizzes.submit');
 });
 
 Route::middleware('admin')->group(function() {

@@ -3,6 +3,7 @@ import { Head, Link, usePage, router } from '@inertiajs/react';
 import React from 'react';
 import axios from 'axios';
 import VideoPlayer from '@/Components/VideoPlayer';
+import Quiz from '@/Components/Quiz';
 
 const CheckmarkIcon = ({ className }) => (
     <svg
@@ -59,7 +60,6 @@ const RatingModal = ({ course, onClose }) => {
                 }
             });
         } else {
-            // If no rating is provided, just close the modal
             setIsSubmitting(false);
             onClose();
         }
@@ -96,40 +96,50 @@ const RatingModal = ({ course, onClose }) => {
     );
 };
 
-    function LearnCourse({ course, progress: initialProgress, last_watched_lesson_id, has_reviewed_by_user }) {
-    const { flash } = usePage().props;
+function LearnCourse({ course, progress: initialProgress, last_watched_lesson_id, has_reviewed_by_user }) {
+    const { flash, quiz_results } = usePage().props;
     const [visibleFlash, setVisibleFlash] = React.useState(flash.success);
+    const [quizResults, setQuizResults] = React.useState(quiz_results);
+    const [activeQuiz, setActiveQuiz] = React.useState(null);
 
     React.useEffect(() => {
         setVisibleFlash(flash.success);
     }, [flash.success]);
 
-    const findLessonDetails = (lessonId) => {
-        let currentSectionIndex = -1;
-        let currentLessonIndex = -1;
+    React.useEffect(() => {
+        setQuizResults(quiz_results);
+        if (quiz_results) {
+            setActiveQuiz(null);
+        }
+    }, [quiz_results]);
 
-        for (let sIdx = 0; sIdx < course.sections.length; sIdx++) {
-            const section = course.sections[sIdx];
-            for (let lIdx = 0; lIdx < section.lessons.length; lIdx++) {
-                const lesson = section.lessons[lIdx];
+    const findLessonDetails = (lessonId) => {
+        if (!lessonId) {
+            return { lesson: course.sections[0]?.lessons[0] || null };
+        }
+        for (const section of course.sections) {
+            for (const lesson of section.lessons) {
                 if (lesson.id === lessonId) {
-                    currentSectionIndex = sIdx;
-                    currentLessonIndex = lIdx;
-                    return { lesson, currentSectionIndex, currentLessonIndex };
+                    return { lesson };
                 }
             }
         }
-        // Default to the first lesson if lessonId is not found or null
-        return {
-            lesson: course.sections[0].lessons[0],
-            currentSectionIndex: 0,
-            currentLessonIndex: 0
-        };
+        return { lesson: course.sections[0]?.lessons[0] || null };
     };
 
     const [currentLesson, setCurrentLesson] = React.useState(findLessonDetails(last_watched_lesson_id).lesson);
     const [progress, setProgress] = React.useState(initialProgress);
     const [showRatingModal, setShowRatingModal] = React.useState(false);
+
+    const handleSetCurrentLesson = (lesson) => {
+        setCurrentLesson(lesson);
+        setActiveQuiz(null);
+    };
+
+    const handleTakeQuiz = (quiz) => {
+        setCurrentLesson(null);
+        setActiveQuiz(quiz);
+    };
 
     const isLessonCompleted = (lessonId) => {
         return progress.some(p => p.course_lesson_id === lessonId && p.is_completed);
@@ -138,117 +148,128 @@ const RatingModal = ({ course, onClose }) => {
     const allLessons = React.useMemo(() => course.sections.flatMap(s => s.lessons), [course.sections]);
 
     const isCourseFullyCompleted = React.useMemo(() => {
-        return allLessons.length > 0 && allLessons.every(l => isLessonCompleted(l.id));
-    }, [allLessons, progress]);
+        const allQuizzes = [...course.sections.map(s => s.quiz).filter(q => q), course.finalQuiz].filter(q => q);
+        const allQuizIds = allQuizzes.map(q => q.id);
+        const completedQuizzes = course.sections.flatMap(s => s.quiz ? s.quiz.attempts : []).concat(course.finalQuiz ? course.finalQuiz.attempts : []);
+        const allQuizzesCompleted = allQuizIds.every(id => completedQuizzes.some(a => a.quiz_id === id));
+
+        return allLessons.length > 0 && allLessons.every(l => isLessonCompleted(l.id)) && allQuizzesCompleted;
+    }, [allLessons, progress, course]);
 
 
     const isSectionCompleted = (section) => {
-        const totalLessons = section.lessons.length;
-        if (totalLessons === 0) return false;
+        const completedLessonsInSection = section.lessons.every(lesson => isLessonCompleted(lesson.id));
+        const quizCompleted = !section.quiz || (section.quiz && section.quiz.attempts.length > 0);
 
-        const completedLessonsInSection = section.lessons.filter(lesson =>
-            progress.some(p => p.course_lesson_id === lesson.id && p.is_completed)
-        ).length;
-
-        return completedLessonsInSection === totalLessons;
+        return completedLessonsInSection && quizCompleted;
     };
 
     const getNextLesson = () => {
-        const { currentSectionIndex, currentLessonIndex } = findLessonDetails(currentLesson.id);
-        const currentSection = course.sections[currentSectionIndex];
-
-        if (currentLessonIndex < currentSection.lessons.length - 1) {
-            return currentSection.lessons[currentLessonIndex + 1];
-        } else if (currentSectionIndex < course.sections.length - 1) {
-            return course.sections[currentSectionIndex + 1].lessons[0];
+        if (!currentLesson) return null;
+        let lessonFound = false;
+        for (const section of course.sections) {
+            for (const lesson of section.lessons) {
+                if (lessonFound) return lesson;
+                if (lesson.id === currentLesson.id) {
+                    lessonFound = true;
+                }
+            }
         }
         return null;
     };
 
     const getPreviousLesson = () => {
-        const { currentSectionIndex, currentLessonIndex } = findLessonDetails(currentLesson.id);
-        const currentSection = course.sections[currentSectionIndex];
-
-        if (currentLessonIndex > 0) {
-            return currentSection.lessons[currentLessonIndex - 1];
-        } else if (currentSectionIndex > 0) {
-            const previousSection = course.sections[currentSectionIndex - 1];
-            return previousSection.lessons[previousSection.lessons.length - 1];
+        if (!currentLesson) return null;
+        let previousLesson = null;
+        for (const section of course.sections) {
+            for (const lesson of section.lessons) {
+                if (lesson.id === currentLesson.id) {
+                    return previousLesson;
+                }
+                previousLesson = lesson;
+            }
         }
         return null;
     };
 
-    const handleVideoEnded = () => {
-        axios.post(`/course-progress/${currentLesson.id}`, {
+    const markLessonAsCompleted = (lessonId) => {
+        axios.post(`/course-progress/${lessonId}`, {
             course_id: course.id,
         }).then(() => {
             const newProgress = [...progress];
-            const progressIndex = newProgress.findIndex(p => p.course_lesson_id === currentLesson.id);
-            if (progressIndex > -1) {
-                newProgress[progressIndex].is_completed = true;
-            } else {
-                newProgress.push({ course_lesson_id: currentLesson.id, is_completed: true });
+            const progressIndex = newProgress.findIndex(p => p.course_lesson_id === lessonId);
+            if (progressIndex === -1) {
+                newProgress.push({ course_lesson_id: lessonId, is_completed: true });
+                setProgress(newProgress);
             }
-            setProgress(newProgress);
         });
+    };
+
+    const handleVideoEnded = () => {
+        if (currentLesson) {
+            markLessonAsCompleted(currentLesson.id);
+        }
+    };
+
+    const handleQuizCompleted = () => {
+        console.log('Quiz completed and results are in.');
     };
 
     const handleNextLesson = () => {
-        // Mark current lesson as completed
-        axios.post(`/course-progress/${currentLesson.id}`, {
-            course_id: course.id,
-        }).then(() => {
-            const newProgress = [...progress];
-            const progressIndex = newProgress.findIndex(p => p.course_lesson_id === currentLesson.id);
-            if (progressIndex > -1) {
-                newProgress[progressIndex].is_completed = true;
-            } else {
-                newProgress.push({ course_lesson_id: currentLesson.id, is_completed: true });
-            }
-            setProgress(newProgress);
-
+        if (currentLesson) {
+            markLessonAsCompleted(currentLesson.id);
             const nextLesson = getNextLesson();
             if (nextLesson) {
-                setCurrentLesson(nextLesson);
+                handleSetCurrentLesson(nextLesson);
             }
-        });
-    };
-
-    const handleCompleteCourse = () => {
-        const newProgress = [...progress];
-        const progressIndex = newProgress.findIndex(p => p.course_lesson_id === currentLesson.id);
-        if (progressIndex > -1) {
-            newProgress[progressIndex].is_completed = true;
-        } else {
-            newProgress.push({ course_lesson_id: currentLesson.id, is_completed: true });
         }
-        setProgress(newProgress);
-
-        router.post(`/course-progress/${currentLesson.id}`, {
-            course_id: course.id,
-            is_finishing: true,
-        });
     };
 
     const handlePreviousLesson = () => {
         const previousLesson = getPreviousLesson();
         if (previousLesson) {
-            setCurrentLesson(previousLesson);
+            handleSetCurrentLesson(previousLesson);
         }
+    };
+
+    const renderContent = () => {
+        if (activeQuiz) {
+            return (
+                <Quiz
+                    quiz={activeQuiz}
+                    onComplete={handleQuizCompleted}
+                    results={quizResults && quizResults.attempt.quiz_id === activeQuiz.id ? quizResults : null}
+                />
+            );
+        }
+
+        if (currentLesson) {
+            return (
+                <div>
+                    {(currentLesson.s3_video_url || currentLesson.video_url) && (
+                        <VideoPlayer videoUrl={currentLesson.s3_video_url || currentLesson.video_url} onVideoEnded={handleVideoEnded} />
+                    )}
+                    <div className="mt-4">
+                        <h2 className="text-2xl font-bold">{currentLesson.title}</h2>
+                        <div className="flex items-center mt-4">
+                            <img
+                                className="w-10 h-10 rounded-full mr-4"
+                                src={course.user.profile_image_url || "/assets/icons/profile.svg"}
+                                alt={course.user.first_name}
+                            />
+                            <Link href={`/tutors/${course.user.id}`} className="text-lg font-bold">{course.user.first_name} {course.user.last_name}</Link>
+                        </div>
+                        <p className="text-gray-600 mt-4">{currentLesson.description}</p>
+                    </div>
+                </div>
+            );
+        }
+
+        return <div className="text-center p-8">Select a lesson or quiz to begin.</div>;
     };
 
     return (
         <div>
-            {visibleFlash && (
-                <div className="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-4 flex justify-between items-center" role="alert">
-                    <p>{visibleFlash}</p>
-                    <button onClick={() => setVisibleFlash(null)} className="text-green-700">
-                        <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                            <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd"></path>
-                        </svg>
-                    </button>
-                </div>
-            )}
             {showRatingModal && <RatingModal course={course} onClose={() => setShowRatingModal(false)} />}
             <Head title={course.title} />
             <div className="flex flex-col md:flex-row h-[92vh]">
@@ -258,90 +279,63 @@ const RatingModal = ({ course, onClose }) => {
                     </div>
                     <ul>
                         {course.sections.map((section) => (
-                            <li key={section.id} className="mb-4">
-                                <h3 className="text-lg font-bold p-4 flex items-center justify-between">
+                            <li key={section.id} className="mb-1">
+                                <h3 className="text-lg font-bold p-4 flex items-center justify-between bg-gray-100">
                                     {section.title}
-                                    {isSectionCompleted(section) && (
-                                        <CheckmarkIcon className="w-5 h-5 text-green-500" />
-                                    )}
+                                    {isSectionCompleted(section) && <CheckmarkIcon className="w-5 h-5 text-green-500" />}
                                 </h3>
                                 <ul>
                                     {section.lessons.map((lesson, index) => (
-                                        <li key={lesson.id} className={`p-4 cursor-pointer flex items-center justify-between ${currentLesson.id === lesson.id ? 'bg-gray-300' : ''}`}>
-                                            <div onClick={() => setCurrentLesson(lesson)}>
-                                                Episode {index + 1}: {lesson.title}
-                                            </div>
-                                            {isLessonCompleted(lesson.id) && (
-                                                <div className="flex-shrink-0">
-                                                    <CheckmarkIcon className="w-5 h-5 text-green-500" />
-                                                </div>
-                                            )}
-                                        </li>))}
+                                        <li key={lesson.id} className={`p-4 cursor-pointer flex items-center justify-between ${currentLesson?.id === lesson.id ? 'bg-gray-300' : ''}`} onClick={() => handleSetCurrentLesson(lesson)}>
+                                            <div>Episode {index + 1}: {lesson.title}</div>
+                                            {isLessonCompleted(lesson.id) && <CheckmarkIcon className="w-5 h-5 text-green-500" />}
+                                        </li>
+                                    ))}
+                                    {section.quiz && (
+                                        <li className={`p-4 cursor-pointer flex items-center justify-between font-semibold ${activeQuiz?.id === section.quiz.id ? 'bg-gray-300' : ''}`} onClick={() => handleTakeQuiz(section.quiz)}>
+                                            <div>Take Quiz: {section.quiz.title}</div>
+                                            {section.quiz.attempts.length > 0 && <CheckmarkIcon className="w-5 h-5 text-green-500" />}
+                                        </li>
+                                    )}
                                 </ul>
                             </li>
                         ))}
+                        {course.finalQuiz && (
+                            <li className={`p-4 cursor-pointer flex items-center justify-between font-bold ${activeQuiz?.id === course.finalQuiz.id ? 'bg-gray-300' : ''}`} onClick={() => handleTakeQuiz(course.finalQuiz)}>
+                                <div>Take Final Quiz: {course.finalQuiz.title}</div>
+                                {course.finalQuiz.attempts.length > 0 && <CheckmarkIcon className="w-5 h-5 text-green-500" />}
+                            </li>
+                        )}
                     </ul>
                 </div>
                 <div className="w-full md:w-3/4 p-4 overflow-y-auto">
-                    <div>
-                        {(currentLesson.s3_video_url || currentLesson.video_url) && (
-                            <VideoPlayer videoUrl={currentLesson.s3_video_url || currentLesson.video_url} onVideoEnded={handleVideoEnded} />
-                        )}
-                        <div className="mt-4">
-                            <h2 className="text-2xl font-bold">{currentLesson.title}</h2>
-                            <div className="flex items-center mt-4">
-                                <img
-                                    className="w-10 h-10 rounded-full mr-4"
-                                    src={
-                                        course.user.profile_image_url ||
-                                        "/assets/icons/profile.svg"
-                                    }
-                                    alt={course.user.first_name}
-                                />
-                                <Link href={`/tutors/${course.user.id}`} className="text-lg font-bold">{course.user.first_name} {course.user.last_name}</Link>
-                            </div>
-                            <p className="text-gray-600 mt-4">{currentLesson.description}</p>
-                        </div>
-                        <div className="flex justify-between mt-4">
-                            <button
-                                onClick={handlePreviousLesson}
-                                disabled={!getPreviousLesson()}
-                                className="px-4 py-2 bg-gray-300 text-gray-800 rounded-md disabled:opacity-50"
-                            >
-                                Previous Lesson
-                            </button>
-                            {(() => {
-                                const isCurrentLessonLast = !getNextLesson();
-
-                                let buttonText = 'Next Lesson';
-                                let buttonDisabled = !getNextLesson(); // Default disabled if no next lesson
-                                let buttonOnClick = handleNextLesson;
-
-                                if (isCurrentLessonLast && isCourseFullyCompleted && !has_reviewed_by_user) {
-                                    buttonText = 'Review Course';
-                                    buttonDisabled = false;
-                                    buttonOnClick = () => setShowRatingModal(true);
-                                } else if (isCurrentLessonLast && isCourseFullyCompleted && has_reviewed_by_user) {
-                                    buttonText = 'Course Completed!';
-                                    buttonDisabled = true;
-                                    buttonOnClick = () => { };
-                                } else if (isCurrentLessonLast) { // Last lesson, but not fully completed yet
-                                    buttonText = 'Complete Course';
-                                    buttonDisabled = isLessonCompleted(currentLesson.id); // Disabled if the current lesson is already completed
-                                    buttonOnClick = handleCompleteCourse;
+                    {renderContent()}
+                    <div className="flex justify-between mt-4">
+                        <button
+                            onClick={handlePreviousLesson}
+                            disabled={!getPreviousLesson()}
+                            className="px-4 py-2 bg-gray-300 text-gray-800 rounded-md disabled:opacity-50"
+                        >
+                            Previous Lesson
+                        </button>
+                        {(() => {
+                            if (isCourseFullyCompleted) {
+                                if (!has_reviewed_by_user) {
+                                    return <button onClick={() => setShowRatingModal(true)} className="px-4 py-2 bg-blue-500 text-white rounded-md">Review Course</button>;
+                                } else {
+                                    return <button className="px-4 py-2 bg-green-500 text-white rounded-md" disabled>Course Completed!</button>;
                                 }
-
-                                return (
-                                    <button
-                                        onClick={buttonOnClick}
-                                        disabled={buttonDisabled}
-                                        className="px-4 py-2 bg-primary text-white rounded-md disabled:opacity-50"
-                                    >
-                                        {buttonText}
-                                    </button>
-                                );
-                            })()}
-                        </div>
+                            }
+                            return (
+                                <button
+                                    onClick={handleNextLesson}
+                                    disabled={!getNextLesson()}
+                                    className="px-4 py-2 bg-primary text-white rounded-md disabled:opacity-50"
+                                >
+                                    Next Lesson
+                                </button>
+                            );
+                        })()}
                     </div>
                 </div>
             </div>

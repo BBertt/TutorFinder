@@ -24,4 +24,9 @@ class CourseSection extends Model
     {
         return $this->hasMany(CourseLesson::class);
     }
+
+    public function quiz()
+    {
+        return $this->hasOne(Quiz::class, 'course_section_id', 'id')->whereNull('course_id');
+    }
 }

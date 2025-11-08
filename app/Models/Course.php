@@ -23,7 +23,7 @@ class Course extends Model
         'thumbnail_image',
         'intro_video',
     ];
-    protected $appends = ['thumbnail_image_url', 'intro_video_url'];
+    protected $appends = ['thumbnail_image_url', 'intro_video_url', 'finalQuiz'];
 
     public function user()
     {
@@ -43,6 +43,14 @@ class Course extends Model
     public function reviews()
     {
         return $this->hasMany(CourseReview::class);
+    }
+
+    public function getFinalQuizAttribute()
+    {
+        return Quiz::where('course_id', $this->id)
+            ->whereNull('course_section_id')
+            ->with('questions.options', 'attempts')
+            ->first();
     }
 
     public function lessons()
