@@ -17,7 +17,7 @@ const Stepper = ({ currentStep }) => {
                             className={`w-8 h-8 rounded-full flex items-center justify-center font-bold transition-colors ${
                                 index + 1 <= currentStep
                                     ? "bg-primary text-white"
-                                    : "bg-gray-200 text-gray-500"
+                                    : "bg-gray-200 text-gray-500 dark:bg-gray-700 dark:text-gray-400"
                             }`}
                         >
                             {index + 1}
@@ -26,7 +26,7 @@ const Stepper = ({ currentStep }) => {
                             className={`ml-2 transition-colors ${
                                 index + 1 <= currentStep
                                     ? "text-primary font-semibold"
-                                    : "text-gray-500"
+                                    : "text-gray-500 dark:text-gray-400"
                             }`}
                         >
                             {step}
@@ -37,7 +37,7 @@ const Stepper = ({ currentStep }) => {
                             className={`flex-auto border-t-2 transition-colors mx-4 ${
                                 index + 1 < currentStep
                                     ? "border-primary"
-                                    : "border-gray-200"
+                                    : "border-gray-200 dark:border-gray-700"
                             }`}
                         ></div>
                     )}
@@ -78,8 +78,8 @@ export default function CourseForm({ categories }) {
     const submitCourse = (e, finalStatus) => {
         e.preventDefault();
         setProcessing(true);
-        clearErrors(); // Clears backend errors
-        setFrontendErrors({}); // Clear frontend errors
+        clearErrors();
+        setFrontendErrors({});
 
         const url = isEditing
             ? route("tutor.courses.update", course.id)
@@ -209,7 +209,7 @@ export default function CourseForm({ categories }) {
         }
 
         setFrontendErrors(newErrors);
-        return Object.keys(newErrors).length === 0; // Returns true if valid
+        return Object.keys(newErrors).length === 0;
     };
 
     const handleNextClick = () => {
@@ -243,7 +243,7 @@ export default function CourseForm({ categories }) {
                             <button
                                 type="button"
                                 onClick={() => setIsCancelModalOpen(true)}
-                                className="px-4 py-2 rounded-lg text-gray-700 bg-accent hover:bg-gray-300 font-semibold"
+                                className="px-4 py-2 rounded-lg text-gray-700 bg-accent hover:bg-gray-300 font-semibold dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
                                 disabled={processing}
                             >
                                 Cancel
@@ -252,7 +252,7 @@ export default function CourseForm({ categories }) {
                             <button
                                 type="button"
                                 onClick={saveDraft}
-                                className="px-4 py-2 rounded-lg bg-secondary text-white font-semibold hover:bg-gray-700"
+                                className="px-4 py-2 rounded-lg bg-secondary text-white font-semibold hover:bg-gray-700 dark:bg-gray-600 dark:hover:bg-gray-500"
                                 disabled={processing}
                             >
                                 {isEditing ? "Save Changes" : "Save to Draft"}
@@ -263,7 +263,7 @@ export default function CourseForm({ categories }) {
             </div>
 
             <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                <div className="bg-white p-8 rounded-lg shadow-md border">
+                <div className="bg-white p-8 rounded-lg shadow-md border dark:bg-gray-800 dark:border-gray-700">
                     <Stepper currentStep={currentStep} />
 
                     <div className={currentStep === 1 ? "block" : "hidden"}>
@@ -277,7 +277,7 @@ export default function CourseForm({ categories }) {
                             sections={data.sections}
                             setData={setData}
                             errors={errors}
-                            frontendErrors={frontendErrors} // Pass prop
+                            frontendErrors={frontendErrors}
                         />
                     </div>
                     <div className={currentStep === 3 ? "block" : "hidden"}>
@@ -295,7 +295,7 @@ export default function CourseForm({ categories }) {
                             setCurrentStep((s) => Math.max(1, s - 1))
                         }
                         disabled={currentStep === 1 || processing}
-                        className="px-6 py-2 rounded-lg bg-gray-200 text-gray-700 font-semibold disabled:opacity-50"
+                        className="px-6 py-2 rounded-lg bg-gray-200 text-gray-700 font-semibold disabled:opacity-50 dark:bg-gray-700 dark:text-gray-300 dark:disabled:opacity-50"
                     >
                         Previous
                     </button>
@@ -303,9 +303,9 @@ export default function CourseForm({ categories }) {
                     {currentStep < 3 && (
                         <button
                             type="button"
-                            onClick={handleNextClick} // Use new handler
+                            onClick={handleNextClick}
                             disabled={processing}
-                            className="px-6 py-2 rounded-lg bg-primary text-white font-semibold disabled:opacity-50"
+                            className="px-6 py-2 rounded-lg bg-primary text-white font-semibold disabled:opacity-50 dark:hover:bg-opacity-80"
                         >
                             Next
                         </button>
@@ -315,7 +315,7 @@ export default function CourseForm({ categories }) {
                         <button
                             type="button"
                             onClick={() => setIsPublishModalOpen(true)}
-                            className="px-6 py-2 rounded-lg bg-primary text-white font-semibold hover:bg-opacity-90"
+                            className="px-6 py-2 rounded-lg bg-primary text-white font-semibold hover:bg-opacity-90 dark:hover:bg-opacity-80"
                             disabled={processing}
                         >
                             Publish

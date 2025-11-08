@@ -6,7 +6,7 @@ export default function CourseOverviewForm({
     errors,
     course,
     categories,
-    frontendErrors = {}, // Accept the new prop
+    frontendErrors = {},
 }) {
     const [thumbnailPreview, setThumbnailPreview] = useState(null);
     const [videoPreview, setVideoPreview] = useState(null);
@@ -32,7 +32,7 @@ export default function CourseOverviewForm({
                 <div>
                     <label
                         htmlFor="title"
-                        className="block text-sm font-medium text-gray-700"
+                        className="block text-sm font-medium text-gray-700 dark:text-gray-300"
                     >
                         Title
                     </label>
@@ -41,7 +41,7 @@ export default function CourseOverviewForm({
                         id="title"
                         value={data.title}
                         onChange={(e) => setData("title", e.target.value)}
-                        className="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
+                        className="mt-1 block w-full border-gray-300 rounded-md shadow-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
                     />
                     {(errors.title || frontendErrors.title) && (
                         <p className="text-sm text-red-500 mt-1">
@@ -52,7 +52,7 @@ export default function CourseOverviewForm({
                 <div>
                     <label
                         htmlFor="description"
-                        className="block text-sm font-medium text-gray-700"
+                        className="block text-sm font-medium text-gray-700 dark:text-gray-300"
                     >
                         Description
                     </label>
@@ -61,7 +61,7 @@ export default function CourseOverviewForm({
                         value={data.description}
                         onChange={(e) => setData("description", e.target.value)}
                         rows="5"
-                        className="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
+                        className="mt-1 block w-full border-gray-300 rounded-md shadow-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
                     ></textarea>
                     {(errors.description || frontendErrors.description) && (
                         <p className="text-sm text-red-500 mt-1">
@@ -72,7 +72,7 @@ export default function CourseOverviewForm({
                 <div>
                     <label
                         htmlFor="student_outcome"
-                        className="block text-sm font-medium text-gray-700"
+                        className="block text-sm font-medium text-gray-700 dark:text-gray-300"
                     >
                         What will they learn
                     </label>
@@ -83,7 +83,7 @@ export default function CourseOverviewForm({
                             setData("student_outcome", e.target.value)
                         }
                         rows="5"
-                        className="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
+                        className="mt-1 block w-full border-gray-300 rounded-md shadow-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
                     ></textarea>
                     {(errors.student_outcome ||
                         frontendErrors.student_outcome) && (
@@ -96,7 +96,7 @@ export default function CourseOverviewForm({
                 <div>
                     <label
                         htmlFor="requirements"
-                        className="block text-sm font-medium text-gray-700"
+                        className="block text-sm font-medium text-gray-700 dark:text-gray-300"
                     >
                         Requirements
                     </label>
@@ -107,7 +107,7 @@ export default function CourseOverviewForm({
                             setData("requirements", e.target.value)
                         }
                         rows="5"
-                        className="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
+                        className="mt-1 block w-full border-gray-300 rounded-md shadow-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
                     ></textarea>
                     {(errors.requirements || frontendErrors.requirements) && (
                         <p className="text-sm text-red-500 mt-1">
@@ -119,7 +119,7 @@ export default function CourseOverviewForm({
 
             <div className="space-y-6">
                 <div>
-                    <label className="block text-sm font-medium text-gray-700">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                         Featured Image
                     </label>
                     <input
@@ -137,7 +137,7 @@ export default function CourseOverviewForm({
                     />
                     <label
                         htmlFor="thumbnail_image"
-                        className="mt-1 w-full h-48 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center bg-gray-50 cursor-pointer hover:border-primary"
+                        className="mt-1 w-full h-48 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center bg-gray-50 cursor-pointer hover:border-primary dark:bg-gray-700 dark:border-gray-600 dark:hover:border-primary"
                     >
                         {thumbnailPreview ? (
                             <img
@@ -146,7 +146,7 @@ export default function CourseOverviewForm({
                                 className="max-h-full max-w-full object-contain"
                             />
                         ) : (
-                            <span className="text-center text-gray-500">
+                            <span className="text-center text-gray-500 dark:text-gray-400">
                                 Click to upload image
                             </span>
                         )}
@@ -160,7 +160,7 @@ export default function CourseOverviewForm({
                     )}
                 </div>
                 <div>
-                    <label className="block text-sm font-medium text-gray-700">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                         Intro Video
                     </label>
                     <input
@@ -174,7 +174,7 @@ export default function CourseOverviewForm({
                     />
                     <label
                         htmlFor="intro_video"
-                        className="mt-1 w-full h-48 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center bg-gray-50 cursor-pointer hover:border-primary"
+                        className="mt-1 w-full h-48 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center bg-gray-50 cursor-pointer hover:border-primary dark:bg-gray-700 dark:border-gray-600 dark:hover:border-primary"
                     >
                         {videoPreview ? (
                             <video
@@ -183,7 +183,7 @@ export default function CourseOverviewForm({
                                 className="max-h-full max-w-full"
                             ></video>
                         ) : (
-                            <span className="text-center text-gray-500">
+                            <span className="text-center text-gray-500 dark:text-gray-400">
                                 Click to upload video
                             </span>
                         )}
@@ -197,7 +197,7 @@ export default function CourseOverviewForm({
                 <div>
                     <label
                         htmlFor="price"
-                        className="block text-sm font-medium text-gray-700"
+                        className="block text-sm font-medium text-gray-700 dark:text-gray-300"
                     >
                         Price (Rp)
                     </label>
@@ -206,7 +206,7 @@ export default function CourseOverviewForm({
                         id="price"
                         value={data.price}
                         onChange={(e) => setData("price", e.target.value)}
-                        className="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
+                        className="mt-1 block w-full border-gray-300 rounded-md shadow-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
                     />
                     {errors.price && (
                         <p className="text-sm text-red-500 mt-1">
@@ -217,7 +217,7 @@ export default function CourseOverviewForm({
                 <div>
                     <label
                         htmlFor="category_id"
-                        className="block text-sm font-medium text-gray-700"
+                        className="block text-sm font-medium text-gray-700 dark:text-gray-300"
                     >
                         Category
                     </label>
@@ -225,7 +225,7 @@ export default function CourseOverviewForm({
                         id="category_id"
                         value={data.category_id}
                         onChange={(e) => setData("category_id", e.target.value)}
-                        className="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
+                        className="mt-1 block w-full border-gray-300 rounded-md shadow-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                     >
                         <option value="">Select a category</option>
                         {categories.map((category) => (

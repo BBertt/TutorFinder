@@ -64,28 +64,29 @@ function ForumIndex({ forums, topStudents, topTutors, filters }) {
                         <Pagination links={forums.links} />
                     </div>
                     <aside className="space-y-6">
-                        <div className="bg-white p-6 rounded-lg border border-gray-200 flex flex-col items-center">
-                            <h3 className="font-bold text-lg mb-4 text-center">
+                        <div className="bg-white p-6 rounded-lg border border-gray-200 flex flex-col items-center dark:bg-gray-800 dark:border-gray-700">
+                            <h3 className="font-bold text-lg mb-4 text-center dark:text-gray-300">
                                 Have concerns in your mind?
                             </h3>
                             <Link
                                 href={route("forums.create")}
-                                className="w-1/2 text-center bg-primary text-white py-2 rounded-full block hover:bg-opacity-90 font-bold"
+                                className="w-1/2 text-center bg-primary text-white py-2 rounded-full block hover:bg-opacity-90 dark:hover:bg-opacity-80 font-bold"
                             >
                                 Create Forum!
                             </Link>
                         </div>
-                        <div className="bg-white p-6 rounded-lg border border-gray-200">
-                            <h3 className="font-bold text-xl mb-4 text-center">
+
+                        <div className="bg-white p-6 rounded-lg border border-gray-200 dark:bg-gray-800 dark:border-gray-700">
+                            <h3 className="font-bold text-xl mb-4 text-center dark:text-gray-300">
                                 Top Contributors
                             </h3>
-                            <div className="flex border-b mb-4">
+                            <div className="flex border-b mb-4 dark:border-gray-700">
                                 <button
                                     onClick={() => setActiveTab("students")}
                                     className={`w-1/2 py-2 text-center ${
                                         activeTab === "students"
                                             ? "border-b-2 border-primary font-semibold text-primary"
-                                            : "text-gray-500"
+                                            : "text-gray-500 dark:text-gray-400"
                                     }`}
                                 >
                                     Students
@@ -95,7 +96,7 @@ function ForumIndex({ forums, topStudents, topTutors, filters }) {
                                     className={`w-1/2 py-2 text-center ${
                                         activeTab === "tutors"
                                             ? "border-b-2 border-primary font-semibold text-primary"
-                                            : "text-gray-500"
+                                            : "text-gray-500 dark:text-gray-400"
                                     }`}
                                 >
                                     Tutors

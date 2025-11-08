@@ -39,7 +39,7 @@ export default function SortDropdown({ currentSort, onSortChange }) {
         <div className="relative">
             <button
                 onClick={() => setIsOpen(!isOpen)}
-                className="flex items-center space-x-2 text-sm font-semibold text-gray-700 hover:text-gray-900"
+                className="flex items-center space-x-2 text-sm font-semibold text-gray-700 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white"
             >
                 <SortIcon className="w-6 h-6" />
                 <span>Sort by</span>
@@ -52,16 +52,16 @@ export default function SortDropdown({ currentSort, onSortChange }) {
                         className="fixed inset-0 z-10"
                     ></div>
 
-                    <div className="absolute z-20 -ml-4 mt-2 w-48 bg-white rounded-lg shadow-xl border">
+                    <div className="absolute z-20 -ml-4 mt-2 w-48 bg-white rounded-lg shadow-xl border dark:bg-gray-800 dark:border-gray-700">
                         {options.map((option) => (
                             <button
                                 key={option.key}
                                 onClick={() => selectOption(option.key)}
                                 className={`block w-full text-left px-4 py-2 text-sm ${
                                     option.key === currentSort
-                                        ? "font-bold text-gray-900"
-                                        : "text-gray-700"
-                                } hover:bg-gray-100`}
+                                        ? "font-bold text-gray-900 dark:text-white"
+                                        : "text-gray-700 dark:text-gray-300"
+                                } hover:bg-gray-100 dark:hover:bg-gray-700`}
                             >
                                 {option.label}
                             </button>

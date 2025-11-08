@@ -35,7 +35,9 @@ export default function ReplyCard({
     return (
         <div className="flex items-start space-x-4">
             <img
-                className="w-12 h-12 rounded-full"
+                className={`w-12 h-12 rounded-full ${
+                    !reply.user.profile_image_url && "dark:invert"
+                }`}
                 src={
                     reply.user.profile_image_url
                         ? reply.user.profile_image_url
@@ -45,24 +47,26 @@ export default function ReplyCard({
             />
             <div className="flex-1">
                 <div className="flex items-center justify-between">
-                    <p className="font-bold">{authorName}</p>
-                    <span className="text-xs text-gray-500">
+                    <p className="font-bold dark:text-gray-200">{authorName}</p>
+                    <span className="text-xs text-gray-500 dark:text-gray-400">
                         {timeAgo(reply.created_at)}
                     </span>
                 </div>
 
                 {type === "forum" && (
-                    <h1 className="text-3xl font-bold mt-1 mb-2">
+                    <h1 className="text-3xl font-bold mt-1 mb-2 dark:text-gray-200">
                         {reply.title}
                     </h1>
                 )}
 
-                <p className="text-gray-700 mt-1">{reply.description}</p>
+                <p className="text-gray-700 mt-1 dark:text-gray-300">
+                    {reply.description}
+                </p>
                 <div className="flex items-center space-x-4 mt-2">
                     <VoteButtons item={reply} type={type} />
                     <button
                         onClick={() => setShowReplyForm(!showReplyForm)}
-                        className="text-sm font-semibold text-gray-500 hover:underline"
+                        className="text-sm font-semibold text-gray-500 hover:underline dark:text-gray-400 dark:hover:text-gray-300"
                     >
                         Reply
                     </button>

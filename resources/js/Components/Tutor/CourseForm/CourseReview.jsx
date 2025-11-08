@@ -3,19 +3,21 @@ import React from "react";
 export default function CourseReview({ courseData, existingCourse }) {
     return (
         <div className="mt-8">
-            <h2 className="text-2xl font-bold mb-4">Review and Publish</h2>
-            <p className="text-gray-600 mb-6">
+            <h2 className="text-2xl font-bold mb-4 dark:text-gray-200">
+                Review and Publish
+            </h2>
+            <p className="text-gray-600 mb-6 dark:text-gray-400">
                 This is a preview of the data that will be saved. Once you are
                 satisfied, click "Publish" or "Save to Draft".
             </p>
 
-            <div className="bg-white p-6 rounded-lg border space-y-8">
+            <div className="bg-white p-6 rounded-lg border space-y-8 dark:bg-gray-800 dark:border-gray-700">
                 <div className="grid md:grid-cols-2 gap-8 items-start">
                     <div>
-                        <h1 className="text-3xl font-bold">
+                        <h1 className="text-3xl font-bold dark:text-gray-100">
                             {courseData.title || "(No Title)"}
                         </h1>
-                        <p className="mt-4 text-gray-700">
+                        <p className="mt-4 text-gray-700 dark:text-gray-300">
                             {courseData.description || "(No Description)"}
                         </p>
                     </div>
@@ -40,48 +42,49 @@ export default function CourseReview({ courseData, existingCourse }) {
                     </div>
                 </div>
 
-                <hr />
+                <hr className="dark:border-gray-700" />
 
                 <div className="grid md:grid-cols-2 gap-8">
                     <div>
-                        <h3 className="text-xl font-bold mb-4">
+                        <h3 className="text-xl font-bold mb-4 dark:text-gray-200">
                             What You'll Learn
                         </h3>
-                        <div className="prose prose-sm max-w-none text-gray-700 whitespace-pre-line">
+                        <div className="prose prose-sm max-w-none text-gray-700 dark:text-gray-300 whitespace-pre-line">
                             {courseData.student_outcome || "(Not specified)"}
                         </div>
                     </div>
                     <div>
-                        <h3 className="text-xl font-bold mb-4">Requirements</h3>
-                        <div className="prose prose-sm max-w-none text-gray-700 whitespace-pre-line">
+                        <h3 className="text-xl font-bold mb-4 dark:text-gray-200">
+                            Requirements
+                        </h3>
+                        <div className="prose prose-sm max-w-none text-gray-700 dark:text-gray-300 whitespace-pre-line">
                             {courseData.requirements || "(Not specified)"}
                         </div>
                     </div>
                 </div>
-
-                <hr />
+                <hr className="dark:border-gray-700" />
 
                 <div>
-                    <h3 className="text-xl font-bold mb-4">
+                    <h3 className="text-xl font-bold mb-4 dark:text-gray-200">
                         Sections & Lessons
                     </h3>
                     <div className="space-y-4">
                         {courseData.sections.map((section, index) => (
                             <div key={section.id}>
-                                <p className="font-semibold">
+                                <p className="font-semibold dark:text-gray-200">
                                     Section {index + 1}: {section.title}
                                 </p>
                                 {section.description && (
-                                    <p className="text-sm text-gray-500 mt-1">
+                                    <p className="text-sm text-gray-500 mt-1 dark:text-gray-400">
                                         {section.description}
                                     </p>
                                 )}
-                                <ul className="list-disc list-inside pl-4 text-gray-600">
+                                <ul className="list-disc list-inside pl-4 text-gray-600 dark:text-gray-300">
                                     {section.lessons.map((lesson) => (
                                         <li key={lesson.id}>{lesson.title}</li>
                                     ))}
                                     {section.lessons.length === 0 && (
-                                        <li className="text-gray-400 italic">
+                                        <li className="text-gray-400 dark:text-gray-500 italic">
                                             No lessons in this section yet.
                                         </li>
                                     )}
@@ -89,7 +92,7 @@ export default function CourseReview({ courseData, existingCourse }) {
                             </div>
                         ))}
                         {courseData.sections.length === 0 && (
-                            <p className="text-gray-400 italic">
+                            <p className="text-gray-400 dark:text-gray-500 italic">
                                 No sections or lessons have been added yet.
                             </p>
                         )}
