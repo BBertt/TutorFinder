@@ -1,25 +1,22 @@
 import Layout from '@/Layouts/Layout';
 import { Head, Link, usePage, router } from '@inertiajs/react';
-import React from 'react';
+import React, { useEffect } from 'react';
 import axios from 'axios';
 import VideoPlayer from '@/Components/VideoPlayer';
 import Quiz from '@/Components/Quiz';
 
+// ... (Icons and Modal components remain the same)
 const CheckmarkIcon = ({ className }) => (
-    <svg
-        className={className}
-        xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 24 24"
-        fill="currentColor"
-    >
-        <path
-            fillRule="evenodd"
-            d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12Zm13.36-1.814a.75.75 0 1 0-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 0 0-1.06 1.06l2.25 2.25a.75.75 0 0 0 1.14-.094l3.75-5.25Z"
-            clipRule="evenodd"
-        />
+    <svg className={className} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+        <path fillRule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12Zm13.36-1.814a.75.75 0 1 0-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 0 0-1.06 1.06l2.25 2.25a.75.75 0 0 0 1.14-.094l3.75-5.25Z" clipRule="evenodd" />
     </svg>
 );
 
+const LockIcon = ({ className }) => (
+    <svg className={className} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+        <path fillRule="evenodd" d="M12 1.5a5.25 5.25 0 00-5.25 5.25v3a3 3 0 00-3 3v6.75a3 3 0 003 3h10.5a3 3 0 003-3v-6.75a3 3 0 00-3-3v-3c0-2.9-2.35-5.25-5.25-5.25zm3.75 8.25v-3a3.75 3.75 0 10-7.5 0v3h7.5z" clipRule="evenodd" />
+    </svg>
+);
 const StarRating = ({ rating, onRatingChange }) => (
     <div className="flex">
         {[1, 2, 3, 4, 5].map((star) => (
@@ -97,95 +94,85 @@ const RatingModal = ({ course, onClose }) => {
 };
 
 function LearnCourse({ course, progress: initialProgress, last_watched_lesson_id, has_reviewed_by_user }) {
-    const { flash, quiz_results } = usePage().props;
-    const [visibleFlash, setVisibleFlash] = React.useState(flash.success);
-    const [quizResults, setQuizResults] = React.useState(quiz_results);
-    const [activeQuiz, setActiveQuiz] = React.useState(null);
+    const { quiz_submitted } = usePage().props;
 
-    React.useEffect(() => {
-        setVisibleFlash(flash.success);
-    }, [flash.success]);
+    const [activeContent, setActiveContent] = React.useState(() => {
+        const lastWatchedLesson = course.sections.flatMap(s => s.lessons).find(l => l.id === last_watched_lesson_id);
+        if (lastWatchedLesson) return { type: 'lesson', content: lastWatchedLesson };
+        const firstLesson = course.sections[0]?.lessons[0];
+        return firstLesson ? { type: 'lesson', content: firstLesson } : null;
+    });
 
-    React.useEffect(() => {
-        setQuizResults(quiz_results);
-        if (quiz_results) {
-            setActiveQuiz(null);
-        }
-    }, [quiz_results]);
-
-    const findLessonDetails = (lessonId) => {
-        if (!lessonId) {
-            return { lesson: course.sections[0]?.lessons[0] || null };
-        }
-        for (const section of course.sections) {
-            for (const lesson of section.lessons) {
-                if (lesson.id === lessonId) {
-                    return { lesson };
-                }
-            }
-        }
-        return { lesson: course.sections[0]?.lessons[0] || null };
-    };
-
-    const [currentLesson, setCurrentLesson] = React.useState(findLessonDetails(last_watched_lesson_id).lesson);
     const [progress, setProgress] = React.useState(initialProgress);
     const [showRatingModal, setShowRatingModal] = React.useState(false);
+    const [isSubmitting, setIsSubmitting] = React.useState(false);
 
-    const handleSetCurrentLesson = (lesson) => {
-        setCurrentLesson(lesson);
-        setActiveQuiz(null);
-    };
+    useEffect(() => {
+        if (quiz_submitted) {
+            setIsSubmitting(true);
+            router.reload({
+                onFinish: () => setIsSubmitting(false)
+            });
+        }
+    }, [quiz_submitted]);
 
-    const handleTakeQuiz = (quiz) => {
-        setCurrentLesson(null);
-        setActiveQuiz(quiz);
-    };
-
-    const isLessonCompleted = (lessonId) => {
-        return progress.some(p => p.course_lesson_id === lessonId && p.is_completed);
-    };
-
-    const allLessons = React.useMemo(() => course.sections.flatMap(s => s.lessons), [course.sections]);
-
-    const isCourseFullyCompleted = React.useMemo(() => {
-        const allQuizzes = [...course.sections.map(s => s.quiz).filter(q => q), course.finalQuiz].filter(q => q);
-        const allQuizIds = allQuizzes.map(q => q.id);
-        const completedQuizzes = course.sections.flatMap(s => s.quiz ? s.quiz.attempts : []).concat(course.finalQuiz ? course.finalQuiz.attempts : []);
-        const allQuizzesCompleted = allQuizIds.every(id => completedQuizzes.some(a => a.quiz_id === id));
-
-        return allLessons.length > 0 && allLessons.every(l => isLessonCompleted(l.id)) && allQuizzesCompleted;
-    }, [allLessons, progress, course]);
-
+    const isLessonCompleted = (lessonId) => progress.some(p => p.course_lesson_id === lessonId);
+    const isQuizPassed = (quiz) => quiz && quiz.attempts.some(a => (a.score / a.total_questions) >= 0.8);
 
     const isSectionCompleted = (section) => {
-        const completedLessonsInSection = section.lessons.every(lesson => isLessonCompleted(lesson.id));
-        const quizCompleted = !section.quiz || (section.quiz && section.quiz.attempts.length > 0);
-
-        return completedLessonsInSection && quizCompleted;
+        const lessonsCompleted = section.lessons.every(l => isLessonCompleted(l.id));
+        const quizPassed = !section.quiz || isQuizPassed(section.quiz);
+        return lessonsCompleted && quizPassed;
     };
 
-    const getNextLesson = () => {
-        if (!currentLesson) return null;
-        let lessonFound = false;
-        for (const section of course.sections) {
-            for (const lesson of section.lessons) {
-                if (lessonFound) return lesson;
-                if (lesson.id === currentLesson.id) {
-                    lessonFound = true;
+    const areAllSectionsCompleted = React.useMemo(() => course.sections.every(isSectionCompleted), [course.sections, progress]);
+    const isCourseFullyCompleted = React.useMemo(() => areAllSectionsCompleted && isQuizPassed(course.finalQuiz), [areAllSectionsCompleted, course.finalQuiz]);
+
+    const getNextContent = () => {
+        if (activeContent?.type === 'lesson') {
+            const { content: currentLesson } = activeContent;
+            const currentSectionIndex = course.sections.findIndex(s => s.lessons.some(l => l.id === currentLesson.id));
+            const currentSection = course.sections[currentSectionIndex];
+            const currentLessonIndex = currentSection.lessons.findIndex(l => l.id === currentLesson.id);
+
+            if (currentLessonIndex < currentSection.lessons.length - 1) {
+                return { type: 'lesson', content: currentSection.lessons[currentLessonIndex + 1] };
+            }
+            if (currentSection.quiz) {
+                return { type: 'quiz', content: currentSection.quiz };
+            }
+            if (currentSectionIndex < course.sections.length - 1) {
+                const nextSection = course.sections[currentSectionIndex + 1];
+                return nextSection?.lessons[0] ? { type: 'lesson', content: nextSection.lessons[0] } : null;
+            }
+        }
+
+        if (activeContent?.type === 'quiz') {
+            const currentSectionIndex = course.sections.findIndex(s => s.quiz?.id === activeContent.content.id);
+            if (currentSectionIndex !== -1 && currentSectionIndex < course.sections.length - 1) {
+                const nextSection = course.sections[currentSectionIndex + 1];
+                if (nextSection?.lessons.length > 0) {
+                    return { type: 'lesson', content: nextSection.lessons[0] };
                 }
             }
         }
+
+        if (course.finalQuiz && areAllSectionsCompleted) {
+            // Don't suggest final quiz if we're already on it
+            if (!(activeContent?.type === 'quiz' && activeContent.content.id === course.finalQuiz.id)) {
+                return { type: 'quiz', content: course.finalQuiz };
+            }
+        }
+
         return null;
     };
 
     const getPreviousLesson = () => {
-        if (!currentLesson) return null;
+        if (activeContent?.type !== 'lesson') return null;
         let previousLesson = null;
         for (const section of course.sections) {
             for (const lesson of section.lessons) {
-                if (lesson.id === currentLesson.id) {
-                    return previousLesson;
-                }
+                if (lesson.id === activeContent.content.id) return previousLesson;
                 previousLesson = lesson;
             }
         }
@@ -193,79 +180,97 @@ function LearnCourse({ course, progress: initialProgress, last_watched_lesson_id
     };
 
     const markLessonAsCompleted = (lessonId) => {
-        axios.post(`/course-progress/${lessonId}`, {
-            course_id: course.id,
-        }).then(() => {
-            const newProgress = [...progress];
-            const progressIndex = newProgress.findIndex(p => p.course_lesson_id === lessonId);
-            if (progressIndex === -1) {
-                newProgress.push({ course_lesson_id: lessonId, is_completed: true });
-                setProgress(newProgress);
-            }
-        });
+        if (isLessonCompleted(lessonId)) return Promise.resolve();
+        return axios.post(`/course-progress/${lessonId}`, { course_id: course.id })
+            .then(() => setProgress(prev => [...prev, { course_lesson_id: lessonId }]));
     };
 
-    const handleVideoEnded = () => {
-        if (currentLesson) {
-            markLessonAsCompleted(currentLesson.id);
+    const handleNext = async () => {
+        if (activeContent?.type === 'lesson') {
+            await markLessonAsCompleted(activeContent.content.id);
         }
+        const next = getNextContent();
+        if (next) setActiveContent(next);
     };
 
-    const handleQuizCompleted = () => {
-        console.log('Quiz completed and results are in.');
-    };
-
-    const handleNextLesson = () => {
-        if (currentLesson) {
-            markLessonAsCompleted(currentLesson.id);
-            const nextLesson = getNextLesson();
-            if (nextLesson) {
-                handleSetCurrentLesson(nextLesson);
-            }
+    const startFinalQuiz = async () => {
+        if (activeContent?.type === 'lesson') {
+            await markLessonAsCompleted(activeContent.content.id);
         }
-    };
-
-    const handlePreviousLesson = () => {
-        const previousLesson = getPreviousLesson();
-        if (previousLesson) {
-            handleSetCurrentLesson(previousLesson);
-        }
+        setActiveContent({ type: 'quiz', content: course.finalQuiz });
     };
 
     const renderContent = () => {
-        if (activeQuiz) {
-            return (
-                <Quiz
-                    quiz={activeQuiz}
-                    onComplete={handleQuizCompleted}
-                    results={quizResults && quizResults.attempt.quiz_id === activeQuiz.id ? quizResults : null}
-                />
-            );
+        if (isSubmitting) {
+            return <div className="text-center p-8">Submitting and loading results...</div>;
         }
-
-        if (currentLesson) {
+        if (activeContent?.type === 'quiz') {
+            const quizId = activeContent.content.id;
+            const latestQuiz = course.sections.find(s => s.quiz?.id === quizId)?.quiz
+                || (course.finalQuiz?.id === quizId ? course.finalQuiz : null);
+            return <Quiz quiz={latestQuiz || activeContent.content} />;
+        }
+        if (activeContent?.type === 'lesson') {
             return (
                 <div>
-                    {(currentLesson.s3_video_url || currentLesson.video_url) && (
-                        <VideoPlayer videoUrl={currentLesson.s3_video_url || currentLesson.video_url} onVideoEnded={handleVideoEnded} />
-                    )}
+                    <VideoPlayer videoUrl={activeContent.content.s3_video_url || activeContent.content.video_url} onVideoEnded={() => markLessonAsCompleted(activeContent.content.id)} />
                     <div className="mt-4">
-                        <h2 className="text-2xl font-bold">{currentLesson.title}</h2>
-                        <div className="flex items-center mt-4">
-                            <img
-                                className="w-10 h-10 rounded-full mr-4"
-                                src={course.user.profile_image_url || "/assets/icons/profile.svg"}
-                                alt={course.user.first_name}
-                            />
-                            <Link href={`/tutors/${course.user.id}`} className="text-lg font-bold">{course.user.first_name} {course.user.last_name}</Link>
-                        </div>
-                        <p className="text-gray-600 mt-4">{currentLesson.description}</p>
+                        <h2 className="text-2xl font-bold">{activeContent.content.title}</h2>
+                        <p className="text-gray-600 mt-4">{activeContent.content.description}</p>
                     </div>
                 </div>
             );
         }
+        return <div className="text-center p-8">Select an item to begin.</div>;
+    };
 
-        return <div className="text-center p-8">Select a lesson or quiz to begin.</div>;
+    const renderNextButton = () => {
+        const next = getNextContent();
+        const buttons = [];
+
+        if (isCourseFullyCompleted && !has_reviewed_by_user) {
+            buttons.push(
+                <button key="review" onClick={() => setShowRatingModal(true)} className="px-4 py-2 bg-primary text-white rounded-md">Review Course</button>
+            );
+        }
+
+        // If there's a final quiz available and we're not on it, prefer offering to start it
+        if (!next && course.finalQuiz && areAllSectionsCompleted && !(activeContent?.type === 'quiz' && activeContent.content.id === course.finalQuiz?.id)) {
+            buttons.push(
+                <button key="start-final" onClick={startFinalQuiz} className="px-4 py-2 bg-primary text-white rounded-md">Start Final Quiz</button>
+            );
+            return <div className="flex gap-3">{buttons}</div>;
+        }
+
+        if (!next) {
+            if (!course.finalQuiz && areAllSectionsCompleted) {
+                buttons.push(
+                    <button key="complete" onClick={() => router.post(`/courses/${course.id}/complete`)} className="px-4 py-2 bg-primary text-white rounded-md">Complete Course</button>
+                );
+            } else if (course.finalQuiz && !(activeContent?.type === 'quiz' && activeContent.content.id === course.finalQuiz?.id)) {
+                buttons.push(
+                    <button key="start-final" onClick={startFinalQuiz} className="px-4 py-2 bg-primary text-white rounded-md">Start Final Quiz</button>
+                );
+            } else {
+                buttons.push(
+                    <Link key="return" href="/purchased-courses" className="px-4 py-2 bg-primary text-white rounded-md">Return to Purchased</Link>
+                );
+            }
+            return <div className="flex gap-3">{buttons}</div>;
+        }
+
+        let buttonText = "Next Lesson";
+        if (next?.type === 'quiz') {
+            buttonText = next.content.id === course.finalQuiz?.id ? "Start Final Quiz" : "Start Section Quiz";
+        }
+
+        buttons.push(
+            <button key="next" onClick={handleNext} className="px-4 py-2 bg-primary text-white rounded-md disabled:opacity-50" disabled={isSubmitting}>
+                {buttonText}
+            </button>
+        );
+
+        return <div className="flex gap-3">{buttons}</div>;
     };
 
     return (
@@ -274,9 +279,7 @@ function LearnCourse({ course, progress: initialProgress, last_watched_lesson_id
             <Head title={course.title} />
             <div className="flex flex-col md:flex-row h-[92vh]">
                 <div className="w-full md:w-1/4 bg-white border-r overflow-y-auto">
-                    <div className="p-4 bg-gray-200">
-                        <h2 className="text-xl font-bold">Course Content</h2>
-                    </div>
+                    <div className="p-4 bg-gray-200"><h2 className="text-xl font-bold">Course Content</h2></div>
                     <ul>
                         {course.sections.map((section) => (
                             <li key={section.id} className="mb-1">
@@ -286,24 +289,31 @@ function LearnCourse({ course, progress: initialProgress, last_watched_lesson_id
                                 </h3>
                                 <ul>
                                     {section.lessons.map((lesson, index) => (
-                                        <li key={lesson.id} className={`p-4 cursor-pointer flex items-center justify-between ${currentLesson?.id === lesson.id ? 'bg-gray-300' : ''}`} onClick={() => handleSetCurrentLesson(lesson)}>
+                                        <li key={lesson.id} className={`p-4 cursor-pointer flex items-center justify-between ${activeContent?.type === 'lesson' && activeContent.content.id === lesson.id ? 'bg-gray-300' : ''}`} onClick={() => setActiveContent({ type: 'lesson', content: lesson })}>
                                             <div>Episode {index + 1}: {lesson.title}</div>
                                             {isLessonCompleted(lesson.id) && <CheckmarkIcon className="w-5 h-5 text-green-500" />}
                                         </li>
                                     ))}
                                     {section.quiz && (
-                                        <li className={`p-4 cursor-pointer flex items-center justify-between font-semibold ${activeQuiz?.id === section.quiz.id ? 'bg-gray-300' : ''}`} onClick={() => handleTakeQuiz(section.quiz)}>
+                                        <li className={`p-4 cursor-pointer flex items-center justify-between font-semibold text-blue-600 ${activeContent?.type === 'quiz' && activeContent.content.id === section.quiz.id ? 'bg-gray-300' : ''}`} onClick={() => setActiveContent({ type: 'quiz', content: section.quiz })}>
                                             <div>Take Quiz: {section.quiz.title}</div>
-                                            {section.quiz.attempts.length > 0 && <CheckmarkIcon className="w-5 h-5 text-green-500" />}
+                                            {isQuizPassed(section.quiz) && <CheckmarkIcon className="w-5 h-5 text-green-500" />}
                                         </li>
                                     )}
                                 </ul>
                             </li>
                         ))}
                         {course.finalQuiz && (
-                            <li className={`p-4 cursor-pointer flex items-center justify-between font-bold ${activeQuiz?.id === course.finalQuiz.id ? 'bg-gray-300' : ''}`} onClick={() => handleTakeQuiz(course.finalQuiz)}>
-                                <div>Take Final Quiz: {course.finalQuiz.title}</div>
-                                {course.finalQuiz.attempts.length > 0 && <CheckmarkIcon className="w-5 h-5 text-green-500" />}
+                            <li
+                                title={!areAllSectionsCompleted ? "Complete all sections to unlock" : "Take the Final Quiz"}
+                                className={`p-4 cursor-pointer flex items-center justify-between font-bold text-purple-600 bg-purple-100 ${activeContent?.type === 'quiz' && activeContent.content.id === course.finalQuiz.id ? 'bg-gray-300' : ''} ${!areAllSectionsCompleted ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                onClick={() => areAllSectionsCompleted && setActiveContent({ type: 'quiz', content: course.finalQuiz })}
+                            >
+                                <div className="flex items-center">
+                                    {!areAllSectionsCompleted && <LockIcon className="w-5 h-5 mr-2" />}
+                                    <div>Take Final Quiz: {course.finalQuiz.title}</div>
+                                </div>
+                                {isQuizPassed(course.finalQuiz) && <CheckmarkIcon className="w-5 h-5 text-green-500" />}
                             </li>
                         )}
                     </ul>
@@ -311,31 +321,10 @@ function LearnCourse({ course, progress: initialProgress, last_watched_lesson_id
                 <div className="w-full md:w-3/4 p-4 overflow-y-auto">
                     {renderContent()}
                     <div className="flex justify-between mt-4">
-                        <button
-                            onClick={handlePreviousLesson}
-                            disabled={!getPreviousLesson()}
-                            className="px-4 py-2 bg-gray-300 text-gray-800 rounded-md disabled:opacity-50"
-                        >
+                        <button onClick={() => { const prev = getPreviousLesson(); if (prev) setActiveContent({ type: 'lesson', content: prev }) }} disabled={!getPreviousLesson()} className="px-4 py-2 bg-gray-300 text-gray-800 rounded-md disabled:opacity-50">
                             Previous Lesson
                         </button>
-                        {(() => {
-                            if (isCourseFullyCompleted) {
-                                if (!has_reviewed_by_user) {
-                                    return <button onClick={() => setShowRatingModal(true)} className="px-4 py-2 bg-blue-500 text-white rounded-md">Review Course</button>;
-                                } else {
-                                    return <button className="px-4 py-2 bg-green-500 text-white rounded-md" disabled>Course Completed!</button>;
-                                }
-                            }
-                            return (
-                                <button
-                                    onClick={handleNextLesson}
-                                    disabled={!getNextLesson()}
-                                    className="px-4 py-2 bg-primary text-white rounded-md disabled:opacity-50"
-                                >
-                                    Next Lesson
-                                </button>
-                            );
-                        })()}
+                        {renderNextButton()}
                     </div>
                 </div>
             </div>

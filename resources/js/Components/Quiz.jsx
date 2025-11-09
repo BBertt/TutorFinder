@@ -1,18 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { router } from '@inertiajs/react';
+import { router, usePage } from '@inertiajs/react';
 
-const Quiz = ({ quiz, onComplete, results: initialResults }) => {
+const Quiz = ({ quiz }) => {
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
     const [selectedAnswers, setSelectedAnswers] = useState({});
-    const [showResults, setShowResults] = useState(false);
-    const [results, setResults] = useState(initialResults);
+    const [view, setView] = useState('question'); // 'question', 'result', 'review'
 
     useEffect(() => {
-        if (initialResults) {
-            setShowResults(true);
-            setResults(initialResults);
+        const latestAttempt = quiz.attempts.length > 0 ? quiz.attempts[quiz.attempts.length - 1] : null;
+        if (latestAttempt) {
+            setView('result');
+        } else {
+            setView('question');
         }
-    }, [initialResults]);
+    }, [quiz.id, quiz.attempts?.length]);
 
     const handleAnswerSelect = (optionId) => {
         setSelectedAnswers({
@@ -31,89 +32,123 @@ const Quiz = ({ quiz, onComplete, results: initialResults }) => {
         router.post(`/quizzes/${quiz.id}/submit`, {
             answers: selectedAnswers,
         }, {
-            onSuccess: () => {
-                onComplete();
-            }
+            preserveScroll: true,
+            onStart: () => setView('submitting'),
+            onSuccess: () => setView('result'),
+            onError: () => setView('question'),
         });
     };
 
     const handleRetry = () => {
         setCurrentQuestionIndex(0);
         setSelectedAnswers({});
-        setShowResults(false);
-        setResults(null);
+        setView('question');
     };
 
-    if (showResults && results) {
+    const handleReview = () => setView('review');
+
+    if (view === 'submitting') {
+        return (
+            <div className="p-8 bg-white rounded-lg shadow-lg text-center">
+                <h2 className="text-2xl font-bold mb-4">Submitting Quiz...</h2>
+                <p className="text-gray-600">Please wait while we process your answers.</p>
+            </div>
+        );
+    }
+
+    if (view === 'question') {
         return (
             <div className="p-8 bg-white rounded-lg shadow-lg">
-                <h2 className="text-3xl font-bold mb-4 text-center">Quiz Results</h2>
-                <p className="text-xl text-center mb-6">You scored {results.score} out of {results.total}</p>
-                <div className="flex justify-center">
-                    <button
-                        onClick={handleRetry}
-                        className="px-6 py-2 bg-blue-500 text-white rounded-md"
-                    >
-                        Retry Quiz
+                <h2 className="text-2xl font-bold mb-2">{quiz.title}</h2>
+                <p className="mb-6 text-gray-600">Question {currentQuestionIndex + 1} of {quiz.questions.length}</p>
+                <div>
+                    <h3 className="text-xl font-semibold mb-4">{quiz.questions[currentQuestionIndex].question}</h3>
+                    <div className="space-y-3">
+                        {quiz.questions[currentQuestionIndex].options.map(option => (
+                            <div
+                                key={option.id}
+                                onClick={() => handleAnswerSelect(option.id)}
+                                className={`p-4 border rounded-lg cursor-pointer hover:bg-accent ${selectedAnswers[quiz.questions[currentQuestionIndex].id] === option.id ? 'bg-accent border-primary' : 'border-gray-300'}`}
+                            >
+                                {option.option}
+                            </div>
+                        ))}
+                    </div>
+                </div>
+                <div className="mt-8 flex justify-end">
+                    {currentQuestionIndex < quiz.questions.length - 1 ? (
+                        <button onClick={handleNextQuestion} disabled={!selectedAnswers[quiz.questions[currentQuestionIndex].id]} className="px-6 py-2 bg-primary text-white rounded-md disabled:opacity-50">
+                            Next
+                        </button>
+                    ) : (
+                        <button onClick={handleSubmit} disabled={!selectedAnswers[quiz.questions[currentQuestionIndex].id]} className="px-6 py-2 bg-primary text-white rounded-md disabled:opacity-50">
+                            Submit
+                        </button>
+                    )}
+                </div>
+            </div>
+        );
+    }
+
+    if (view === 'result') {
+        const latestAttempt = quiz.attempts[quiz.attempts.length - 1];
+        if (!latestAttempt) return null; // Should not happen if view is 'result'
+
+        const percentage = (latestAttempt.score / latestAttempt.total_questions) * 100;
+        const passed = percentage >= 80;
+        const isPerfectScore = percentage === 100;
+        const canRetry = !passed || !isPerfectScore;
+
+        return (
+            <div className="p-8 bg-white rounded-lg shadow-lg text-center">
+                <h2 className="text-3xl font-bold mb-4">Quiz Complete!</h2>
+                <p className={`text-xl mb-2 ${passed ? 'text-primary' : 'text-secondary'}`}>
+                    You scored {latestAttempt.score} out of {latestAttempt.total_questions} ({percentage.toFixed(0)}%)
+                </p>
+                <p className="text-gray-600 mb-6">{passed ? "Congratulations, you've passed!" : "You have not met the passing score of 80%."}</p>
+                <div className="flex justify-center gap-4">
+                    {canRetry ? (
+                        <button onClick={handleRetry} className="px-6 py-2 bg-primary text-white rounded-md">
+                            Retry Quiz
+                        </button>
+                    ) : (
+                        <button onClick={handleReview} className="px-6 py-2 bg-secondary text-white rounded-md">
+                            Review Answers
+                        </button>
+                    )}
+                </div>
+            </div>
+        );
+    }
+
+    if (view === 'review') {
+        return (
+            <div className="p-8 bg-white rounded-lg shadow-lg">
+                <h2 className="text-3xl font-bold mb-6 text-center">Review Answers</h2>
+                <div className="space-y-6">
+                    {quiz.questions.map((question, index) => (
+                        <div key={question.id} className="p-4 rounded-lg bg-gray-100">
+                            <h3 className="font-semibold text-lg">{index + 1}. {question.question}</h3>
+                            <ul>
+                                {question.options.map(option => (
+                                    <li key={option.id} className={`mt-2 p-2 rounded border ${option.is_correct ? 'bg-accent font-bold text-primary border-primary' : 'border-transparent'}`}>
+                                        {option.option} {option.is_correct && '(Correct Answer)'}
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                    ))}
+                </div>
+                <div className="flex justify-center mt-6">
+                    <button onClick={() => setView('result')} className="px-6 py-2 bg-secondary text-white rounded-md">
+                        Back to Results
                     </button>
                 </div>
             </div>
         );
     }
 
-    return (
-        <div className="p-8 bg-white rounded-lg shadow-lg">
-            <h2 className="text-2xl font-bold mb-2">{quiz.title}</h2>
-            <p className="mb-6 text-gray-600">Question {currentQuestionIndex + 1} of {quiz.questions.length}</p>
-
-            <div>
-                <h3 className="text-xl font-semibold mb-4">{quiz.questions[currentQuestionIndex].question}</h3>
-                <div className="space-y-3">
-                    {quiz.questions[currentQuestionIndex].options.map(option => (
-                        <div
-                            key={option.id}
-                            onClick={() => handleAnswerSelect(option.id)}
-                            className={`p-4 border rounded-lg cursor-pointer hover:bg-gray-100 ${selectedAnswers[quiz.questions[currentQuestionIndex].id] === option.id ? 'bg-blue-100 border-blue-500' : 'border-gray-300'}`}
-                        >
-                            {option.option}
-                        </div>
-                    ))}
-                </div>
-            </div>
-
-            <div className="mt-8 flex justify-between items-center">
-                <div>
-                    {quiz.attempts && quiz.attempts.length > 0 && (
-                        <div>
-                            <h4 className="font-bold">Previous Attempts:</h4>
-                            <ul>
-                                {quiz.attempts.map(attempt => (
-                                    <li key={attempt.id}>Score: {attempt.score}/{quiz.questions.length}</li>
-                                ))}
-                            </ul>
-                        </div>
-                    )}
-                </div>
-                {currentQuestionIndex < quiz.questions.length - 1 ? (
-                    <button
-                        onClick={handleNextQuestion}
-                        disabled={!selectedAnswers[quiz.questions[currentQuestionIndex].id]}
-                        className="px-6 py-2 bg-primary text-white rounded-md disabled:opacity-50"
-                    >
-                        Next
-                    </button>
-                ) : (
-                    <button
-                        onClick={handleSubmit}
-                        disabled={!selectedAnswers[quiz.questions[currentQuestionIndex].id]}
-                        className="px-6 py-2 bg-green-500 text-white rounded-md disabled:opacity-50"
-                    >
-                        Submit
-                    </button>
-                )}
-            </div>
-        </div>
-    );
+    return null;
 };
 
 export default Quiz;

@@ -13,6 +13,7 @@ class QuizAttempt extends Model
         'user_id',
         'quiz_id',
         'score',
+        'total_questions',
     ];
 
     public function user()

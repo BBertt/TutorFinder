@@ -83,6 +83,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/courses/{course}', [CourseController::class, 'show'])->name('courses.show');
     Route::get('/courses/{course}/learn', [CourseController::class, 'learn'])->name('courses.learn');
     Route::post('/courses/{course}/reviews', [CourseReviewController::class, 'store'])->name('courses.reviews.store'); // NEW
+    Route::post('/courses/{course}/complete', [CourseController::class, 'complete'])->name('courses.complete');
 
     // Purchased Courses
     Route::get('/purchased-courses', [PurchasedCoursesController::class, 'index'])->name('purchased-courses.index');

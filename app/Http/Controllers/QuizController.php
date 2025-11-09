@@ -15,6 +15,7 @@ class QuizController extends Controller
         $answers = $request->input('answers');
         $questions = $quiz->questions()->with('options')->get();
         $score = 0;
+        $totalQuestions = $questions->count();
 
         foreach ($questions as $question) {
             $correctOption = $question->options->firstWhere('is_correct', true);
@@ -27,12 +28,19 @@ class QuizController extends Controller
             'user_id' => $user->id,
             'quiz_id' => $quiz->id,
             'score' => $score,
+            'total_questions' => $totalQuestions,
         ]);
 
-        return redirect()->back()->with('quiz_results', [
-            'score' => $score,
-            'total' => $questions->count(),
-            'attempt' => $attempt,
-        ]);
+        $percentage = $totalQuestions > 0 ? ($score / $totalQuestions) * 100 : 0;
+        $passed = $percentage >= 80;
+
+        $message = $passed ? 'Congratulations! You passed the quiz.' : 'You did not pass the quiz. Please try again.';
+
+        $response = redirect()->back()->with('quiz_submitted', true);
+        if ($passed && is_null($quiz->course_section_id)) {
+            $response = $response->with('success', 'Course completed!');
+        }
+
+        return $response;
     }
 }
