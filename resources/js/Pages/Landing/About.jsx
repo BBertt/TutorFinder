@@ -6,7 +6,7 @@ const About = () => {
             <GuestNavbar />
 
             {/* Hero Section */}
-            <section className="bg-primary text-white py-16 flex flex-col items-center text-center">
+            <section className="bg-primary text-white py-16 flex flex-col items-center text-center dark:bg-darkSecondary dark:border-dark">
                 <h1 className="text-4xl font-extrabold mb-4">
                     About TutorFinder
                 </h1>
@@ -23,7 +23,7 @@ const About = () => {
             </section>
 
             {/* Mission Section */}
-            <section className="py-16 bg-secondary text-center text-white">
+            <section className="py-16 bg-secondary text-center text-white dark:bg-darkPrimary">
                 <h2 className="text-4xl font-extrabold mb-4">Our Mission</h2>
                 <div className="flex justify-evenly items-center gap-8">
                     {[
@@ -33,9 +33,9 @@ const About = () => {
                     ].map((text, idx) => (
                         <div
                             key={idx}
-                            className="flex-1 flex flex-col gap-3 max-w-xs p-6 rounded-lg shadow-md border bg-white"
+                            className="flex-1 flex flex-col gap-3 max-w-xs p-6 rounded-lg shadow-md border bg-white dark:bg-darkSecondary dark:border-dark"
                         >
-                            <h3 className="text-xl font-bold text-black">
+                            <h3 className="text-xl font-bold text-black dark:text-white">
                                 {text}
                             </h3>
                             <img

@@ -77,7 +77,7 @@ export default function EditSectionModal({ section, isOpen, onClose, onSave }) {
                         </button>
                         <button
                             type="submit"
-                            className="px-4 py-2 rounded-lg bg-primary text-white font-semibold hover:bg-opacity-90 dark:hover:bg-opacity-80"
+                            className="px-4 py-2 rounded-lg bg-primary text-white font-semibold hover:bg-opacity-80 dark:hover:bg-opacity-80"
                             disabled={processing}
                         >
                             {processing ? "Saving..." : "Ok"}

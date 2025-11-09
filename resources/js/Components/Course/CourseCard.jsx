@@ -20,7 +20,7 @@ export default function CourseCard({ course }) {
                 href={route("courses.show", course.id)}
                 className="block group"
             >
-                <div className="bg-white rounded-lg shadow-md overflow-hidden transform hover:-translate-y-2 transition-transform duration-300 h-full flex flex-col">
+                <div className="bg-white rounded-lg shadow-md overflow-hidden transform hover:-translate-y-2 transition-transform duration-300 h-full flex flex-col dark:bg-darkSecondary dark:border-dark">
                     <img
                         src={course.thumbnail_image_url}
                         alt={course.title}
@@ -32,10 +32,10 @@ export default function CourseCard({ course }) {
                         }}
                     />
                     <div className="p-4 flex flex-col flex-grow">
-                        <h3 className="text-lg font-semibold truncate group-hover:text-primary">
+                        <h3 className="text-lg font-semibold truncate group-hover:text-primary dark:text-white">
                             {course.title}
                         </h3>
-                        <p className="text-sm text-gray-500 mt-1">
+                        <p className="text-sm mt-1 text-gray-400">
                             <span
                                 onClick={handleTutorClick}
                                 className="hover:underline cursor-pointer"
@@ -43,8 +43,8 @@ export default function CourseCard({ course }) {
                                 {authorName}
                             </span>
                         </p>
-                        <div className="flex items-center justify-between mt-3">
-                            <span className="text-lg font-bold text-gray-800">
+                        <div className="flex items-center justify-between mt-3 ">
+                            <span className="text-lg font-bold dark:text-white">
                                 Rp{" "}
                                 {Number(course.price).toLocaleString("id-ID")}
                             </span>

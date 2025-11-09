@@ -16,7 +16,7 @@ const Landing = () => {
     return (
         <div className="flex flex-col">
             <GuestNavbar />
-            <section className="bg-primary text-white py-16 flex flex-col">
+            <section className="bg-primary text-white py-16 flex flex-col dark:bg-darkSecondary dark:border-dark">
                 <div className="flex justify-between items-center w-full">
                     <img
                         className="w-40 h-40 object-cover"
@@ -40,7 +40,7 @@ const Landing = () => {
                             />
                             <button
                                 type="submit"
-                                className="bg-[#3D3D3D] px-6 py-2 rounded-lg font-bold"
+                                className="bg-secondary px-6 py-2 rounded-lg font-bold dark:bg-primary dark:hover:bg-opacity-80"
                             >
                                 Search
                             </button>
@@ -51,7 +51,7 @@ const Landing = () => {
                             </p>
                             <Link
                                 href="/tutor/register"
-                                className="bg-[#3D3D3D] text-white hover:bg-white hover:text-[#4F6D40] px-6 py-2 rounded-full font-bold mt-2"
+                                className="bg-secondary text-white hover:bg-white hover:text-[primary] px-6 py-2 rounded-full font-bold mt-2 dark:bg-primary dark:hover:bg-opacity-80 dark:text-white"
                             >
                                 Register as a Tutor
                             </Link>
@@ -65,8 +65,8 @@ const Landing = () => {
             </section>
 
             {/* Steps Section */}
-            <section className="px-8 py-16 text-center">
-                <h2 className="text-secondary text-3xl font-extrabold mb-12">
+            <section className="px-8 py-16 text-center dark:bg-darkPrimary dark:text-white">
+                <h2 className="text-secondary text-3xl font-extrabold mb-12 dark:text-white">
                     Finding a Subject is Simple
                 </h2>
                 <div className="flex justify-evenly items-center gap-8">
@@ -77,7 +77,7 @@ const Landing = () => {
                     ].map((text, idx) => (
                         <div
                             key={idx}
-                            className="flex flex-col flex-wrap flex-1 gap-3 max-w-xs p-6 rounded-lg shadow-md border"
+                            className="flex flex-col flex-wrap flex-1 gap-3 max-w-xs p-6 rounded-lg shadow-md border dark:bg-darkSecondary dark:border-dark"
                         >
                             <h3 className="text-xl font-bold">
                                 Step {idx + 1}
@@ -107,7 +107,7 @@ const Landing = () => {
                             href={`/tutors/${tutor.id}`}
                             className="flex-1"
                         >
-                            <div className="bg-secondary rounded-xl p-6 flex gap-4 items-center">
+                            <div className="bg-secondary rounded-xl p-6 flex gap-4 items-center dark:bg-darkSecondary dark:border-dark">
                                 <img
                                     className="w-24 h-24 rounded-full"
                                     src={

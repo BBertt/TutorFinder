@@ -8,10 +8,10 @@ export default function PurchasedCourse({ enrolledCourses }) {
         <>
             <Head title="My Courses" />
 
-            <main className="bg-gray-50 min-h-screen">
+            <main className="min-h-screen">
                 <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
                     <div className="text-center mb-12">
-                        <h1 className="text-4xl font-bold text-gray-800">
+                        <h1 className="text-4xl font-bold dark:text-white">
                             My Courses
                         </h1>
                     </div>
@@ -26,7 +26,7 @@ export default function PurchasedCourse({ enrolledCourses }) {
                             ))}
                         </div>
                     ) : (
-                        <div className="text-center text-gray-500 bg-white p-12 rounded-lg shadow-sm border">
+                        <div className="text-center bg-white p-12 rounded-lg shadow-sm border dark:bg-darkSecondary dark:border-dark">
                             <h2 className="text-2xl font-bold">
                                 You haven't enrolled in any courses yet!
                             </h2>

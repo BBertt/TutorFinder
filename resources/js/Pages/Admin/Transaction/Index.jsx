@@ -22,8 +22,8 @@ const AdminTransactionIndex = ({ transactions, viewedUser }) => {
                 <h1 className="text-3xl font-bold mb-6">
                     Transactions for {viewedUser.name} ({viewedUser.email})
                 </h1>
-                <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                    <div className="p-6 bg-white border-b border-gray-200">
+                <div className="overflow-hidden shadow-sm sm:rounded-lg">
+                    <div className="p-6 border-b border-gray-200 dark:bg-darkSecondary dark:border-dark">
                         {transactions && transactions.length > 0 ? (
                             <div className="space-y-6">
                                 {transactions.map((transaction) => (
@@ -37,7 +37,7 @@ const AdminTransactionIndex = ({ transactions, viewedUser }) => {
                                                     Transaction #
                                                     {transaction.external_id}
                                                 </h2>
-                                                <p className="text-sm text-gray-500">
+                                                <p className="text-sm text-gray-400">
                                                     {new Date(
                                                         transaction.created_at
                                                     ).toLocaleString()}
@@ -113,7 +113,7 @@ const AdminTransactionIndex = ({ transactions, viewedUser }) => {
                                                                                     }
                                                                                 </h2>
                                                                             </Link>
-                                                                            <p className="text-sm text-gray-600">
+                                                                            <p className="text-sm text-gray-400">
                                                                                 {detail
                                                                                     .course
                                                                                     .user
@@ -123,7 +123,7 @@ const AdminTransactionIndex = ({ transactions, viewedUser }) => {
                                                                                           .name
                                                                                     : "Author"}
                                                                             </p>
-                                                                            <p className="font-bold text-gray-800 mt-1">
+                                                                            <p className="font-bold mt-1">
                                                                                 Rp{" "}
                                                                                 {parseFloat(
                                                                                     detail.price_at_transaction
