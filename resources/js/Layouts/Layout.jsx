@@ -310,11 +310,6 @@ export default function Layout({ children, showFooter = true }) {
     return (
         <div className="flex flex-col min-h-screen bg-white dark:bg-gray-900 dark:text-gray-300">
             {auth.user ? <AppNavbar logoSrc={logoSrc} /> : <GuestNavbar />}
-            {flash?.success && (
-                <div className="bg-green-100 text-green-800">
-                    <div className="container mx-auto px-4 py-3">{flash.success}</div>
-                </div>
-            )}
             <main className="flex-grow">{children}</main>
             {showFooter && <AppFooter logoSrc={logoSrc} />}
         </div>

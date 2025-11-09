@@ -4,6 +4,7 @@ import React, { useEffect } from 'react';
 import axios from 'axios';
 import VideoPlayer from '@/Components/VideoPlayer';
 import Quiz from '@/Components/Quiz';
+import Modal from '@/Components/Modal';
 
 // ... (Icons and Modal components remain the same)
 const CheckmarkIcon = ({ className }) => (
@@ -94,7 +95,8 @@ const RatingModal = ({ course, onClose }) => {
 };
 
 function LearnCourse({ course, progress: initialProgress, last_watched_lesson_id, has_reviewed_by_user }) {
-    const { quiz_submitted } = usePage().props;
+    const { quiz_submitted, flash } = usePage().props;
+    const [showCompletionModal, setShowCompletionModal] = React.useState(false);
 
     const [activeContent, setActiveContent] = React.useState(() => {
         const lastWatchedLesson = course.sections.flatMap(s => s.lessons).find(l => l.id === last_watched_lesson_id);
@@ -115,6 +117,10 @@ function LearnCourse({ course, progress: initialProgress, last_watched_lesson_id
             });
         }
     }, [quiz_submitted]);
+
+    useEffect(() => {
+        if (flash?.success) setShowCompletionModal(true);
+    }, [flash?.success]);
 
     const isLessonCompleted = (lessonId) => progress.some(p => p.course_lesson_id === lessonId);
     const isQuizPassed = (quiz) => quiz && quiz.attempts.some(a => (a.score / a.total_questions) >= 0.8);
@@ -276,6 +282,15 @@ function LearnCourse({ course, progress: initialProgress, last_watched_lesson_id
     return (
         <div>
             {showRatingModal && <RatingModal course={course} onClose={() => setShowRatingModal(false)} />}
+            <Modal show={showCompletionModal} onClose={() => setShowCompletionModal(false)} maxWidth="md">
+                <div className="p-6">
+                    <h2 className="text-xl font-semibold mb-2">Course completed</h2>
+                    <p className="text-gray-700 mb-4">{flash?.success}</p>
+                    <div className="text-right">
+                        <button onClick={() => setShowCompletionModal(false)} className="px-4 py-2 bg-primary text-white rounded-md">Close</button>
+                    </div>
+                </div>
+            </Modal>
             <Head title={course.title} />
             <div className="flex flex-col md:flex-row h-[92vh]">
                 <div className="w-full md:w-1/4 bg-white border-r overflow-y-auto">
