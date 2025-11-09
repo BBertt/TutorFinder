@@ -22,7 +22,7 @@ export default function CourseCard({ course }) {
             >
                 <div className="bg-white rounded-lg shadow-md overflow-hidden transform hover:-translate-y-2 transition-transform duration-300 h-full flex flex-col">
                     <img
-                        src={`/${course.thumbnail_image}`}
+                        src={course.thumbnail_image_url}
                         alt={course.title}
                         className="w-full h-48 object-cover"
                         onError={(e) => {

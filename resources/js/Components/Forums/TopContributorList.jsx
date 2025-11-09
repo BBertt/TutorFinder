@@ -8,9 +8,13 @@ export default function TopContributorList({ contributors }) {
                     key={contributor.id}
                     className="flex items-center space-x-3"
                 >
-                    <span className="font-bold text-gray-500">{index + 1}</span>
+                    <span className="font-bold text-gray-500 dark:text-gray-400">
+                        {index + 1}
+                    </span>
                     <img
-                        className="w-10 h-10 rounded-full"
+                        className={`w-10 h-10 rounded-full ${
+                            !contributor.profile_image_path && "dark:invert"
+                        }`}
                         src={
                             contributor.profile_image_path
                                 ? contributor.profile_image_path
@@ -19,8 +23,8 @@ export default function TopContributorList({ contributors }) {
                         alt={`${contributor.first_name} ${contributor.last_name}`}
                     />
                     <div>
-                        <p className="font-semibold">{`${contributor.first_name} ${contributor.last_name}`}</p>
-                        <p className="text-sm text-gray-500">
+                        <p className="font-semibold dark:text-gray-200">{`${contributor.first_name} ${contributor.last_name}`}</p>
+                        <p className="text-sm text-gray-500 dark:text-gray-400">
                             {parseInt(contributor.total_likes).toLocaleString()}{" "}
                             Likes
                         </p>

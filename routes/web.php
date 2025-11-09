@@ -69,6 +69,9 @@ Route::middleware('guest')->group(function() {
     })->name('about');
 });
 
+Route::get('/courses', [CourseController::class, 'index'])->name('courses.index');
+Route::get('/forums', [ForumController::class, 'index'])->name('forums.index');
+
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -78,7 +81,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/profile', [ProfileController::class, 'update'])->name('profile.update');
 
     // Courses
-    Route::get('/courses', [CourseController::class, 'index'])->name('courses.index');
+    // Route::get('/courses', [CourseController::class, 'index'])->name('courses.index');
     Route::get('/courses/{course}', [CourseController::class, 'show'])->name('courses.show');
     Route::get('/courses/{course}/learn', [CourseController::class, 'learn'])->name('courses.learn');
     Route::post('/courses/{course}/reviews', [CourseReviewController::class, 'store'])->name('courses.reviews.store'); // NEW
@@ -99,7 +102,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/cart/checkout', [TransactionController::class, 'checkout'])->name('checkout');
 
     // Forum
-    Route::get('/forums', [ForumController::class, 'index'])->name('forums.index');
+    // Route::get('/forums', [ForumController::class, 'index'])->name('forums.index');
 
     Route::get('/forums/create', [ForumController::class, 'create'])->name('forums.create');
     Route::post('/forums', [ForumController::class, 'store'])->name('forums.store');
