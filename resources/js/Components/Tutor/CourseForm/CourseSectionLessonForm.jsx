@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import QuizEditor from './QuizEditor';
 import AddLessonModal from "./AddLessonModal";
 import EditSectionModal from "./EditSectionModal";
 import EditLessonModal from "./EditLessonModal";
@@ -263,15 +264,30 @@ export default function CourseSectionLessonForm({
                                         No lessons in this section yet.
                                     </p>
                                 )}
-                                <button
-                                    type="button"
-                                    onClick={() =>
-                                        openModal("addLesson", section)
-                                    }
-                                    className="text-sm font-semibold text-primary mt-2 hover:underline"
-                                >
-                                    + Add Lesson
-                                </button>
+                                <div className="mt-3 flex flex-col gap-2">
+                                    <button
+                                        type="button"
+                                        onClick={() => openModal("addLesson", section)}
+                                        className="text-sm font-semibold text-primary hover:underline"
+                                    >
+                                        + Add Lesson
+                                    </button>
+                                    <input
+                                        type="text"
+                                        value={section.quiz?.title || section.quiz_title || ""}
+                                        onChange={e => setData("sections", sections.map(s => s.id === section.id ? { ...s, quiz: { ...(s.quiz||{}), title: e.target.value, questions: s.quiz?.questions || [] } } : s))}
+                                        placeholder="Optional Section Quiz Title"
+                                        className="text-sm w-full border-gray-300 rounded-md shadow-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
+                                    />
+                                    {(section.quiz?.title || section.quiz_title) && (
+                                        <div className="mt-2">
+                                            <QuizEditor
+                                                value={section.quiz}
+                                                onChange={(qz) => setData('sections', sections.map(s => s.id === section.id ? { ...s, quiz: qz } : s))}
+                                            />
+                                        </div>
+                                    )}
+                                </div>
                             </div>
                         </div>
                     ))}

@@ -294,7 +294,6 @@ function LearnCourse({ course, progress: initialProgress, last_watched_lesson_id
             <Head title={course.title} />
             <div className="flex flex-col md:flex-row h-[92vh]">
                 <div className="w-full md:w-1/4 bg-white border-r overflow-y-auto">
-                    <div className="p-4 bg-gray-200"><h2 className="text-xl font-bold">Course Content</h2></div>
                     <ul>
                         {course.sections.map((section) => (
                             <li key={section.id} className="mb-1">

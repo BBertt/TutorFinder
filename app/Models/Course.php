@@ -25,6 +25,11 @@ class Course extends Model
     ];
     protected $appends = ['thumbnail_image_url', 'intro_video_url', 'finalQuiz'];
 
+    public function quizzes()
+    {
+        return $this->hasMany(Quiz::class);
+    }
+
     public function user()
     {
         return $this->belongsTo(User::class);
@@ -47,7 +52,7 @@ class Course extends Model
 
     public function getFinalQuizAttribute()
     {
-        return Quiz::where('course_id', $this->id)
+        return $this->quizzes()
             ->whereNull('course_section_id')
             ->with('questions.options', 'attempts')
             ->first();

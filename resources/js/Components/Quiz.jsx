@@ -102,7 +102,7 @@ const Quiz = ({ quiz }) => {
         return (
             <div className="p-8 bg-white rounded-lg shadow-lg text-center">
                 <h2 className="text-3xl font-bold mb-4">Quiz Complete!</h2>
-                <p className={`text-xl mb-2 ${passed ? 'text-primary' : 'text-secondary'}`}>
+                <p className={`text-xl mb-2 ${passed ? 'text-primary' : 'text-red-800'}`}>
                     You scored {latestAttempt.score} out of {latestAttempt.total_questions} ({percentage.toFixed(0)}%)
                 </p>
                 <p className="text-gray-600 mb-6">{passed ? "Congratulations, you've passed!" : "You have not met the passing score of 80%."}</p>

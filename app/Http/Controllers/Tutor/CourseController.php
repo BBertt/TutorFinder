@@ -11,6 +11,9 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
+use App\Models\Quiz;
+use App\Models\QuizQuestion;
+use App\Models\QuizQuestionOption;
 
 class CourseController extends Controller
 {
@@ -140,6 +143,36 @@ class CourseController extends Controller
                     );
                     $sectionIds[] = $section->id;
 
+                    // Optional section quiz
+                    $quizTitle = $request->input("sections.$s_index.quiz_title");
+                    $quizPayload = $request->input("sections.$s_index.quiz.questions", []);
+                    if ($quizTitle) {
+                        $quiz = $section->quiz()->updateOrCreate([], [
+                            'title' => $quizTitle,
+                            'description' => '',
+                            'course_section_id' => $section->id,
+                        ]);
+                        // Sync questions/options (simple replace)
+                        if (is_array($quizPayload)) {
+                            $quiz->questions()->delete();
+                            foreach ($quizPayload as $qData) {
+                                if (!empty($qData['question'])) {
+                                    $question = $quiz->questions()->create(['question' => $qData['question']]);
+                                    foreach ($qData['options'] ?? [] as $optData) {
+                                        if (!empty($optData['option'])) {
+                                            $question->options()->create([
+                                                'option' => $optData['option'],
+                                                'is_correct' => !empty($optData['is_correct']),
+                                            ]);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    } else {
+                        if ($section->quiz) { $section->quiz->delete(); }
+                    }
+
                     $lessonIds = [];
                     if (isset($sectionData['lessons']) && is_array($sectionData['lessons'])) {
                         foreach ($sectionData['lessons'] as $l_index => $lessonData) {
@@ -163,6 +196,19 @@ class CourseController extends Controller
 
             if (!$isNew) {
                  $course->sections()->whereNotIn('id', $sectionIds)->delete();
+            }
+
+            // Optional final quiz
+            $finalQuizTitle = $request->input('final_quiz_title');
+            if ($finalQuizTitle) {
+                $existingFinal = $course->finalQuiz;
+                if ($existingFinal) {
+                    $existingFinal->update(['title' => $finalQuizTitle, 'description' => '']);
+                } else {
+                    $course->quizzes()->create(['title' => $finalQuizTitle, 'description' => '', 'course_id' => $course->id]);
+                }
+            } else {
+                if ($course->finalQuiz) { $course->finalQuiz->delete(); }
             }
         });
     }

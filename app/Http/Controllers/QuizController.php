@@ -24,7 +24,7 @@ class QuizController extends Controller
             }
         }
 
-        $attempt = QuizAttempt::create([
+        QuizAttempt::create([
             'user_id' => $user->id,
             'quiz_id' => $quiz->id,
             'score' => $score,
@@ -33,8 +33,6 @@ class QuizController extends Controller
 
         $percentage = $totalQuestions > 0 ? ($score / $totalQuestions) * 100 : 0;
         $passed = $percentage >= 80;
-
-        $message = $passed ? 'Congratulations! You passed the quiz.' : 'You did not pass the quiz. Please try again.';
 
         $response = redirect()->back()->with('quiz_submitted', true);
         if ($passed && is_null($quiz->course_section_id)) {

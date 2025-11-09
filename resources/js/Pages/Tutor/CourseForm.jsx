@@ -65,7 +65,8 @@ export default function CourseForm({ categories }) {
         category_id: course?.category_id || "",
         thumbnail_image: null,
         intro_video: null,
-        sections: course?.sections || [],
+        sections: (course?.sections || []).map(s => ({ ...s, quiz_title: s.quiz?.title || s.quiz_title || "" })),
+        final_quiz_title: course?.finalQuiz?.title || "",
         status: course?.status || "draft",
     });
 
@@ -105,6 +106,16 @@ export default function CourseForm({ categories }) {
         if (data.sections.length > 0) {
             data.sections.forEach((section, s_index) => {
                 formData.append(`sections[${s_index}][id]`, section.id || "");
+                formData.append(`sections[${s_index}][quiz_title]`, (section.quiz && section.quiz.title) || section.quiz_title || "");
+                if (section.quiz && Array.isArray(section.quiz.questions)) {
+                    section.quiz.questions.forEach((q, q_index) => {
+                        formData.append(`sections[${s_index}][quiz][questions][${q_index}][question]`, q.question || '');
+                        (q.options || []).forEach((opt, o_index) => {
+                            formData.append(`sections[${s_index}][quiz][questions][${q_index}][options][${o_index}][option]`, opt.option || '');
+                            formData.append(`sections[${s_index}][quiz][questions][${q_index}][options][${o_index}][is_correct]`, opt.is_correct ? '1' : '0');
+                        });
+                    });
+                }
                 formData.append(`sections[${s_index}][title]`, section.title);
                 formData.append(
                     `sections[${s_index}][description]`,
@@ -137,6 +148,8 @@ export default function CourseForm({ categories }) {
                 }
             });
         }
+
+        formData.append('final_quiz_title', data.final_quiz_title || '');
 
         if (isEditing) {
             formData.append("_method", "patch");
@@ -281,6 +294,17 @@ export default function CourseForm({ categories }) {
                         />
                     </div>
                     <div className={currentStep === 3 ? "block" : "hidden"}>
+                        <div className="mb-6 p-4 border rounded-lg bg-gray-50 dark:bg-gray-800 dark:border-gray-700">
+                            <h2 className="text-lg font-semibold mb-3 dark:text-gray-200">Final Quiz (Optional)</h2>
+                            <input
+                                type="text"
+                                value={data.final_quiz_title}
+                                onChange={e => setData("final_quiz_title", e.target.value)}
+                                placeholder="Enter a final quiz title or leave blank"
+                                className="w-full border-gray-300 rounded-md shadow-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
+                            />
+                            <p className="text-xs text-gray-500 mt-1 dark:text-gray-400">If provided, a final quiz will be created for the whole course.</p>
+                        </div>
                         <CourseReview
                             courseData={data}
                             existingCourse={course}
