@@ -87,7 +87,7 @@ const Checkout = ({ cartItems }) => {
                 </h1>
                 {cartItems.length > 0 ? (
                     <div className="flex flex-col lg:flex-row shadow-lg my-10">
-                        <div className="w-full lg:w-3/4 bg-white p-10">
+                        <div className="w-full lg:w-3/4 bg-white p-10 dark:bg-darkSecondary dark:border-dark">
                             <div className="flex justify-between border-b pb-8">
                                 <h1 className="font-semibold text-2xl">
                                     {cartItems.length} Total in Cart
@@ -118,12 +118,12 @@ const Checkout = ({ cartItems }) => {
                                             <h2 className="font-bold text-lg">
                                                 {item.course.title}
                                             </h2>
-                                            <p className="text-sm text-gray-600">
+                                            <p className="text-sm dark:text-white">
                                                 {item.course.user
                                                     ? item.course.user.name
                                                     : "Author"}
                                             </p>
-                                            <p className="font-bold text-gray-800 mt-1">
+                                            <p className="font-bold dark:text-white mt-1">
                                                 Rp{" "}
                                                 {parseFloat(
                                                     item.course.price
@@ -158,7 +158,7 @@ const Checkout = ({ cartItems }) => {
                             </div>
                         </div>
 
-                        <div className="w-full lg:w-1/4 bg-[#4F6D40] text-white p-8 rounded-r-lg">
+                        <div className="w-full lg:w-1/4 bg-primary text-white p-8 rounded-r-lg">
                             <h1 className="font-bold text-2xl border-b pb-6">
                                 Total
                             </h1>

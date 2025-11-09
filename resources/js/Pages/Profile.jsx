@@ -36,7 +36,7 @@ const Profile = () => {
     };
 
     return (
-        <div className="max-w-lg w-full mx-auto my-10 bg-primary p-6 rounded-xl text-white flex flex-col items-center">
+        <div className="max-w-lg w-full mx-auto my-10 bg-primary p-6 rounded-xl text-white flex flex-col items-center dark:bg-darkSecondary dark:border-dark">
             {flash.success && (
                 <div className="bg-green-500 text-white px-4 py-2 rounded mb-4 w-full">
                     {flash.success}
@@ -217,7 +217,7 @@ const Profile = () => {
                 <button
                     type="submit"
                     disabled={processing}
-                    className="p-2 font-extrabold rounded-full bg-secondary hover:bg-[#000000] w-full"
+                    className="p-2 font-extrabold rounded-full bg-secondary hover:bg-[#000000] w-full dark:bg-primary dark:hover:bg-opacity-80"
                 >
                     Save Changes
                 </button>
