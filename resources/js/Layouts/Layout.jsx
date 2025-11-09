@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { Link, usePage, useForm } from "@inertiajs/react";
+import GuestNavbar from "@/Components/Landing/GuestNavbar";
+import { ThemeToggle } from "@/Components/ThemeToggle";
 
 const AppNavbar = ({ logoSrc }) => {
     const { categories } = usePage().props;
@@ -19,7 +21,7 @@ const AppNavbar = ({ logoSrc }) => {
     const { url } = usePage();
 
     return (
-        <nav className="bg-accent shadow-sm sticky top-0 z-50">
+        <nav className="bg-accent shadow-sm sticky top-0 z-50 dark:bg-gray-800 dark:border-b dark:border-gray-700">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex items-center justify-between h-20">
                     <div className="flex-shrink-0">
@@ -39,7 +41,7 @@ const AppNavbar = ({ logoSrc }) => {
                         >
                             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                 <img
-                                    className="w-4 h-4"
+                                    className="w-4 h-4 dark:invert"
                                     src="/assets/icons/magnifying-glass.svg"
                                     alt="Search"
                                 />
@@ -51,13 +53,14 @@ const AppNavbar = ({ logoSrc }) => {
                                 onChange={(e) =>
                                     setData("search", e.target.value)
                                 }
-                                className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-full leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-green-700 focus:border-green-700 sm:text-sm"
+                                className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-full leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-green-700 focus:border-green-700 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
                                 placeholder="Search..."
                                 type="Search"
                             />
                             <div className="relative ml-2">
                                 <img
-                                    className="w-7 h-7 cursor-pointer"
+                                    className={`w-7 h-7 cursor-pointer ${!dropdown && "dark:invert"
+                                        }`}
                                     src={
                                         dropdown
                                             ? "/assets/icons/arrow-down-primary.svg"
@@ -68,12 +71,12 @@ const AppNavbar = ({ logoSrc }) => {
                                 />
 
                                 {dropdown && (
-                                    <div className="absolute right-0 mt-2 w-64 bg-white rounded-md border border-gray-200 z-1">
+                                    <div className="absolute right-0 mt-2 w-64 bg-white rounded-md border border-gray-200 z-1 dark:bg-gray-800 dark:border-gray-700">
                                         {categories.map((category) => (
                                             <Link
                                                 key={category.id}
                                                 href={`/courses?category=${category.id}`}
-                                                className="block px-4 py-2 text-secondary hover:bg-primary hover:text-white rounded-md"
+                                                className="block px-4 py-2 text-secondary hover:bg-primary hover:text-white rounded-md dark:text-gray-300 dark:hover:bg-primary"
                                                 onClick={() =>
                                                     setDropdown(false)
                                                 }
@@ -90,7 +93,8 @@ const AppNavbar = ({ logoSrc }) => {
                     <div className="hidden md:flex items-center space-x-10">
                         <Link href="/cart">
                             <img
-                                className="w-7 h-7"
+                                className={`w-7 h-7 ${!url.startsWith("/cart") && "dark:invert"
+                                    }`}
                                 src={
                                     url.startsWith("/cart")
                                         ? "/assets/icons/cart-primary.svg"
@@ -101,7 +105,8 @@ const AppNavbar = ({ logoSrc }) => {
                         </Link>
                         <Link href="/forums">
                             <img
-                                className="w-7 h-7"
+                                className={`w-7 h-7 ${!url.startsWith("/forums") && "dark:invert"
+                                    }`}
                                 src={
                                     url.startsWith("/forums")
                                         ? "/assets/icons/forum-primary.svg"
@@ -112,7 +117,8 @@ const AppNavbar = ({ logoSrc }) => {
                         </Link>
                         <Link href="/chat">
                             <img
-                                className="w-7 h-7"
+                                className={`w-7 h-7 ${!url.startsWith("/chat") && "dark:invert"
+                                    }`}
                                 src={
                                     url.startsWith("/chat")
                                         ? "/assets/icons/messages-primary.svg"
@@ -121,13 +127,18 @@ const AppNavbar = ({ logoSrc }) => {
                                 alt="Messages"
                             />
                         </Link>
+
+                        <ThemeToggle />
+
                         <div className="relative">
                             <div
                                 onClick={() => setOpen(!open)}
                                 className="cursor-pointer"
                             >
                                 <img
-                                    className="w-7 h-7 rounded-full"
+                                    className={`w-7 h-7 rounded-full ${!auth.user.profile_image_url &&
+                                        "dark:invert"
+                                        }`}
                                     src={
                                         auth.user.profile_image_url ||
                                         "/assets/icons/profile.svg"
@@ -137,24 +148,24 @@ const AppNavbar = ({ logoSrc }) => {
                             </div>
 
                             {open && (
-                                <div className="absolute right-0 mt-2 w-64 bg-white rounded-md border border-gray-200 z-1">
+                                <div className="absolute right-0 mt-2 w-64 bg-white rounded-md border border-gray-200 z-1 dark:bg-gray-800 dark:border-gray-700">
                                     <Link
                                         href="/profile"
-                                        className="block px-4 py-2 text-secondary hover:bg-primary hover:text-white rounded-md"
+                                        className="block px-4 py-2 text-secondary hover:bg-primary hover:text-white rounded-md dark:text-gray-300 dark:hover:bg-primary"
                                         onClick={() => setOpen(false)}
                                     >
                                         Profile
                                     </Link>
                                     <Link
                                         href="/purchased-courses"
-                                        className="block px-4 py-2 text-secondary hover:bg-primary hover:text-white rounded-md"
+                                        className="block px-4 py-2 text-secondary hover:bg-primary hover:text-white rounded-md dark:text-gray-300 dark:hover:bg-primary"
                                         onClick={() => setOpen(false)}
                                     >
                                         Purchased Courses
                                     </Link>
                                     <Link
                                         href="/transactions"
-                                        className="block px-4 py-2 text-secondary hover:bg-primary hover:text-white rounded-md"
+                                        className="block px-4 py-2 text-secondary hover:bg-primary hover:text-white rounded-md dark:text-gray-300 dark:hover:bg-primary"
                                         onClick={() => setOpen(false)}
                                     >
                                         Transaction History
@@ -163,7 +174,7 @@ const AppNavbar = ({ logoSrc }) => {
                                         href="/logout"
                                         method="post"
                                         as="button"
-                                        className="w-full text-left px-4 py-2 text-secondary hover:bg-primary hover:text-white rounded-md"
+                                        className="w-full text-left px-4 py-2 text-secondary hover:bg-primary hover:text-white rounded-md dark:text-gray-300 dark:hover:bg-primary"
                                     >
                                         Logout
                                     </Link>
@@ -179,7 +190,7 @@ const AppNavbar = ({ logoSrc }) => {
 
 const AppFooter = ({ logoSrc }) => {
     return (
-        <footer className="bg-gradient-to-r from-[#99D37C] to-[#4F6D40]">
+        <footer className="bg-gradient-to-r from-[#99D37C] to-[#4F6D40] dark:from-gray-800 dark:to-gray-900">
             <div className="container mx-auto py-12 px-4 sm:px-6 lg:px-8">
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
                     <div className="space-y-4">
@@ -291,13 +302,14 @@ const AppFooter = ({ logoSrc }) => {
     );
 };
 
-export default function AuthenticatedLayout({ children, showFooter = true }) {
+export default function Layout({ children, showFooter = true }) {
     const logoSrc = "/assets/logo.png";
     const { flash } = usePage().props;
+    const { auth } = usePage().props;
 
     return (
-        <div className="flex flex-col min-h-screen bg-white">
-            <AppNavbar logoSrc={logoSrc} />
+        <div className="flex flex-col min-h-screen bg-white dark:bg-gray-900 dark:text-gray-300">
+            {auth.user ? <AppNavbar logoSrc={logoSrc} /> : <GuestNavbar />}
             {flash?.success && (
                 <div className="bg-green-100 text-green-800">
                     <div className="container mx-auto px-4 py-3">{flash.success}</div>

@@ -15,7 +15,7 @@ export default function VoteButtons({ item, type }) {
     };
 
     return (
-        <div className="flex items-center space-x-4 text-sm text-gray-500">
+        <div className="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-400">
             <button
                 onClick={(e) => handleVote(e, 1)}
                 className="flex items-center space-x-1 group"
@@ -23,7 +23,7 @@ export default function VoteButtons({ item, type }) {
                 <img
                     src="/assets/icons/thumbsUp.png"
                     alt="Like"
-                    className={`w-5 h-5 transition-opacity ${
+                    className={`w-5 h-5 transition-opacity dark:invert ${
                         userVote === 1
                             ? "opacity-100"
                             : "opacity-50 group-hover:opacity-100"
@@ -38,7 +38,7 @@ export default function VoteButtons({ item, type }) {
                 <img
                     src="/assets/icons/thumbsDown.png"
                     alt="Dislike"
-                    className={`w-5 h-5 transition-opacity ${
+                    className={`w-5 h-5 transition-opacity dark:invert ${
                         userVote === -1
                             ? "opacity-100"
                             : "opacity-50 group-hover:opacity-100"

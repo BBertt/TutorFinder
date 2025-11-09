@@ -1,15 +1,25 @@
-import React from "react";
+import React, { useState } from "react";
 import Layout from "@/Layouts/Layout";
 import { Head, usePage } from "@inertiajs/react";
 import CourseCard from "@/Components/Course/CourseCard";
 import Breadcrumb from "@/Components/Course/Breadcrumb";
+import LoginModal from "@/Components/LoginModal";
 
 function CourseList({ courses }) {
     const params = new URLSearchParams(window.location.search);
     const searchParam = params.get("search");
     const categoryParam = params.get("category");
-    const { categories } = usePage().props;
+    const { categories, auth } = usePage().props;
     const category = categories.find((c) => c.id == categoryParam);
+
+    const [isLoginModalOpen, setLoginModalOpen] = useState(false);
+
+    const handleGuestClick = (e) => {
+        if (!auth.user) {
+            e.preventDefault();
+            setLoginModalOpen(true);
+        }
+    };
 
     return (
         <>
@@ -50,10 +60,16 @@ function CourseList({ courses }) {
                     )}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                     {courses.data.map((course) => (
-                        <CourseCard key={course.id} course={course} />
+                        <div key={course.id} onClickCapture={handleGuestClick}>
+                            <CourseCard course={course} />
+                        </div>
                     ))}
                 </div>
             </main>
+            <LoginModal
+                isOpen={isLoginModalOpen}
+                onClose={() => setLoginModalOpen(false)}
+            />
         </>
     );
 }

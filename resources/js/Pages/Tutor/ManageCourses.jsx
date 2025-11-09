@@ -25,8 +25,8 @@ export default function ManageCourses({ courses, filters }) {
                             })}
                             className={`px-4 py-2 rounded-md text-sm font-semibold transition-colors ${
                                 activeStatus === "draft"
-                                    ? "bg-gray-300 text-gray-800"
-                                    : "bg-gray-100 text-gray-500 hover:bg-gray-200"
+                                    ? "bg-gray-300 text-gray-800 dark:bg-gray-600 dark:text-gray-100"
+                                    : "bg-gray-100 text-gray-500 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700"
                             }`}
                             preserveState
                             preserveScroll
@@ -39,8 +39,8 @@ export default function ManageCourses({ courses, filters }) {
                             })}
                             className={`px-4 py-2 rounded-md text-sm font-semibold transition-colors ${
                                 activeStatus === "published"
-                                    ? "bg-gray-300 text-gray-800"
-                                    : "bg-gray-100 text-gray-500 hover:bg-gray-200"
+                                    ? "bg-gray-300 text-gray-800 dark:bg-gray-600 dark:text-gray-100"
+                                    : "bg-gray-100 text-gray-500 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700"
                             }`}
                             preserveState
                             preserveScroll
@@ -51,7 +51,7 @@ export default function ManageCourses({ courses, filters }) {
                     <div className="ml-auto">
                         <Link
                             href={route("tutor.courses.create")}
-                            className="bg-primary text-white font-bold py-2 px-4 rounded-lg hover:bg-opacity-90 transition-colors"
+                            className="bg-primary text-white font-bold py-2 px-4 rounded-lg hover:bg-opacity-90 dark:hover:bg-opacity-80 transition-colors"
                         >
                             Create New Course
                         </Link>
@@ -65,8 +65,8 @@ export default function ManageCourses({ courses, filters }) {
                         ))}
                     </div>
                 ) : (
-                    <div className="text-center text-gray-500 bg-white p-12 rounded-lg shadow-sm border">
-                        <h2 className="text-2xl font-bold">
+                    <div className="text-center text-gray-500 bg-white p-12 rounded-lg shadow-sm border dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400">
+                        <h2 className="text-2xl font-bold dark:text-gray-200">
                             No courses found!
                         </h2>
                         <p className="mt-2">

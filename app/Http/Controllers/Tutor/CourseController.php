@@ -8,13 +8,12 @@ use App\Models\Course;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 
 class CourseController extends Controller
 {
-    /**
-     * Display a list of the authenticated tutor's courses.
-     */
     public function index(Request $request)
     {
         $request->validate(['status' => 'in:draft,published']);
@@ -23,9 +22,6 @@ class CourseController extends Controller
         return Inertia::render('Tutor/ManageCourses', ['courses' => $courses, 'filters' => ['status' => $status]]);
     }
 
-    /**
-     * Show the form to create a new course.
-     */
     public function create()
     {
         return Inertia::render('Tutor/CourseForm', [
@@ -34,134 +30,140 @@ class CourseController extends Controller
         ]);
     }
 
-    /**
-     * Store a new course in the database.
-     */
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'required|string',
-            'student_outcome' => 'required|string',
-            'requirements' => 'required|string',
-            'price' => 'required|numeric|min:0',
-            'category_id' => 'required|exists:categories,id',
-            'thumbnail_image' => 'required|image|mimes:jpeg,png,jpg',
-            'intro_video' => 'nullable|mimetypes:video/mp4,video/quicktime',
-        ]);
-
-        $course = new Course($request->except(['thumbnail_image', 'intro_video']));
-        $course->user_id = Auth::id();
-        $course->status = 'draft';
-
-        if ($request->hasFile('thumbnail_image')) {
-            $course->thumbnail_image = $request->file('thumbnail_image')->store('course-thumbnails');
-        }
-        if ($request->hasFile('intro_video')) {
-            $course->intro_video = $request->file('intro_video')->store('course-intros');
-        }
-
-        $course->save();
-
-        if ($request->input('action') === 'save_and_continue') {
-
-            return redirect()->route('tutor.courses.edit', $course->id)
-                ->with('success', 'Overview saved. Now build your curriculum.')
-                ->with('from_create', true);
-        }
-
-        return redirect()->route('tutor.courses.index')->with('success', 'Course saved as draft.');
+        $validated = $this->validateFullCourse($request);
+        $this->createOrUpdateCourse($validated, $request);
+        return redirect()->route('tutor.courses.index')->with('success', 'Course created successfully!');
     }
 
-    /**
-     * Show the form to edit an existing course.
-     */
-     public function edit(Course $course)
+    public function edit(Course $course)
     {
         if ($course->user_id !== Auth::id()) { abort(403); }
-
         $course->load(['sections.lessons', 'category']);
-
         return Inertia::render('Tutor/CourseForm', [
             'course' => $course,
             'categories' => Category::all()
         ]);
     }
 
-    /**
-     * Update an existing course.
-     */
     public function update(Request $request, Course $course)
     {
-        if ($course->user_id !== Auth::id()) {
-            abort(403);
-        }
+        if ($course->user_id !== Auth::id()) { abort(403); }
+        $validated = $this->validateFullCourse($request, $course);
+        $this->createOrUpdateCourse($validated, $request, $course);
+        return redirect()->route('tutor.courses.index')->with('success', 'Course updated successfully!');
+    }
 
-        $request->validate([
+    public function publish(Course $course)
+    {
+        if ($course->user_id !== Auth::id()) { abort(403); }
+        $course->update(['status' => 'published']);
+        return redirect()->route('tutor.courses.index')->with('success', 'Course published!');
+    }
+
+    public function destroy(Course $course)
+    {
+        if ($course->user_id !== Auth::id()) { abort(403); }
+        if ($course->thumbnail_image) { Storage::delete($course->thumbnail_image); }
+        if ($course->intro_video) { Storage::delete($course->intro_video); }
+        $course->delete();
+        return redirect()->route('tutor.courses.index')->with('success', 'Course deleted.');
+    }
+
+
+    private function validateFullCourse(Request $request, Course $course = null): array
+    {
+        $isNew = $course === null;
+        $status = $request->input('status');
+
+        return $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'required|string',
             'student_outcome' => 'required|string',
             'requirements' => 'required|string',
             'price' => 'required|numeric|min:0',
             'category_id' => 'required|exists:categories,id',
-            'thumbnail_image' => 'nullable|image',
+            'status' => 'required|in:draft,published',
+
+            'thumbnail_image' => $isNew ? 'required|image' : 'nullable|image',
             'intro_video' => 'nullable|mimetypes:video/mp4,video/quicktime',
+
+            'sections' => ['nullable', 'array', Rule::when($status === 'published', 'min:1', 'nullable')],
+
+            'sections.*.id' => 'nullable|string',
+            'sections.*.title' => 'required_with:sections|string|max:255',
+            'sections.*.description' => 'nullable|string',
+
+            'sections.*.lessons' => ['present', 'array', Rule::when($status === 'published', 'min:1', 'nullable')],
+            'sections.*.lessons.*.id' => 'nullable|string',
+            'sections.*.lessons.*.title' => [Rule::when($status === 'published', 'required', 'nullable'), 'string', 'max:255'],
+            'sections.*.lessons.*.description' => [Rule::when($status === 'published', 'required', 'nullable'), 'string'],
+            'sections.*.lessons.*.video' => ['nullable', 'file', 'mimetypes:video/mp4,video/quicktime'],
         ]);
-
-        $course->title = $request->title;
-        $course->description = $request->description;
-        $course->student_outcome = $request->student_outcome;
-        $course->requirements = $request->requirements;
-        $course->price = $request->price;
-        $course->category_id = $request->category_id;
-
-        if ($request->hasFile('thumbnail_image')) {
-            if ($course->thumbnail_image) {
-                Storage::delete($course->thumbnail_image);
-            }
-            $course->thumbnail_image = $request->file('thumbnail_image')->store('course-thumbnails');
-        }
-
-        if ($request->hasFile('intro_video')) {
-            if ($course->intro_video) {
-                Storage::delete($course->intro_video);
-            }
-            $course->intro_video = $request->file('intro_video')->store('course-intros');
-        }
-
-        $course->save();
-
-        $course->load(['sections.lessons', 'category']);
-
-        if ($request->input('action') === 'save_and_exit') {
-            return redirect()->route('tutor.courses.index')->with('success', 'Course updated successfully.');
-        }
-
-        return back()->with('success', 'Changes saved.');
     }
 
-    /**
-     * Delete a course.
-     */
-    public function destroy(Course $course)
+    private function createOrUpdateCourse(array $validated, Request $request, Course $course = null)
     {
-        if ($course->user_id !== Auth::id()) { abort(403); }
+        $isNew = $course === null;
 
-        if ($course->thumbnail_image) {
-            Storage::delete($course->thumbnail_image);
-        }
+        DB::transaction(function () use ($validated, $request, $isNew, &$course) {
 
-        $course->delete();
+            $courseData = [
+                'title' => $validated['title'],
+                'description' => $validated['description'],
+                'student_outcome' => $validated['student_outcome'],
+                'requirements' => $validated['requirements'],
+                'price' => $validated['price'],
+                'category_id' => $validated['category_id'],
+                'status' => $validated['status'],
+                'user_id' => Auth::id(),
+            ];
 
-        return redirect()->route('tutor.courses.index')->with('success', 'Course deleted successfully.');
-    }
+            if ($request->hasFile('thumbnail_image')) {
+                if (!$isNew && $course->thumbnail_image) { Storage::delete($course->thumbnail_image); }
+                $courseData['thumbnail_image'] = $request->file('thumbnail_image')->store('course-thumbnails');
+            }
+            if ($request->hasFile('intro_video')) {
+                if (!$isNew && $course->intro_video) { Storage::delete($course->intro_video); }
+                $courseData['intro_video'] = $request->file('intro_video')->store('course-intros');
+            }
 
-    public function publish(Course $course)
-    {
-        if ($course->user_id !== Auth::id()) { abort(403); }
+            $course = Course::updateOrCreate(['id' => $isNew ? null : $course->id], $courseData);
 
-        $course->update(['status' => 'published']);
+            $sectionIds = [];
+            if (!empty($validated['sections'])) {
+                foreach ($validated['sections'] as $s_index => $sectionData) {
+                    $section = $course->sections()->updateOrCreate(
+                        ['id' => $sectionData['id'] ?? 0],
+                        ['title' => $sectionData['title'], 'description' => $sectionData['description'] ?? '']
+                    );
+                    $sectionIds[] = $section->id;
 
-        return redirect()->route('tutor.courses.index')->with('success', 'Congratulations! Your course is now live.');
+                    $lessonIds = [];
+                    if (isset($sectionData['lessons']) && is_array($sectionData['lessons'])) {
+                        foreach ($sectionData['lessons'] as $l_index => $lessonData) {
+                            $lesson = $section->lessons()->updateOrCreate(
+                                ['id' => $lessonData['id'] ?? 0],
+                                ['title' => $lessonData['title'], 'description' => $lessonData['description']]
+                            );
+                            $lessonIds[] = $lesson->id;
+
+                            $videoFileKey = "sections.{$s_index}.lessons.{$l_index}.video";
+                            if ($request->hasFile($videoFileKey)) {
+                                if ($lesson->video_url) { Storage::delete($lesson->video_url); }
+                                $lesson->video_url = $request->file($videoFileKey)->store('course-lessons');
+                                $lesson->save();
+                            }
+                        }
+                    }
+                    $section->lessons()->whereNotIn('id', $lessonIds)->delete();
+                }
+            }
+
+            if (!$isNew) {
+                 $course->sections()->whereNotIn('id', $sectionIds)->delete();
+            }
+        });
     }
 }
