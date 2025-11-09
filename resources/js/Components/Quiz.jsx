@@ -132,7 +132,7 @@ const Quiz = ({ quiz }) => {
                             <ul>
                                 {question.options.map(option => (
                                     <li key={option.id} className={`mt-2 p-2 rounded border ${option.is_correct ? 'bg-accent font-bold text-primary border-primary' : 'border-transparent'}`}>
-                                        {option.option} {option.is_correct && '(Correct Answer)'}
+                                        {option.option} {option.is_correct ? '(Correct Answer)' : ''}
                                     </li>
                                 ))}
                             </ul>
