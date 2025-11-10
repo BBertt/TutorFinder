@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import AddLessonModal from "./AddLessonModal";
 import EditSectionModal from "./EditSectionModal";
 import EditLessonModal from "./EditLessonModal";
-import ConfirmationModal from "@/Components/Tutor/Modals/ConfirmationModal";
+import ConfirmationModal from "@/Components/Modals/ConfirmationModal";
 
 export default function CourseSectionLessonForm({
     sections,

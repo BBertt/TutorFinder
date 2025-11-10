@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, usePage, useForm } from "@inertiajs/react";
 import GuestNavbar from "@/Components/Landing/GuestNavbar";
 import { ThemeToggle } from "@/Components/ThemeToggle";
+import SuccessModal from "@/Components/Modals/SuccessModal";
 
 const AppNavbar = ({ logoSrc }) => {
     const { categories } = usePage().props;
@@ -257,13 +258,30 @@ const AppFooter = ({ logoSrc }) => {
 
 export default function Layout({ children, showFooter = true }) {
     const logoSrc = "/assets/logo.png";
-    const { auth } = usePage().props;
+    const { auth, flash } = usePage().props;
+
+    const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
+    const [successMessage, setSuccessMessage] = useState("");
+
+    useEffect(() => {
+        if (flash.success) {
+            setSuccessMessage(flash.success);
+            setIsSuccessModalOpen(true);
+        }
+    }, [flash]);
 
     return (
         <div className="flex flex-col min-h-screen bg-white dark:bg-gray-900 dark:text-white">
             {auth.user ? <AppNavbar logoSrc={logoSrc} /> : <GuestNavbar />}
             <main className="flex-grow">{children}</main>
             {showFooter && <AppFooter logoSrc={logoSrc} />}
+
+            <SuccessModal
+                isOpen={isSuccessModalOpen}
+                onClose={() => setIsSuccessModalOpen(false)}
+                title="Success!"
+                message={successMessage}
+            />
         </div>
     );
 }

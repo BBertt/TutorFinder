@@ -4,7 +4,7 @@ import { Head, Link, useForm, router, usePage } from "@inertiajs/react";
 import CourseOverviewForm from "@/Components/Tutor/CourseForm/CourseOverviewForm";
 import CourseSectionLessonForm from "@/Components/Tutor/CourseForm/CourseSectionLessonForm";
 import CourseReview from "@/Components/Tutor/CourseForm/CourseReview";
-import ConfirmationModal from "@/Components/Tutor/Modals/ConfirmationModal";
+import ConfirmationModal from "@/Components/Modals/ConfirmationModal";
 
 const Stepper = ({ currentStep }) => {
     const steps = ["Overview", "Sections & Lessons", "Review"];

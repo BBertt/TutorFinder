@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link, router } from "@inertiajs/react";
 import StarIcon from "../Course/StarIcon";
-import ConfirmationModal from "@/Components/Tutor/Modals/ConfirmationModal";
+import ConfirmationModal from "@/Components/Modals/ConfirmationModal";
 
 export default function TutorCourseCard({ course }) {
     const authorName = `${course.user.first_name} ${course.user.last_name}`;

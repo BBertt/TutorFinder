@@ -1,15 +1,39 @@
-import React from "react";
+import React, { useState } from "react";
 import Layout from "@/Layouts/Layout";
 import { Head, useForm } from "@inertiajs/react";
+import ConfirmationModal from "@/Components/Modals/ConfirmationModal";
 
 function CreateForum() {
-    const { data, setData, post, processing, errors } = useForm({
+    const { data, setData, post, processing, errors, clearErrors } = useForm({
         title: "",
         description: "",
     });
 
+    const [titleError, setTitleError] = useState("");
+    const [descriptionError, setDescriptionError] = useState("");
+    const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
+
     const submit = (e) => {
         e.preventDefault();
+
+        clearErrors();
+        setTitleError("");
+        setDescriptionError("");
+
+        let hasErrors = false;
+        if (!data.title) {
+            setTitleError("The title field is required.");
+            hasErrors = true;
+        }
+        if (!data.description) {
+            setDescriptionError("The description field is required.");
+            hasErrors = true;
+        }
+
+        if (hasErrors) {
+            return;
+        }
+
         post(route("forums.store"));
     };
 
@@ -23,7 +47,7 @@ function CreateForum() {
                         Create a New Forum Post
                     </h1>
 
-                    <form onSubmit={submit}>
+                    <form onSubmit={submit} noValidate>
                         <div className="mb-4">
                             <label
                                 htmlFor="title"
@@ -36,15 +60,24 @@ function CreateForum() {
                                 type="text"
                                 placeholder="Write down your concern..."
                                 value={data.title}
-                                onChange={(e) =>
-                                    setData("title", e.target.value)
-                                }
+                                onChange={(e) => {
+                                    setData("title", e.target.value);
+                                    clearErrors("title");
+                                    if (!e.target.value) {
+                                        setTitleError(
+                                            "The title field is required."
+                                        );
+                                    } else {
+                                        setTitleError("");
+                                    }
+                                }}
                                 className="mt-1 block w-full border-gray-200 rounded-md shadow-sm dark:bg-darkSecondary dark:border-dark dark:text-white dark:placeholder-gray-400"
                                 required
                             />
-                            {errors.title && (
+
+                            {(titleError || errors.title) && (
                                 <p className="text-red-500 text-sm mt-1">
-                                    {errors.title}
+                                    {titleError || errors.title}
                                 </p>
                             )}
                         </div>
@@ -59,24 +92,33 @@ function CreateForum() {
                             <textarea
                                 id="description"
                                 value={data.description}
-                                onChange={(e) =>
-                                    setData("description", e.target.value)
-                                }
+                                onChange={(e) => {
+                                    setData("description", e.target.value);
+                                    clearErrors("description");
+                                    if (!e.target.value) {
+                                        setDescriptionError(
+                                            "The description field is required."
+                                        );
+                                    } else {
+                                        setDescriptionError("");
+                                    }
+                                }}
                                 placeholder="Describe your concern here..."
                                 className="mt-1 block w-full border-gray-200 rounded-md shadow-sm dark:bg-darkSecondary dark:border-dark dark:text-white dark:placeholder-gray-400"
                                 rows="8"
                                 required
                             ></textarea>
-                            {errors.description && (
+                            {(descriptionError || errors.description) && (
                                 <p className="text-red-500 text-sm mt-1">
-                                    {errors.description}
+                                    {descriptionError || errors.description}
                                 </p>
                             )}
                         </div>
 
                         <div className="flex justify-end">
                             <button
-                                type="submit"
+                                type="button"
+                                onClick={() => setIsConfirmModalOpen(true)}
                                 className="px-8 py-3 bg-primary text-white rounded-lg font-semibold hover:bg-opacity-80 dark:hover:bg-opacity-80 disabled:opacity-50"
                                 disabled={processing}
                             >
@@ -86,6 +128,20 @@ function CreateForum() {
                     </form>
                 </div>
             </main>
+
+            <ConfirmationModal
+                isOpen={isConfirmModalOpen}
+                onClose={() => setIsConfirmModalOpen(false)}
+                onConfirm={(e) => {
+                    submit(e);
+                    setIsConfirmModalOpen(false);
+                }}
+                title="Confirm Forum Post"
+                message="Are you sure you want to create this forum post?"
+                confirmText="Yes, Post"
+                cancelText="Cancel"
+                confirmColor="bg-primary"
+            />
         </>
     );
 }

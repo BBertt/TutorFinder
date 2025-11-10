@@ -6,7 +6,7 @@ import ReplyForm from "@/Components/Forums/ReplyForm";
 import Pagination from "@/Components/Pagination";
 import SortDropdown from "@/Components/SortDropdown";
 
-function ForumDetails({ forum, replies, filters }) {
+function ForumDetails({ forum, replies, filters, repliesTotal }) {
     const onSortChange = (newSort) => {
         router.get(
             route("forums.show", forum.id),
@@ -36,7 +36,7 @@ function ForumDetails({ forum, replies, filters }) {
                     <hr className="my-8 dark:border-dark" />
                     <div className="flex justify-between items-center mb-6">
                         <h2 className="text-2xl font-bold dark:text-white">
-                            Replies ({replies.total})
+                            Replies ({repliesTotal})
                         </h2>
                         <SortDropdown
                             currentSort={filters.sort}
@@ -51,23 +51,7 @@ function ForumDetails({ forum, replies, filters }) {
                                 reply={reply}
                                 type="reply"
                                 forumId={forum.id}
-                            >
-                                {reply.children &&
-                                    reply.children.length > 0 && (
-                                        <div className="mt-4 pl-6 border-l-2 border-gray-200 dark:border-gray-700 space-y-4">
-                                            {reply.children.map(
-                                                (childReply) => (
-                                                    <ReplyCard
-                                                        key={childReply.id}
-                                                        reply={childReply}
-                                                        type="reply"
-                                                        forumId={forum.id}
-                                                    />
-                                                )
-                                            )}
-                                        </div>
-                                    )}
-                            </ReplyCard>
+                            />
                         ))}
                     </div>
 
