@@ -2,6 +2,7 @@ import React from "react";
 import Layout from "@/Layouts/Layout";
 import { Head, Link } from "@inertiajs/react";
 import TutorCourseCard from "@/Components/Tutor/TutorCourseCard";
+import Pagination from "@/Components/Pagination";
 
 export default function ManageCourses({ courses, filters }) {
     const activeStatus = filters.status || "draft";
@@ -74,6 +75,9 @@ export default function ManageCourses({ courses, filters }) {
                         </p>
                     </div>
                 )}
+                <div className="mt-8">
+                    <Pagination links={courses.links} />
+                </div>
             </main>
         </>
     );
