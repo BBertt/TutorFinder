@@ -15,11 +15,19 @@ class ProfileUpdateRequest extends FormRequest
      */
     public function rules(): array
     {
+        $id = null;
+
+        if ($this->route('user')) {
+            $id = $this->route('user')->id;
+        } else {
+            $id = auth()->user()->id;
+        }
+
         return [
             'profileImage' => ['nullable', 'image', 'mimes:jpg,jpeg,png'],
             'firstName' => ['required', 'string'],
             'lastName' => ['required', 'string'],
-            'phoneNumber' => ['nullable', 'string', 'regex:/^[0-9]+$/', 'unique:users,phone_number'],
+            'phoneNumber' => ['nullable', 'string', 'regex:/^[0-9]+$/', 'unique:users,phone_number,'. $id],
             'dateOfBirth' => ['nullable', 'date', 'before_or_equal:today'],
             'bio' => ['nullable', 'string']
         ];

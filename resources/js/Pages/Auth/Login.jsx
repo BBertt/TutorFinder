@@ -1,7 +1,7 @@
 import AuthPagesLayout from "@/Layouts/AuthPagesLayout";
-
 import { useForm, Link, usePage } from "@inertiajs/react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import SuccessModal from "@/Components/Modals/SuccessModal";
 
 const Login = () => {
     const { flash, status } = usePage().props;
@@ -14,28 +14,47 @@ const Login = () => {
     const [emailError, setEmailError] = useState("");
     const [passwordError, setPasswordError] = useState("");
 
+    // state modal sukses
+    const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
+    const [successMessage, setSuccessMessage] = useState("");
+
+    // tampilkan modal jika ada flash.success atau verification link sent
+    useEffect(() => {
+        if (flash.success || status === "verification-link-sent") {
+            setSuccessMessage(
+                flash.success ||
+                    "A new verification link has been sent to your email."
+            );
+            setIsSuccessModalOpen(true);
+        }
+    }, [flash, status]);
+
     const submit = (e) => {
-        e.preventDefault(e);
+        e.preventDefault();
         post("/login");
     };
 
     const resendVerification = (e) => {
         e.preventDefault();
         if (!data.email) return;
-        post(route('verification.resend'), { preserveScroll: true });
+        post(route("verification.resend"), { preserveScroll: true });
     };
 
-    const needsVerification = (errors.email || "").toLowerCase().includes("verify your email");
+    const needsVerification = (errors.email || "")
+        .toLowerCase()
+        .includes("verify your email");
 
     return (
         <div className="w-full max-w-xs flex flex-col gap-6">
-            <div className="text-center">
-                {(flash.success || status === 'verification-link-sent') && (
-                    <div className="bg-green-500 text-white px-4 py-2 rounded mb-4 w-full">
-                        {flash.success || 'A new verification link has been sent to your email.'}
-                    </div>
-                )}
+            {/* Success Modal */}
+            <SuccessModal
+                isOpen={isSuccessModalOpen}
+                onClose={() => setIsSuccessModalOpen(false)}
+                title="Success!"
+                message={successMessage}
+            />
 
+            <div className="text-center">
                 <h1 className="text-5xl font-bold">
                     Welcome!
                     <br />
@@ -75,9 +94,9 @@ const Login = () => {
                             type="button"
                             onClick={resendVerification}
                             disabled={processing || !data.email}
-                            className="mt-2 text-sm underline text-[#4F6D40] hover:text-[#2f4d28]"
+                            className="p-2 font-extrabold rounded-full bg-secondary hover:bg-[#000000] w-2/3"
                         >
-                            Resend verification email
+                            Resend Verification Email
                         </button>
                     )}
                 </div>

@@ -237,7 +237,7 @@ const AppFooter = ({ logoSrc }) => {
                             Get in touch
                         </h3>
                         <ul className="mt-4 space-y-2 text-white">
-                            <li>tutorfinder@example.com</li>
+                            <li>tutorfinderindonesia@gmail.com</li>
                         </ul>
                     </div>
                 </div>

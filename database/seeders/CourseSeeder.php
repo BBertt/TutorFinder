@@ -146,7 +146,7 @@ class CourseSeeder extends Seeder
                 ->each(function (CourseSection $section) {
                     CourseLesson::factory()
                         ->count(rand(4, 8))
-                        ->for($section)
+                        ->for($section, 'section')
                         ->create();
                 });
 

@@ -1,9 +1,10 @@
 import Layout from "@/Layouts/Layout";
 import { usePage, useForm, router } from "@inertiajs/react";
 import { useState } from "react";
+import ConfirmationModal from "@/Components/Modals/ConfirmationModal";
 
 const UserEdit = () => {
-    const { user, flash } = usePage().props;
+    const { user } = usePage().props;
 
     const [profileImage, setProfileImage] = useState(
         user.profile_image_url || "/assets/icons/profile.svg"
@@ -39,14 +40,10 @@ const UserEdit = () => {
         router.get("/users");
     };
 
+    const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
+
     return (
         <div className="max-w-lg w-full mx-auto my-10 bg-primary p-6 rounded-xl text-white flex flex-col items-center dark:bg-darkSecondary dark:border-dark">
-            {flash.success && (
-                <div className="bg-green-500 text-white px-4 py-2 rounded mb-4 w-full">
-                    {flash.success}
-                </div>
-            )}
-
             <h2 className="text-xl font-extrabold mb-4">User Profile</h2>
 
             <form
@@ -220,9 +217,10 @@ const UserEdit = () => {
 
                 <div className="flex justify-center items-center gap-4">
                     <button
-                        type="submit"
+                        type="button"
                         disabled={processing}
                         className="p-2 font-extrabold rounded-full bg-secondary hover:bg-[#000000] w-full dark:bg-primary dark:hover:bg-opacity-80"
+                        onClick={() => setIsUpdateModalOpen(true)}
                     >
                         Update
                     </button>
@@ -234,6 +232,17 @@ const UserEdit = () => {
                         Cancel
                     </button>
                 </div>
+
+                <ConfirmationModal
+                    isOpen={isUpdateModalOpen}
+                    onClose={() => setIsUpdateModalOpen(false)}
+                    onConfirm={handleSubmit}
+                    title="Update Profile"
+                    message="Are you sure you want to update your profile?"
+                    confirmText="Yes, Update"
+                    cancelText="Cancel"
+                    confirmColor="bg-primary"
+                />
             </form>
         </div>
     );

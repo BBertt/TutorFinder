@@ -1,21 +1,11 @@
 import { usePage, router } from "@inertiajs/react";
 import Layout from "@/Layouts/Layout";
 import { useState } from "react";
+import ConfirmationModal from "@/Components/Modals/ConfirmationModal";
 
 const Users = () => {
-    const { users, flash } = usePage().props;
-    const [isOpen, setIsOpen] = useState(false);
+    const { users } = usePage().props;
     const [selectedId, setSelectedId] = useState(null);
-
-    const handleOpen = (id) => {
-        setSelectedId(id);
-        setIsOpen(true);
-    };
-
-    const handleClose = () => {
-        setSelectedId(null);
-        setIsOpen(false);
-    };
 
     const handleUpdate = (id) => {
         router.get(`/users/${id}/edit`);
@@ -24,19 +14,17 @@ const Users = () => {
     const handleDelete = () => {
         router.delete(`/users/${selectedId}`, {
             onSuccess: () => {
-                handleClose();
+                setSelectedId(null);
+                setIsDeleteModalOpen(false);
             },
         });
     };
 
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+
     return (
         <div className="flex flex-col items-center m-10">
             <h1 className="text-2xl font-extrabold mb-6">Users</h1>
-            {flash.success && (
-                <div className="bg-green-500 text-white px-4 py-2 rounded mb-4 w-full">
-                    {flash.success}
-                </div>
-            )}
             {users.length === 0 ? (
                 <h2 className="text-xl font-bold mb-3">
                     There are no Student or Tutor that have registered.
@@ -89,7 +77,10 @@ const Users = () => {
                                     {" | "}
                                     <button
                                         type="button"
-                                        onClick={() => handleOpen(user.id)}
+                                        onClick={() => {
+                                            setSelectedId(user.id);
+                                            setIsDeleteModalOpen(true);
+                                        }}
                                         className="text-secondary font-extrabold dark:text-white"
                                     >
                                         Delete
@@ -101,31 +92,19 @@ const Users = () => {
                 </table>
             )}
 
-            {isOpen && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                    <div className="rounded-lg bg-white p-4 shadow-lg max-w-md w-full flex flex-col justify-center items-center">
-                        <h2 className="text-xl font-bold mb-3">
-                            Are you sure you want to delete this user?
-                        </h2>
-                        <div className="flex justify-center items-center gap-4 w-full">
-                            <button
-                                type="button"
-                                className="p-2 font-extrabold rounded-full bg-primary text-white hover:bg-secondary w-full"
-                                onClick={() => handleDelete(selectedId)}
-                            >
-                                Yes
-                            </button>
-                            <button
-                                type="button"
-                                className="p-2 font-extrabold rounded-full bg-secondary text-white hover:bg-[#000000] w-full"
-                                onClick={handleClose}
-                            >
-                                No
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
+            <ConfirmationModal
+                isOpen={isDeleteModalOpen}
+                onClose={() => {
+                    setSelectedId(null);
+                    setIsDeleteModalOpen(false);
+                }}
+                onConfirm={handleDelete}
+                title="Delete User"
+                message="Are you sure you want to delete this user?"
+                confirmText="Yes, Delete"
+                cancelText="Cancel"
+                confirmColor="bg-red-600"
+            />
         </div>
     );
 };
