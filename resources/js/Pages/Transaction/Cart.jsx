@@ -120,7 +120,7 @@ const Checkout = ({ cartItems }) => {
                                             </h2>
                                             <p className="text-sm dark:text-white">
                                                 {item.course.user
-                                                    ? item.course.user.name
+                                                    ? `${item.course.user.first_name} ${item.course.user.last_name}`
                                                     : "Author"}
                                             </p>
                                             <p className="font-bold dark:text-white mt-1">
