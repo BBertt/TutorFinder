@@ -108,6 +108,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::get('/forums/create', [ForumController::class, 'create'])->name('forums.create');
     Route::post('/forums', [ForumController::class, 'store'])->name('forums.store');
+    Route::delete('/forums/{forum}', [ForumController::class, 'destroy'])->name('forums.destroy');
 
     Route::get('/forums/{forum}', [ForumController::class, 'show'])->name('forums.show');
 

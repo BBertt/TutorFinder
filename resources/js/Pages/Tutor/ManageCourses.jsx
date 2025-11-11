@@ -2,6 +2,7 @@ import React from "react";
 import Layout from "@/Layouts/Layout";
 import { Head, Link } from "@inertiajs/react";
 import TutorCourseCard from "@/Components/Tutor/TutorCourseCard";
+import Pagination from "@/Components/Pagination";
 
 export default function ManageCourses({ courses, filters }) {
     const activeStatus = filters.status || "draft";
@@ -25,8 +26,8 @@ export default function ManageCourses({ courses, filters }) {
                             })}
                             className={`px-4 py-2 rounded-md text-sm font-semibold transition-colors ${
                                 activeStatus === "draft"
-                                    ? "bg-gray-300 text-gray-800 dark:bg-gray-600 dark:text-gray-100"
-                                    : "bg-gray-100 text-gray-500 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700"
+                                    ? "bg-primary font-bold text-white"
+                                    : "text-gray-700 bg-white hover:bg-gray-200 dark:bg-darkSecondary dark:text-gray-400 dark:hover:bg-gray-700"
                             }`}
                             preserveState
                             preserveScroll
@@ -39,8 +40,8 @@ export default function ManageCourses({ courses, filters }) {
                             })}
                             className={`px-4 py-2 rounded-md text-sm font-semibold transition-colors ${
                                 activeStatus === "published"
-                                    ? "bg-gray-300 text-gray-800 dark:bg-gray-600 dark:text-gray-100"
-                                    : "bg-gray-100 text-gray-500 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700"
+                                    ? "bg-primary font-bold text-white"
+                                    : "text-gray-700 bg-white hover:bg-gray-200 dark:bg-darkSecondary dark:text-gray-400 dark:hover:bg-gray-700"
                             }`}
                             preserveState
                             preserveScroll
@@ -51,7 +52,7 @@ export default function ManageCourses({ courses, filters }) {
                     <div className="ml-auto">
                         <Link
                             href={route("tutor.courses.create")}
-                            className="bg-primary text-white font-bold py-2 px-4 rounded-lg hover:bg-opacity-90 dark:hover:bg-opacity-80 transition-colors"
+                            className="bg-primary text-white font-bold py-2 px-4 rounded-lg hover:bg-opacity-80 transition-colors"
                         >
                             Create New Course
                         </Link>
@@ -65,8 +66,8 @@ export default function ManageCourses({ courses, filters }) {
                         ))}
                     </div>
                 ) : (
-                    <div className="text-center text-gray-500 bg-white p-12 rounded-lg shadow-sm border dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400">
-                        <h2 className="text-2xl font-bold dark:text-gray-200">
+                    <div className="text-center text-gray-400 bg-white p-12 rounded-lg shadow-sm border dark:bg-darkSecondary dark:border-dark">
+                        <h2 className="text-2xl font-bold text-black dark:text-white">
                             No courses found!
                         </h2>
                         <p className="mt-2">
@@ -74,6 +75,9 @@ export default function ManageCourses({ courses, filters }) {
                         </p>
                     </div>
                 )}
+                <div className="mt-8">
+                    <Pagination links={courses.links} />
+                </div>
             </main>
         </>
     );

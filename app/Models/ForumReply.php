@@ -39,6 +39,11 @@ class ForumReply extends Model
         return $this->hasMany(ForumReply::class, 'parent_id');
     }
 
+    public function allChildren()
+    {
+        return $this->children()->with(['user', 'userVote', 'allChildren']);
+    }
+
     public function votes()
     {
         return $this->morphMany(ForumVote::class, 'voteable');

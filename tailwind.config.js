@@ -28,6 +28,11 @@ export default {
                 primary: "#4F6D40",
                 secondary: "#3D3D3D",
                 accent: "#F5F5F5",
+                darkPrimary: "#111827",
+                darkSecondary: "#1F2937",
+            },
+            borderColor: {
+                dark: "#374151",
             },
         },
     },

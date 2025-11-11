@@ -18,17 +18,13 @@ const timeAgo = (dateString) => {
     return Math.floor(seconds) + " seconds ago";
 };
 
-export default function ReplyCard({
-    reply,
-    type = "reply",
-    forumId,
-    children,
-}) {
+export default function ReplyCard({ reply, type = "reply", forumId }) {
     const [showReplyForm, setShowReplyForm] = useState(false);
     const [showNestedReplies, setShowNestedReplies] = useState(false);
 
-    const hasChildren = reply.children && reply.children.length > 0;
-    const childrenCount = hasChildren ? reply.children.length : 0;
+    // CHANGE 1: Look for `all_children` instead of `children`
+    const hasChildren = reply.all_children && reply.all_children.length > 0;
+    const childrenCount = hasChildren ? reply.all_children.length : 0;
 
     const authorName = `${reply.user.first_name} ${reply.user.last_name}`;
 
@@ -48,28 +44,29 @@ export default function ReplyCard({
             <div className="flex-1">
                 <div className="flex items-center justify-between">
                     <p className="font-bold dark:text-gray-200">{authorName}</p>
-                    <span className="text-xs text-gray-500 dark:text-gray-400">
+                    <span className="text-xs text-gray-400">
                         {timeAgo(reply.created_at)}
                     </span>
                 </div>
 
                 {type === "forum" && (
-                    <h1 className="text-3xl font-bold mt-1 mb-2 dark:text-gray-200">
+                    <h1 className="text-3xl font-bold mt-1 mb-2 dark:text-white">
                         {reply.title}
                     </h1>
                 )}
 
-                <p className="text-gray-700 mt-1 dark:text-gray-300">
-                    {reply.description}
-                </p>
+                <p className="mt-1 dark:text-white">{reply.description}</p>
                 <div className="flex items-center space-x-4 mt-2">
                     <VoteButtons item={reply} type={type} />
-                    <button
-                        onClick={() => setShowReplyForm(!showReplyForm)}
-                        className="text-sm font-semibold text-gray-500 hover:underline dark:text-gray-400 dark:hover:text-gray-300"
-                    >
-                        Reply
-                    </button>
+
+                    {type === "reply" && (
+                        <button
+                            onClick={() => setShowReplyForm(!showReplyForm)}
+                            className="text-sm font-semibold text-gray-400 hover:underline dark:hover:text-white"
+                        >
+                            Reply
+                        </button>
+                    )}
 
                     {hasChildren && (
                         <button
@@ -86,6 +83,7 @@ export default function ReplyCard({
                                 }`}
                             />
                             <span>
+                                {/* CHANGE 2: Use childrenCount (which is based on all_children) */}
                                 {showNestedReplies
                                     ? "Hide Replies"
                                     : `View ${childrenCount} ${
@@ -106,7 +104,19 @@ export default function ReplyCard({
                     />
                 )}
 
-                {hasChildren && showNestedReplies && children}
+                {/* CHANGE 3: Map over `all_children` instead of `children` */}
+                {hasChildren && showNestedReplies && (
+                    <div className="mt-4 pl-6 border-l-2 border-gray-200 dark:border-gray-700 space-y-4">
+                        {reply.all_children.map((childReply) => (
+                            <ReplyCard
+                                key={childReply.id}
+                                reply={childReply}
+                                type="reply"
+                                forumId={forumId}
+                            />
+                        ))}
+                    </div>
+                )}
             </div>
         </div>
     );

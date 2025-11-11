@@ -23,7 +23,7 @@ function Home() {
                 </h1>
                 <Link
                     href={getCourses()}
-                    className="mt-4 inline-block text-lg font-semibold hover:text-primary"
+                    className="mt-4 inline-block text-lg font-semibold text-primary"
                 >
                     Your Courses
                 </Link>
@@ -55,7 +55,7 @@ function Home() {
                             href={`/tutors/${tutor.id}`}
                             className="flex-1"
                         >
-                            <div className="bg-secondary rounded-xl p-6 flex gap-4 items-center text-white">
+                            <div className="bg-secondary rounded-xl p-6 flex gap-4 items-center text-white dark:bg-darkSecondary dark:border-dark">
                                 <img
                                     className="w-24 h-24 rounded-full"
                                     src={

@@ -12,9 +12,7 @@ export default function TopContributorList({ contributors }) {
                         {index + 1}
                     </span>
                     <img
-                        className={`w-10 h-10 rounded-full ${
-                            !contributor.profile_image_path && "dark:invert"
-                        }`}
+                        className="w-10 h-10 rounded-full"
                         src={
                             contributor.profile_image_path
                                 ? contributor.profile_image_path

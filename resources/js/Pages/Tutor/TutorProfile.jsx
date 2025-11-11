@@ -15,9 +15,7 @@ function TutorProfile({ tutor }) {
                 <section className="bg-primary text-white rounded-lg p-8 md:p-12">
                     <div className="flex flex-col md:flex-row items-center justify-center gap-8 md:gap-12">
                         <img
-                            className={`w-40 h-40 rounded-full ring-4 ring-white flex-shrink-0 ${
-                                !tutor.profile_image_path && "dark:invert"
-                            }`}
+                            className="w-40 h-40 rounded-full flex-shrink-0"
                             src={
                                 tutor.profile_image_path
                                     ? `/${tutor.profile_image_path}`
@@ -39,7 +37,7 @@ function TutorProfile({ tutor }) {
                     </div>
                 </section>
                 <section>
-                    <h2 className="text-3xl font-bold mb-6 dark:text-gray-200">
+                    <h2 className="text-3xl font-bold mb-6 dark:text-white">
                         Tutor courses
                     </h2>
                     {tutor.courses?.length > 0 ? (
@@ -49,14 +47,14 @@ function TutorProfile({ tutor }) {
                             ))}
                         </div>
                     ) : (
-                        <p className="text-gray-500 dark:text-gray-400">
+                        <p className="text-gray-400">
                             This tutor has not published any courses yet.
                         </p>
                     )}
                 </section>
 
                 <section>
-                    <h2 className="text-3xl font-bold mb-6 dark:text-gray-200">
+                    <h2 className="text-3xl font-bold mb-6 dark:text-white">
                         Review
                     </h2>
                     {tutor.reviews?.length > 0 ? (
@@ -69,7 +67,7 @@ function TutorProfile({ tutor }) {
                             ))}
                         </div>
                     ) : (
-                        <p className="text-gray-500 dark:text-gray-400">
+                        <p className="text-gray-400">
                             This tutor has not received any reviews yet.
                         </p>
                     )}

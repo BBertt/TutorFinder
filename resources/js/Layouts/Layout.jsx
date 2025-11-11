@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, usePage, useForm } from "@inertiajs/react";
 import GuestNavbar from "@/Components/Landing/GuestNavbar";
 import { ThemeToggle } from "@/Components/ThemeToggle";
+import SuccessModal from "@/Components/Modals/SuccessModal";
 
 const AppNavbar = ({ logoSrc }) => {
     const { categories } = usePage().props;
@@ -53,7 +54,7 @@ const AppNavbar = ({ logoSrc }) => {
                                 onChange={(e) =>
                                     setData("search", e.target.value)
                                 }
-                                className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-full leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-green-700 focus:border-green-700 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
+                                className="block w-full pl-10 pr-3 py-2 border border-gray-200 rounded-full leading-5 bg-white placeholder-gray-400 sm:text-sm dark:bg-darkSecondary dark:border-g dark:text-white dark:placeholder-gray-400"
                                 placeholder="Search..."
                                 type="Search"
                             />
@@ -71,12 +72,12 @@ const AppNavbar = ({ logoSrc }) => {
                                 />
 
                                 {dropdown && (
-                                    <div className="absolute right-0 mt-2 w-64 bg-white rounded-md border border-gray-200 z-1 dark:bg-gray-800 dark:border-gray-700">
+                                    <div className="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-xl border dark:bg-darkSecondary dark:border-dark z-20">
                                         {categories.map((category) => (
                                             <Link
                                                 key={category.id}
                                                 href={`/courses?category=${category.id}`}
-                                                className="block px-4 py-2 text-secondary hover:bg-primary hover:text-white rounded-md dark:text-gray-300 dark:hover:bg-primary"
+                                                className="block w-full text-left px-4 py-2 text-sm text-secondary hover:bg-gray-200 hover:text-gray-800 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-white"
                                                 onClick={() =>
                                                     setDropdown(false)
                                                 }
@@ -136,9 +137,7 @@ const AppNavbar = ({ logoSrc }) => {
                                 className="cursor-pointer"
                             >
                                 <img
-                                    className={`w-7 h-7 rounded-full ${!auth.user.profile_image_url &&
-                                        "dark:invert"
-                                        }`}
+                                    className="w-7 h-7 rounded-full"
                                     src={
                                         auth.user.profile_image_url ||
                                         "/assets/icons/profile.svg"
@@ -151,21 +150,21 @@ const AppNavbar = ({ logoSrc }) => {
                                 <div className="absolute right-0 mt-2 w-64 bg-white rounded-md border border-gray-200 z-1 dark:bg-gray-800 dark:border-gray-700">
                                     <Link
                                         href="/profile"
-                                        className="block px-4 py-2 text-secondary hover:bg-primary hover:text-white rounded-md dark:text-gray-300 dark:hover:bg-primary"
+                                        className="block px-4 py-2 text-secondary hover:bg-gray-200 hover:text-gray-800 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-white"
                                         onClick={() => setOpen(false)}
                                     >
                                         Profile
                                     </Link>
                                     <Link
                                         href="/purchased-courses"
-                                        className="block px-4 py-2 text-secondary hover:bg-primary hover:text-white rounded-md dark:text-gray-300 dark:hover:bg-primary"
+                                        className="block px-4 py-2 text-secondary hover:bg-gray-200 hover:text-gray-800 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-white"
                                         onClick={() => setOpen(false)}
                                     >
                                         Purchased Courses
                                     </Link>
                                     <Link
                                         href="/transactions"
-                                        className="block px-4 py-2 text-secondary hover:bg-primary hover:text-white rounded-md dark:text-gray-300 dark:hover:bg-primary"
+                                        className="block px-4 py-2 text-secondary hover:bg-gray-200 hover:text-gray-800 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-white"
                                         onClick={() => setOpen(false)}
                                     >
                                         Transaction History
@@ -174,7 +173,7 @@ const AppNavbar = ({ logoSrc }) => {
                                         href="/logout"
                                         method="post"
                                         as="button"
-                                        className="w-full text-left px-4 py-2 text-secondary hover:bg-primary hover:text-white rounded-md dark:text-gray-300 dark:hover:bg-primary"
+                                        className="w-full text-left px-4 py-2 text-secondary hover:bg-gray-200 hover:text-gray-800 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-white"
                                     >
                                         Logout
                                     </Link>
@@ -191,20 +190,14 @@ const AppNavbar = ({ logoSrc }) => {
 const AppFooter = ({ logoSrc }) => {
     return (
         <footer className="bg-gradient-to-r from-[#99D37C] to-[#4F6D40] dark:from-gray-800 dark:to-gray-900">
-            <div className="container mx-auto py-12 px-4 sm:px-6 lg:px-8">
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+            <div className="container mx-auto py-12 px-4 justify-between sm:px-6 lg:px-8">
+                <div className="flex flex-col md:flex-row justify-between">
                     <div className="space-y-4">
                         <img
                             className="h-24 w-auto"
                             src={logoSrc}
                             alt="TutorFinder Logo"
                         />
-                        <p className="text-white text-sm">
-                            Pengalaman tentang tutor finder...
-                        </p>
-                        <p className="text-white text-sm">
-                            Penjelasan tentang tutor finder...
-                        </p>
                     </div>
 
                     <div>
@@ -214,66 +207,26 @@ const AppFooter = ({ logoSrc }) => {
                         <ul className="mt-4 space-y-2">
                             <li>
                                 <Link
-                                    href="#"
+                                    href="/"
                                     className="text-base text-white hover:text-gray-300 font-bold"
                                 >
-                                    Navigation Link
+                                    Home
                                 </Link>
                             </li>
                             <li>
                                 <Link
-                                    href="#"
+                                    href="/courses"
                                     className="text-base text-white hover:text-gray-300 font-bold"
                                 >
-                                    Navigation Link
+                                    Courses
                                 </Link>
                             </li>
                             <li>
                                 <Link
-                                    href="#"
+                                    href="/forums"
                                     className="text-base text-white hover:text-gray-300 font-bold"
                                 >
-                                    Navigation Link
-                                </Link>
-                            </li>
-                            <li>
-                                <Link
-                                    href="#"
-                                    className="text-base text-white hover:text-gray-300 font-bold"
-                                >
-                                    Navigation Link
-                                </Link>
-                            </li>
-                        </ul>
-                    </div>
-
-                    <div>
-                        <h3 className="text-sm font-semibold tracking-wider uppercase opacity-0 hidden md:block">
-                            Navigation
-                        </h3>
-                        <ul className="mt-4 space-y-2 md:mt-10">
-                            <li>
-                                <Link
-                                    href="#"
-                                    className="text-base text-white hover:text-gray-300 font-bold"
-                                >
-                                    Navigation Link
-                                </Link>
-                            </li>
-                            <li>
-                                <Link
-                                    href="#"
-                                    className="text-base text-white hover:text-gray-300 font-bold"
-                                >
-                                    Navigation Link
-                                </Link>
-                            </li>
-                            <li>
-                                <Link
-                                    href="#"
-                                    className="text-base text-white hover:text-gray-300 font-bold"
-                                >
-                                    Navigation Link
+                                    Forums
                                 </Link>
                             </li>
                         </ul>
@@ -285,9 +238,6 @@ const AppFooter = ({ logoSrc }) => {
                         </h3>
                         <ul className="mt-4 space-y-2 text-white">
                             <li>tutorfinder@example.com</li>
-                            <li>
-                                TutorFinder Address, Jl. Example, kota, negara
-                            </li>
                         </ul>
                     </div>
                 </div>
@@ -304,14 +254,30 @@ const AppFooter = ({ logoSrc }) => {
 
 export default function Layout({ children, showFooter = true }) {
     const logoSrc = "/assets/logo.png";
-    const { flash } = usePage().props;
-    const { auth } = usePage().props;
+    const { auth, flash } = usePage().props;
+
+    const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
+    const [successMessage, setSuccessMessage] = useState("");
+
+    useEffect(() => {
+        if (flash.success) {
+            setSuccessMessage(flash.success);
+            setIsSuccessModalOpen(true);
+        }
+    }, [flash]);
 
     return (
-        <div className="flex flex-col min-h-screen bg-white dark:bg-gray-900 dark:text-gray-300">
+        <div className="flex flex-col min-h-screen bg-white dark:bg-gray-900 dark:text-white">
             {auth.user ? <AppNavbar logoSrc={logoSrc} /> : <GuestNavbar />}
             <main className="flex-grow">{children}</main>
             {showFooter && <AppFooter logoSrc={logoSrc} />}
+
+            <SuccessModal
+                isOpen={isSuccessModalOpen}
+                onClose={() => setIsSuccessModalOpen(false)}
+                title="Success!"
+                message={successMessage}
+            />
         </div>
     );
 }

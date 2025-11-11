@@ -8,8 +8,8 @@ const Dashboard = () => {
 
             <div className="w-full flex flex-wrap justify-evenly items-center text-white">
                 <Link
-                    href={route('admin.tutors')}
-                    className="max-w-md w-full p-10 bg-primary rounded-xl hover:bg-secondary text-center"
+                    href={route("admin.tutors")}
+                    className="max-w-md w-full p-10 bg-primary rounded-xl hover:bg-secondary text-center dark:bg-darkSecondary dark:border-dark dark:hover:bg-gray-700"
                 >
                     <h2 className="text-xl font-bold mb-2">
                         Manage Tutor Registration
@@ -18,16 +18,16 @@ const Dashboard = () => {
                 </Link>
 
                 <Link
-                    href={route('admin.users')}
-                    className="max-w-md w-full p-10 bg-secondary rounded-xl hover:bg-[#000000] text-center"
+                    href={route("admin.users")}
+                    className="max-w-md w-full p-10 bg-secondary rounded-xl hover:bg-[#000000] text-center dark:bg-darkSecondary dark:border-dark dark:hover:bg-gray-700"
                 >
                     <h2 className="text-xl font-bold mb-2">Manage Users</h2>
                     <p>Manage all users in the system.</p>
                 </Link>
 
                 <Link
-                    href={route('admin.transactions')}
-                    className="max-w-md w-full p-10 bg-primary rounded-xl hover:bg-secondary text-center"
+                    href={route("admin.transactions")}
+                    className="max-w-md w-full p-10 bg-primary rounded-xl hover:bg-secondary text-center dark:bg-darkSecondary dark:border-dark dark:hover:bg-gray-700"
                 >
                     <h2 className="text-xl font-bold mb-2">History</h2>
                     <p>View users transactions history</p>
