@@ -218,7 +218,24 @@ function LearnCourse({ course, progress: initialProgress, last_watched_lesson_id
         if (activeContent?.type === 'lesson') {
             return (
                 <div>
-                    <VideoPlayer videoUrl={activeContent.content.s3_video_url || activeContent.content.video_url} onVideoEnded={() => markLessonAsCompleted(activeContent.content.id)} />
+                    {(activeContent.content.s3_video_url || activeContent.content.video_url) && (
+                        <VideoPlayer videoUrl={activeContent.content.s3_video_url || activeContent.content.video_url} onVideoEnded={() => markLessonAsCompleted(activeContent.content.id)} />
+                    )}
+                    <div className="mt-4">
+                        <h2 className="text-2xl font-bold">{activeContent.title}</h2>
+                        <div className="flex items-center mt-4">
+                            <img
+                                className="w-10 h-10 rounded-full mr-4"
+                                src={
+                                    course.user.profile_image_url ||
+                                    "/assets/icons/profile.svg"
+                                }
+                                alt={course.user.first_name}
+                            />
+                            <Link href={`/tutors/${course.user.id}`} className="text-lg font-bold">{course.user.first_name} {course.user.last_name}</Link>
+                        </div>
+                        <p className="text-gray-600 mt-4">{activeContent.description}</p>
+                    </div>
                     <div className="mt-4">
                         <h2 className="text-2xl font-bold">{activeContent.content.title}</h2>
                         <p className="text-gray-600 mt-4">{activeContent.content.description}</p>
