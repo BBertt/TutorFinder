@@ -10,6 +10,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Requests\Auth\TutorRegisterRequest;
 use App\Models\TutorRegistration;
+use Carbon\Carbon;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Facades\Auth;
 
@@ -30,7 +31,8 @@ class RegisteredTutorController extends Controller
             'date_of_birth' => $request->dateOfBirth,
             'role_id' => 2, // default role_id for tutor,
             'identification_image_path' => $request->file('identificationImage')->store('identification'),
-            'certification_image_path' => $request->file('certificationImage')->store('certification')
+            'certification_image_path' => $request->file('certificationImage')->store('certification'),
+            'email_verified_at' => Carbon::now()
         ]);
 
         TutorRegistration::create([
