@@ -39,6 +39,7 @@ export default function CourseOverviewForm({
                     <input
                         type="text"
                         id="title"
+                        placeholder="Input your course title here..."
                         value={data.title}
                         onChange={(e) => setData("title", e.target.value)}
                         className="mt-1 block w-full border-gray-200 rounded-md shadow-sm dark:bg-darkSecondary dark:border-dark dark:text-white dark:placeholder-gray-400"
@@ -58,6 +59,7 @@ export default function CourseOverviewForm({
                     </label>
                     <textarea
                         id="description"
+                        placeholder="Input your course description here..."
                         value={data.description}
                         onChange={(e) => setData("description", e.target.value)}
                         rows="5"
@@ -78,6 +80,7 @@ export default function CourseOverviewForm({
                     </label>
                     <textarea
                         id="student_outcome"
+                        placeholder="Input what students will learn here..."
                         value={data.student_outcome}
                         onChange={(e) =>
                             setData("student_outcome", e.target.value)
@@ -102,6 +105,7 @@ export default function CourseOverviewForm({
                     </label>
                     <textarea
                         id="requirements"
+                        placeholder="Input course requirements here..."
                         value={data.requirements}
                         onChange={(e) =>
                             setData("requirements", e.target.value)
