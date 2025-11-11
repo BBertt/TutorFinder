@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link, router } from "@inertiajs/react";
 import StarIcon from "../Course/StarIcon";
-import ConfirmationModal from "@/Components/Tutor/Modals/ConfirmationModal";
+import ConfirmationModal from "@/Components/Modals/ConfirmationModal";
 
 export default function TutorCourseCard({ course }) {
     const authorName = `${course.user.first_name} ${course.user.last_name}`;
@@ -30,13 +30,13 @@ export default function TutorCourseCard({ course }) {
                 />
                 <div className="p-4 flex-1 flex flex-col sm:flex-row items-start sm:justify-between">
                     <div className="flex-1 pr-0 sm:pr-4">
-                        <h3 className="text-lg font-semibold text-gray-800 line-clamp-2 dark:text-gray-200">
+                        <h3 className="text-lg font-semibold text-gray-800 line-clamp-2 dark:text-white">
                             {course.title}
                         </h3>
                         <p className="text-sm text-gray-500 mt-1 dark:text-gray-400">
                             {authorName}
                         </p>
-                        <p className="text-lg font-bold text-gray-900 mt-2 dark:text-gray-100">
+                        <p className="text-lg font-bold text-gray-900 mt-2 dark:text-white">
                             Rp {Number(course.price).toLocaleString("id-ID")}
                         </p>
                     </div>

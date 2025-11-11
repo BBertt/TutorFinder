@@ -28,7 +28,7 @@ export default function ReplyForm({
                 value={data.description}
                 onChange={(e) => setData("description", e.target.value)}
                 placeholder="Write a message..."
-                className="w-full border-gray-300 rounded-lg shadow-sm focus:border-primary focus:ring-primary dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
+                className="w-full border-gray-200 rounded-lg shadow-sm dark:bg-darkSecondary dark:border-dark dark:text-white dark:placeholder-gray-400"
                 rows="3"
             ></textarea>
             {errors.description && (
@@ -40,7 +40,7 @@ export default function ReplyForm({
                 <button
                     type="submit"
                     disabled={processing}
-                    className="px-6 py-2 bg-primary text-white rounded-lg hover:bg-opacity-90 dark:hover:bg-opacity-80 disabled:opacity-50 text-sm font-semibold"
+                    className="px-6 py-2 bg-primary text-white rounded-lg hover:bg-opacity-80 dark:hover:bg-opacity-80 disabled:opacity-50 text-sm font-semibold"
                 >
                     Post Reply
                 </button>

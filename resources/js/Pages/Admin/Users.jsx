@@ -65,12 +65,15 @@ const Users = () => {
                                 <td className="border p-2">
                                     {user.phone_number}
                                 </td>
-                                <td className="border p-2">{user.gender ? user.gender : "-"}</td>
                                 <td className="border p-2">
-                                    {user.date_of_birth ? new Date(
-                                        user.date_of_birth
-                                    ).toLocaleDateString("en-GB") : "-"
-                                    }
+                                    {user.gender ? user.gender : "-"}
+                                </td>
+                                <td className="border p-2">
+                                    {user.date_of_birth
+                                        ? new Date(
+                                              user.date_of_birth
+                                          ).toLocaleDateString("en-GB")
+                                        : "-"}
                                 </td>
                                 <td className="border p-2">{user.role.name}</td>
                                 <td className="border p-2">
@@ -87,7 +90,7 @@ const Users = () => {
                                     <button
                                         type="button"
                                         onClick={() => handleOpen(user.id)}
-                                        className="text-secondary font-extrabold"
+                                        className="text-secondary font-extrabold dark:text-white"
                                     >
                                         Delete
                                     </button>

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import AddLessonModal from "./AddLessonModal";
 import EditSectionModal from "./EditSectionModal";
 import EditLessonModal from "./EditLessonModal";
-import ConfirmationModal from "@/Components/Tutor/Modals/ConfirmationModal";
+import ConfirmationModal from "@/Components/Modals/ConfirmationModal";
 
 export default function CourseSectionLessonForm({
     sections,
@@ -157,10 +157,10 @@ export default function CourseSectionLessonForm({
             />
 
             <div className="mt-8">
-                <h2 className="text-2xl font-bold mb-4 dark:text-gray-200">
+                <h2 className="text-2xl font-bold mb-4 dark:text-white">
                     Sections & Lessons
                 </h2>
-                <p className="text-gray-600 mb-6 dark:text-gray-400">
+                <p className="text-gray-400 mb-6">
                     Structure your course by adding sections and the lessons
                     within them.
                 </p>
@@ -185,15 +185,15 @@ export default function CourseSectionLessonForm({
                     {sections.map((section, index) => (
                         <div
                             key={section.id}
-                            className="p-4 border rounded-lg bg-gray-50 dark:bg-gray-800 dark:border-gray-700"
+                            className="p-4 border rounded-lg dark:bg-darkSecondary dark:border-dark"
                         >
                             <div className="flex justify-between items-start">
                                 <div>
-                                    <p className="font-semibold text-lg dark:text-gray-200">
+                                    <p className="font-semibold text-lg dark:text-white">
                                         Section {index + 1}: {section.title}
                                     </p>
                                     {section.description && (
-                                        <p className="text-sm text-gray-500 mt-1 dark:text-gray-400">
+                                        <p className="text-sm text-gray-400 mt-1">
                                             {section.description}
                                         </p>
                                     )}
@@ -204,7 +204,7 @@ export default function CourseSectionLessonForm({
                                         onClick={() =>
                                             openModal("editSection", section)
                                         }
-                                        className="px-4 py-1 text-sm bg-gray-200 text-gray-800 font-semibold rounded-md hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
+                                        className="px-4 py-1 text-sm bg-gray-200 font-semibold rounded-md hover:bg-gray-300 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600"
                                     >
                                         Edit
                                     </button>
@@ -226,7 +226,7 @@ export default function CourseSectionLessonForm({
                                 {section.lessons.map((lesson) => (
                                     <div
                                         key={lesson.id}
-                                        className="text-sm text-gray-700 dark:text-gray-300 flex justify-between items-center"
+                                        className="text-sm dark:text-white flex justify-between items-center"
                                     >
                                         <span>- {lesson.title}</span>
                                         <div className="flex items-center space-x-2">
@@ -259,7 +259,7 @@ export default function CourseSectionLessonForm({
                                     </div>
                                 ))}
                                 {section.lessons.length === 0 && (
-                                    <p className="text-sm text-gray-400 dark:text-gray-500 italic">
+                                    <p className="text-sm text-gray-400 italic">
                                         No lessons in this section yet.
                                     </p>
                                 )}
@@ -276,11 +276,11 @@ export default function CourseSectionLessonForm({
                         </div>
                     ))}
                     {sections.length === 0 && (
-                        <div className="text-center py-12 border-2 border-dashed rounded-lg dark:border-gray-700">
-                            <h3 className="text-xl font-bold text-gray-700 dark:text-gray-300">
+                        <div className="text-center py-12 border-2 border-dashed rounded-lg dark:border-dark">
+                            <h3 className="text-xl font-bold dark:text-white">
                                 Your course has no sections
                             </h3>
-                            <p className="text-gray-500 mt-1 dark:text-gray-400">
+                            <p className="text-gray-400 mt-1">
                                 Add your first section below to get started.
                             </p>
                         </div>
@@ -297,7 +297,7 @@ export default function CourseSectionLessonForm({
                             value={newSectionTitle}
                             onChange={(e) => setNewSectionTitle(e.target.value)}
                             placeholder="Add a new section title..."
-                            className="w-full border-gray-300 rounded-md shadow-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
+                            className="w-full border-gray-200 rounded-md shadow-sm dark:bg-darkSecondary dark:border-dark dark:text-white dark:placeholder-gray-400"
                         />
                         {errors["sections.0.title"] && (
                             <p className="text-red-500 text-sm mt-1">
@@ -311,7 +311,7 @@ export default function CourseSectionLessonForm({
                             onChange={(e) => setNewSectionDesc(e.target.value)}
                             placeholder="Add an optional description for the section..."
                             rows="2"
-                            className="w-full border-gray-300 rounded-md shadow-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
+                            className="w-full border-gray-200 rounded-md shadow-sm dark:bg-darkSecondary dark:border-dark dark:text-white dark:placeholder-gray-400"
                         ></textarea>
                     </div>
                     <div className="flex justify-end">

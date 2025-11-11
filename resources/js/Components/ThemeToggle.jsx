@@ -44,7 +44,7 @@ export const ThemeToggle = () => {
     return (
         <button
             onClick={toggleTheme}
-            className="w-7 h-7 text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary"
+            className="w-7 h-7 text-gray-700 dark:text-gray-400"
             title={
                 theme === "light"
                     ? "Switch to dark mode"

@@ -16,10 +16,7 @@ export default function PurchasedCourseCard({ enrollment }) {
     };
 
     return (
-        <Link
-            href={route("courses.show", course.id)}
-            className="block group"
-        >
+        <Link href={route("courses.show", course.id)} className="block group">
             <div className="bg-white rounded-lg shadow-md overflow-hidden transform hover:-translate-y-2 transition-transform duration-300 h-full flex flex-col">
                 <img
                     src={`/${course.thumbnail_image}`}

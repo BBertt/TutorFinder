@@ -1,6 +1,6 @@
 import React from "react";
 import { router } from "@inertiajs/react";
-import ConfirmationModal from "@/Components/Tutor/Modals/ConfirmationModal";
+import ConfirmationModal from "@/Components/Modals/ConfirmationModal";
 
 export default function LoginModal({ isOpen, onClose }) {
     const handleLoginRedirect = () => {

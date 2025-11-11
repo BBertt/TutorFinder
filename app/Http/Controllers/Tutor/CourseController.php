@@ -18,7 +18,7 @@ class CourseController extends Controller
     {
         $request->validate(['status' => 'in:draft,published']);
         $status = $request->input('status', 'draft');
-        $courses = Auth::user()->courses()->where('status', $status)->with('user')->withAvg('reviews', 'rating')->latest()->paginate(6);
+        $courses = Auth::user()->courses()->where('status', $status)->with('user')->withAvg('reviews', 'rating')->latest()->paginate(6)->withQueryString();
         return Inertia::render('Tutor/ManageCourses', ['courses' => $courses, 'filters' => ['status' => $status]]);
     }
 

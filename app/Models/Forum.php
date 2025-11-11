@@ -28,6 +28,11 @@ class Forum extends Model
         return $this->hasMany(ForumReply::class)->whereNull('parent_id');
     }
 
+    public function allReplies()
+    {
+        return $this->hasMany(ForumReply::class);
+    }
+
     public function votes()
     {
         return $this->morphMany(ForumVote::class, 'voteable');

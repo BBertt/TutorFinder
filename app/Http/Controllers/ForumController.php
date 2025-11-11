@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreForumRequest;
 use App\Models\Forum;
 use App\Models\User;
+use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -15,12 +16,31 @@ class ForumController extends Controller
      public function index(Request $request)
     {
         $request->validate([
-            'sort' => 'nullable|in:newest,oldest,top_likes'
+            'sort' => 'nullable|in:newest,oldest,top_likes',
+            'view' => 'nullable|in:my_forums',
+            'search' => 'nullable|string',
         ]);
 
         $sort = $request->input('sort', 'newest');
+        $view = $request->input('view', 'all');
+        $search = $request->input('search');
 
         $forumsQuery = Forum::with('user', 'replies', 'userVote');
+
+        if ($view === 'my_forums' && Auth::check()) {
+            $forumsQuery->where('user_id', Auth::id());
+        }
+
+        if ($search) {
+            $forumsQuery->where(function (Builder $query) use ($search) {
+                $query->where('title', 'like', '%' . $search . '%')
+                    ->orWhere('description', 'like', '%' . $search . '%')
+                    ->orWhereHas('user', function (Builder $query) use ($search) {
+                        $query->where('first_name', 'like', '%' . $search . '%')
+                            ->orWhere('last_name', 'like', '%' . $search . '%');
+                    });
+            });
+        }
 
         switch($sort){
             case 'oldest':
@@ -52,7 +72,7 @@ class ForumController extends Controller
             'forums' => $forums,
             'topStudents' => $topStudents,
             'topTutors' => $topTutors,
-            'filters' => ['sort' => $sort],
+            'filters' => ['sort' => $sort, 'view' => $view, 'search' => $search],
         ]);
     }
 
@@ -63,8 +83,7 @@ class ForumController extends Controller
 
         $forum->load(['user', 'userVote']);
 
-        $repliesQuery = $forum->replies()
-            ->with(['user', 'userVote', 'children.user', 'children.userVote']);
+        $repliesQuery = $forum->replies()->with(['user', 'userVote', 'allChildren']);
 
         switch ($sort) {
             case 'oldest': $repliesQuery->oldest(); break;
@@ -74,10 +93,13 @@ class ForumController extends Controller
 
         $replies = $repliesQuery->paginate(10, ['*'], 'repliesPage')->withQueryString();
 
+        $repliesTotal = $forum->allReplies()->count();
+
         return Inertia::render('Forums/ForumDetails', [
             'forum' => $forum,
             'replies' => $replies,
-            'filters' => ['sort' => $sort]
+            'filters' => ['sort' => $sort],
+            'repliesTotal' => $repliesTotal
         ]);
     }
 
@@ -99,5 +121,19 @@ class ForumController extends Controller
         ]);
 
         return redirect()->route('forums.index')->with('success', 'Forum created successfully!');
+    }
+
+    public function destroy(Forum $forum)
+    {
+        if (Auth::id() !== $forum->user_id) {
+            return abort(403, 'Unauthorized action.');
+        }
+
+        $forum->allReplies()->delete();
+        $forum->votes()->delete();
+
+        $forum->delete();
+
+        return redirect()->back()->with('success', 'Forum deleted successfully.');
     }
 }
