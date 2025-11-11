@@ -5,7 +5,7 @@ namespace Database\Seeders;
 use App\Models\Role;
 use App\Models\TutorReview;
 use App\Models\User;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\TutorRegistration;
 use Illuminate\Database\Seeder;
 
 class UserSeeder extends Seeder
@@ -33,6 +33,11 @@ class UserSeeder extends Seeder
             'last_name' => 'User',
             'email' => 'tutor@example.com',
             'role_id' => 2,
+        ]);
+
+        TutorRegistration::create([
+            'user_id' => 2,
+            'status' => 'approved',
         ]);
 
         User::factory()->create([
@@ -70,7 +75,10 @@ class UserSeeder extends Seeder
 
 
         foreach ($tutors as $tutor) {
-
+            TutorRegistration::create([
+                'user_id' => $tutor->id,
+                'status' => 'approved',
+            ]);
             $reviewers = $students->random(rand(6, $students->count()));
 
             foreach ($reviewers as $reviewer) {

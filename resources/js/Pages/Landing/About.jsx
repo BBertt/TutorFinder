@@ -2,7 +2,7 @@ import GuestNavbar from "@/Components/Landing/GuestNavbar";
 
 const About = () => {
     return (
-        <div className="flex flex-col">
+        <div className="flex flex-col min-h-screen">
             <GuestNavbar />
 
             {/* Hero Section */}
