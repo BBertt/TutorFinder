@@ -10,10 +10,12 @@ const Tutors = () => {
 
     const handleApprove = (id) => {
         router.patch(`/tutors/${id}/approve`);
+        setIsModalOpen(false);
     };
 
     const handleReject = (id) => {
         router.patch(`/tutors/${id}/reject`);
+        setIsModalOpen(false);
     };
 
     const [selectedId, setSelectedId] = useState(null);
