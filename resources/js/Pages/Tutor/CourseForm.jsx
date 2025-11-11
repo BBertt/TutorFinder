@@ -14,31 +14,28 @@ const Stepper = ({ currentStep }) => {
                 <React.Fragment key={index}>
                     <div className="flex items-center">
                         <div
-                            className={`w-8 h-8 rounded-full flex items-center justify-center font-bold transition-colors ${
-                                index + 1 <= currentStep
-                                    ? "bg-primary text-white"
-                                    : "bg-gray-200 text-gray-400 dark:bg-gray-700 dark:text-gray-400"
-                            }`}
+                            className={`w-8 h-8 rounded-full flex items-center justify-center font-bold transition-colors ${index + 1 <= currentStep
+                                ? "bg-primary text-white"
+                                : "bg-gray-200 text-gray-400 dark:bg-gray-700 dark:text-gray-400"
+                                }`}
                         >
                             {index + 1}
                         </div>
                         <p
-                            className={`ml-2 transition-colors ${
-                                index + 1 <= currentStep
-                                    ? "text-primary font-semibold"
-                                    : "text-gray-400"
-                            }`}
+                            className={`ml-2 transition-colors ${index + 1 <= currentStep
+                                ? "text-primary font-semibold"
+                                : "text-gray-400"
+                                }`}
                         >
                             {step}
                         </p>
                     </div>
                     {index < steps.length - 1 && (
                         <div
-                            className={`flex-auto border-t-2 transition-colors mx-4 ${
-                                index + 1 < currentStep
-                                    ? "border-primary"
-                                    : "border-gray-200 dark:border-dark"
-                            }`}
+                            className={`flex-auto border-t-2 transition-colors mx-4 ${index + 1 < currentStep
+                                ? "border-primary"
+                                : "border-gray-200 dark:border-dark"
+                                }`}
                         ></div>
                     )}
                 </React.Fragment>
@@ -67,6 +64,7 @@ export default function CourseForm({ categories }) {
         intro_video: null,
         sections: (course?.sections || []).map(s => ({ ...s, quiz_title: s.quiz?.title || s.quiz_title || "" })),
         final_quiz_title: course?.finalQuiz?.title || "",
+        final_quiz: course?.finalQuiz || { title: course?.finalQuiz?.title || "", questions: [] },
         status: course?.status || "draft",
     });
 
@@ -150,6 +148,16 @@ export default function CourseForm({ categories }) {
         }
 
         formData.append('final_quiz_title', data.final_quiz_title || '');
+
+        if (data.final_quiz && Array.isArray(data.final_quiz.questions)) {
+            data.final_quiz.questions.forEach((q, q_index) => {
+                formData.append(`final_quiz[questions][${q_index}][question]`, q.question || '');
+                (q.options || []).forEach((opt, o_index) => {
+                    formData.append(`final_quiz[questions][${q_index}][options][${o_index}][option]`, opt.option || '');
+                    formData.append(`final_quiz[questions][${q_index}][options][${o_index}][is_correct]`, opt.is_correct ? '1' : '0');
+                });
+            });
+        }
 
         if (isEditing) {
             formData.append("_method", "patch");
@@ -291,20 +299,16 @@ export default function CourseForm({ categories }) {
                             setData={setData}
                             errors={errors}
                             frontendErrors={frontendErrors}
+                            finalQuizTitle={data.final_quiz_title}
+                            finalQuiz={data.final_quiz}
+                            onFinalQuizTitleChange={(v) => {
+                                setData('final_quiz_title', v);
+                                setData('final_quiz', { ...(data.final_quiz || {}), title: v, questions: data.final_quiz?.questions || [] });
+                            }}
+                            onFinalQuizChange={(qz) => setData('final_quiz', qz)}
                         />
                     </div>
                     <div className={currentStep === 3 ? "block" : "hidden"}>
-                        <div className="mb-6 p-4 border rounded-lg bg-gray-50 dark:bg-gray-800 dark:border-gray-700">
-                            <h2 className="text-lg font-semibold mb-3 dark:text-gray-200">Final Quiz (Optional)</h2>
-                            <input
-                                type="text"
-                                value={data.final_quiz_title}
-                                onChange={e => setData("final_quiz_title", e.target.value)}
-                                placeholder="Enter a final quiz title or leave blank"
-                                className="w-full border-gray-300 rounded-md shadow-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
-                            />
-                            <p className="text-xs text-gray-500 mt-1 dark:text-gray-400">If provided, a final quiz will be created for the whole course.</p>
-                        </div>
                         <CourseReview
                             courseData={data}
                             existingCourse={course}

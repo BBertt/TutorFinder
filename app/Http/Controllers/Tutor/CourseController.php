@@ -198,14 +198,31 @@ class CourseController extends Controller
                  $course->sections()->whereNotIn('id', $sectionIds)->delete();
             }
 
-            // Optional final quiz
+            // Optional final quiz + questions
             $finalQuizTitle = $request->input('final_quiz_title');
+            $finalQuizPayload = $request->input('final_quiz.questions', []);
             if ($finalQuizTitle) {
-                $existingFinal = $course->finalQuiz;
-                if ($existingFinal) {
-                    $existingFinal->update(['title' => $finalQuizTitle, 'description' => '']);
+                $final = $course->finalQuiz;
+                if ($final) {
+                    $final->update(['title' => $finalQuizTitle, 'description' => '']);
                 } else {
-                    $course->quizzes()->create(['title' => $finalQuizTitle, 'description' => '', 'course_id' => $course->id]);
+                    $final = $course->quizzes()->create(['title' => $finalQuizTitle, 'description' => '', 'course_id' => $course->id]);
+                }
+                if (is_array($finalQuizPayload)) {
+                    $final->questions()->delete();
+                    foreach ($finalQuizPayload as $qData) {
+                        if (!empty($qData['question'])) {
+                            $question = $final->questions()->create(['question' => $qData['question']]);
+                            foreach ($qData['options'] ?? [] as $optData) {
+                                if (!empty($optData['option'])) {
+                                    $question->options()->create([
+                                        'option' => $optData['option'],
+                                        'is_correct' => !empty($optData['is_correct']),
+                                    ]);
+                                }
+                            }
+                        }
+                    }
                 }
             } else {
                 if ($course->finalQuiz) { $course->finalQuiz->delete(); }

@@ -30,7 +30,7 @@ class CourseLesson extends Model
         return null;
     }
 
-    public function courseSection()
+    public function section()
     {
         return $this->belongsTo(CourseSection::class, 'course_section_id');
     }
