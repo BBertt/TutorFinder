@@ -2,7 +2,7 @@ import Layout from "@/Layouts/Layout";
 import { Head, router } from "@inertiajs/react";
 import { useState } from "react";
 import axios from "axios";
-import ConfirmDeleteModal from "@/Components/ConfirmDeleteModal";
+import ConfirmationModal from "@/Components/Modals/ConfirmationModal";
 
 const Checkout = ({ cartItems }) => {
     const [processing, setProcessing] = useState(false);
@@ -209,11 +209,15 @@ const Checkout = ({ cartItems }) => {
                     </div>
                 )}
             </div>
-            <ConfirmDeleteModal
+            <ConfirmationModal
                 isOpen={isModalOpen}
                 onClose={closeConfirmModal}
                 onConfirm={handleRemoveItem}
-                itemName={itemToDelete?.course?.title}
+                title="Remove Item"
+                message={`Are you sure you want to remove "${itemToDelete?.course?.title}" from your cart?`}
+                confirmText="Yes, Remove"
+                cancelText="Cancel"
+                confirmColor="bg-red-600"
             />
         </>
     );

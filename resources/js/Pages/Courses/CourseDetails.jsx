@@ -6,13 +6,7 @@ import Breadcrumb from "@/Components/Course/Breadcrumb";
 function CourseDetails({ course, isEnrolled }) {
     const handleAddToCart = (e) => {
         e.preventDefault();
-        router.post(
-            route("cart.store"),
-            { course_id: course.id },
-            {
-                onSuccess: () => alert("Course added to cart!"),
-            }
-        );
+        router.post(route("cart.store"), { course_id: course.id });
     };
 
     return (
