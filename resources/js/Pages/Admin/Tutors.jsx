@@ -2,27 +2,30 @@ import { usePage } from "@inertiajs/react";
 import Layout from "@/Layouts/Layout";
 import { useState } from "react";
 import { router } from "@inertiajs/react";
+import ConfirmationModal from "@/Components/Modals/ConfirmationModal";
 
 const Tutors = () => {
-    const { tutors, flash } = usePage().props;
+    const { tutors } = usePage().props;
     const [image, setImage] = useState(null);
 
     const handleApprove = (id) => {
         router.patch(`/tutors/${id}/approve`);
+        setIsModalOpen(false);
     };
 
     const handleReject = (id) => {
         router.patch(`/tutors/${id}/reject`);
+        setIsModalOpen(false);
     };
+
+    const [selectedId, setSelectedId] = useState(null);
+    const [actionType, setActionType] = useState(null);
+
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
     return (
         <div className="flex flex-col items-center m-10">
             <h1 className="text-2xl font-extrabold mb-6">Tutor Registration</h1>
-            {flash.success && (
-                <div className="bg-green-500 text-white px-4 py-2 rounded mb-4 w-full">
-                    {flash.success}
-                </div>
-            )}
             {tutors.length === 0 ? (
                 <h2 className="text-xl font-bold mb-3">
                     There are no Tutor Registration Form Submitted.
@@ -85,14 +88,22 @@ const Tutors = () => {
                                 </td>
                                 <td className="border p-2">
                                     <button
-                                        onClick={() => handleApprove(tutor.id)}
+                                        onClick={() => {
+                                            setSelectedId(tutor.id);
+                                            setActionType("approved");
+                                            setIsModalOpen(true);
+                                        }}
                                         className="text-primary font-extrabold"
                                     >
                                         Approve
                                     </button>
                                     {" | "}
                                     <button
-                                        onClick={() => handleReject(tutor.id)}
+                                        onClick={() => {
+                                            setSelectedId(tutor.id);
+                                            setActionType("rejected");
+                                            setIsModalOpen(true);
+                                        }}
                                         className="text-secondary font-extrabold"
                                     >
                                         Reject
@@ -121,6 +132,37 @@ const Tutors = () => {
                     </div>
                 </div>
             )}
+
+            <ConfirmationModal
+                isOpen={isModalOpen}
+                onClose={() => {
+                    setSelectedId(null);
+                    setActionType(null);
+                    setIsModalOpen(false);
+                }}
+                onConfirm={() => {
+                    if (actionType === "approved") {
+                        handleApprove(selectedId);
+                    } else {
+                        handleReject(selectedId);
+                    }
+                }}
+                title={
+                    actionType === "approved" ? "Approve User" : "Reject User"
+                }
+                message={
+                    actionType === "approved"
+                        ? "Are you sure you want to approve this user?"
+                        : "Are you sure you want to reject this user?"
+                }
+                confirmText={
+                    actionType === "approved" ? "Yes, Approve" : "Yes, Reject"
+                }
+                cancelText="Cancel"
+                confirmColor={
+                    actionType === "approved" ? "bg-primary" : "bg-red-600"
+                }
+            />
         </div>
     );
 };

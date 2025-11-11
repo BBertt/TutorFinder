@@ -2,11 +2,15 @@ import React, { useState, useEffect } from "react";
 import AuthenticatedLayout from "@/Layouts/Layout";
 import { usePage, router } from "@inertiajs/react";
 import axios from "axios";
+import ConfirmationModal from "@/Components/Modals/ConfirmationModal";
 
 const Chat = ({ contacts, receiver, messages: initialMessages }) => {
     const { auth } = usePage().props;
     const [messages, setMessages] = useState(initialMessages);
     const [newMessage, setNewMessage] = useState("");
+
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [selectedMessageId, setSelectedMessageId] = useState(null);
 
     useEffect(() => {
         setMessages(initialMessages);
@@ -41,19 +45,31 @@ const Chat = ({ contacts, receiver, messages: initialMessages }) => {
         );
     };
 
-    const handleDeleteMessage = (messageId) => {
-        if (!confirm("Are you sure you want to delete this message?")) return;
+    const openDeleteModal = (messageId) => {
+        setSelectedMessageId(messageId);
+        setIsModalOpen(true);
+    };
 
-        axios
-            .delete(route("chat.destroy", { message: messageId }))
-            .then(() => {
-                setMessages((prevMessages) =>
-                    prevMessages.filter((m) => m.id !== messageId)
-                );
-            })
-            .catch((error) => {
-                console.error("Failed to delete message:", error);
-            });
+    const closeModal = () => {
+        setSelectedMessageId(null);
+        setIsModalOpen(false);
+    };
+
+    const handleDeleteMessage = async () => {
+        if (!selectedMessageId) return;
+
+        try {
+            await axios.delete(
+                route("chat.destroy", { message: selectedMessageId })
+            );
+            setMessages((prevMessages) =>
+                prevMessages.filter((m) => m.id !== selectedMessageId)
+            );
+        } catch (error) {
+            console.error("Failed to delete message:", error);
+        } finally {
+            closeModal();
+        }
     };
 
     const handleSendMessage = async (e) => {
@@ -160,7 +176,7 @@ const Chat = ({ contacts, receiver, messages: initialMessages }) => {
                                                 auth.user.id && (
                                                 <button
                                                     onClick={() =>
-                                                        handleDeleteMessage(
+                                                        openDeleteModal(
                                                             message.id
                                                         )
                                                     }
@@ -216,6 +232,16 @@ const Chat = ({ contacts, receiver, messages: initialMessages }) => {
                         )}
                     </div>
                 </div>
+                <ConfirmationModal
+                    isOpen={isModalOpen}
+                    onClose={closeModal}
+                    onConfirm={handleDeleteMessage}
+                    title="Delete Message"
+                    message="Are you sure you want to delete this message?"
+                    confirmText="Yes, Delete"
+                    cancelText="Cancel"
+                    confirmColor="bg-red-600"
+                />
             </div>
         </AuthenticatedLayout>
     );

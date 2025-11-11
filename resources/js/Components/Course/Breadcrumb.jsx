@@ -39,7 +39,7 @@ const Breadcrumb = ({ category, course }) => {
                                 href={`/courses?category=${category.id}`}
                                 className={`ms-1 text-sm font-medium md:ms-2 ${
                                     course
-                                        ? "text-gray-700 dark:text-gray-400 dark:hover:text-white"
+                                        ? "text-gray-400 dark:hover:text-white"
                                         : "text-white"
                                 }`}
                             >
