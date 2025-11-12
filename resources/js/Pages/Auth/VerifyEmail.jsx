@@ -1,8 +1,11 @@
+import SuccessModal from "@/Components/Modals/SuccessModal";
+import { useState, useEffect } from "react";
 import AuthPagesLayout from "@/Layouts/AuthPagesLayout";
 
-import { Head, Link, useForm } from "@inertiajs/react";
+import { Head, Link, useForm, usePage } from "@inertiajs/react";
 
-const VerifyEmail = ({ status }) => {
+const VerifyEmail = () => {
+    const { flash, status } = usePage().props;
     const { post, processing } = useForm({});
 
     const submit = (e) => {
@@ -11,8 +14,29 @@ const VerifyEmail = ({ status }) => {
         post(route("verification.send"));
     };
 
+    // state modal sukses
+    const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
+    const [successMessage, setSuccessMessage] = useState("");
+
+    // tampilkan modal jika ada flash.success atau verification link sent
+    useEffect(() => {
+        if (flash.success || status === "verification-link-sent") {
+            setSuccessMessage(
+                flash.success ||
+                "A new verification link has been sent to your email."
+            );
+            setIsSuccessModalOpen(true);
+        }
+    }, [flash, status]);
+
     return (
         <div className="w-full max-w-xs flex flex-col gap-6">
+            <SuccessModal
+                isOpen={isSuccessModalOpen}
+                onClose={() => setIsSuccessModalOpen(false)}
+                title="Success!"
+                message={successMessage}
+            />
             <div className="text-center">
                 <h1 className="text-5xl font-bold">Verify Your Email</h1>
             </div>
@@ -23,14 +47,6 @@ const VerifyEmail = ({ status }) => {
                 you? If you didn't receive the email, we will gladly send you
                 another.
             </div>
-
-            {status === "verification-link-sent" && (
-                <div className="text-center text-sm font-medium text-green-600">
-                    A new verification link has been sent to the email address
-                    you provided during registration.
-                </div>
-            )}
-
             <form onSubmit={submit} className="flex flex-col gap-6">
                 <button
                     type="submit"

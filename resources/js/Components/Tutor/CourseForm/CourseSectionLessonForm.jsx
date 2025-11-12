@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import QuizEditor from './QuizEditor';
 import AddLessonModal from "./AddLessonModal";
 import EditSectionModal from "./EditSectionModal";
 import EditLessonModal from "./EditLessonModal";
@@ -9,6 +10,10 @@ export default function CourseSectionLessonForm({
     setData,
     errors,
     frontendErrors = {},
+    finalQuizTitle,
+    finalQuiz,
+    onFinalQuizTitleChange,
+    onFinalQuizChange,
 }) {
     const [isLessonModalOpen, setLessonModalOpen] = useState(false);
     const [isEditSectionModalOpen, setEditSectionModalOpen] = useState(false);
@@ -86,11 +91,11 @@ export default function CourseSectionLessonForm({
                 sections.map((s) =>
                     s.id === sectionId
                         ? {
-                              ...s,
-                              lessons: s.lessons.filter(
-                                  (l) => l.id !== lessonId
-                              ),
-                          }
+                            ...s,
+                            lessons: s.lessons.filter(
+                                (l) => l.id !== lessonId
+                            ),
+                        }
                         : s
                 )
             );
@@ -168,18 +173,18 @@ export default function CourseSectionLessonForm({
                 {(frontendErrors.sections_min ||
                     frontendErrors.lessons_min ||
                     frontendErrors.lesson_content) && (
-                    <div className="p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-100 border border-red-300 dark:bg-red-900 dark:text-red-300 dark:border-red-700">
-                        {frontendErrors.sections_min && (
-                            <p>{frontendErrors.sections_min}</p>
-                        )}
-                        {frontendErrors.lessons_min && (
-                            <p>{frontendErrors.lessons_min}</p>
-                        )}
-                        {frontendErrors.lesson_content && (
-                            <p>{frontendErrors.lesson_content}</p>
-                        )}
-                    </div>
-                )}
+                        <div className="p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-100 border border-red-300 dark:bg-red-900 dark:text-red-300 dark:border-red-700">
+                            {frontendErrors.sections_min && (
+                                <p>{frontendErrors.sections_min}</p>
+                            )}
+                            {frontendErrors.lessons_min && (
+                                <p>{frontendErrors.lessons_min}</p>
+                            )}
+                            {frontendErrors.lesson_content && (
+                                <p>{frontendErrors.lesson_content}</p>
+                            )}
+                        </div>
+                    )}
 
                 <div className="space-y-4 mb-8">
                     {sections.map((section, index) => (
@@ -263,15 +268,30 @@ export default function CourseSectionLessonForm({
                                         No lessons in this section yet.
                                     </p>
                                 )}
-                                <button
-                                    type="button"
-                                    onClick={() =>
-                                        openModal("addLesson", section)
-                                    }
-                                    className="text-sm font-semibold text-primary mt-2 hover:underline"
-                                >
-                                    + Add Lesson
-                                </button>
+                                <div className="mt-3 flex flex-col gap-2">
+                                    <button
+                                        type="button"
+                                        onClick={() => openModal("addLesson", section)}
+                                        className="text-sm font-semibold text-primary hover:underline"
+                                    >
+                                        + Add Lesson
+                                    </button>
+                                    <input
+                                        type="text"
+                                        value={section.quiz?.title || section.quiz_title || ""}
+                                        onChange={e => setData("sections", sections.map(s => s.id === section.id ? { ...s, quiz: { ...(s.quiz || {}), title: e.target.value, questions: s.quiz?.questions || [] } } : s))}
+                                        placeholder="Optional Section Quiz Title"
+                                        className="text-sm w-full border-gray-300 rounded-md shadow-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
+                                    />
+                                    {(section.quiz?.title || section.quiz_title) && (
+                                        <div className="mt-2">
+                                            <QuizEditor
+                                                value={section.quiz}
+                                                onChange={(qz) => setData('sections', sections.map(s => s.id === section.id ? { ...s, quiz: qz } : s))}
+                                            />
+                                        </div>
+                                    )}
+                                </div>
                             </div>
                         </div>
                     ))}
@@ -323,6 +343,27 @@ export default function CourseSectionLessonForm({
                         </button>
                     </div>
                 </form>
+                <div className="mt-10">
+                    <div className="mb-6 p-4 border rounded-lg bg-gray-50 dark:bg-gray-800 dark:border-gray-700">
+                        <h2 className="text-lg font-semibold mb-3 dark:text-gray-200">Final Quiz (Optional)</h2>
+                        <input
+                            type="text"
+                            value={finalQuizTitle || ''}
+                            onChange={(e) => onFinalQuizTitleChange && onFinalQuizTitleChange(e.target.value)}
+                            placeholder="Enter a final quiz title or leave blank"
+                            className="w-full border-gray-300 rounded-md shadow-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
+                        />
+                        {finalQuizTitle ? (
+                            <div className="mt-3">
+                                <QuizEditor
+                                    value={finalQuiz}
+                                    onChange={onFinalQuizChange}
+                                />
+                            </div>
+                        ) : null}
+                        <p className="text-xs text-gray-500 mt-1 dark:text-gray-400">If provided, a final quiz will be created for the whole course.</p>
+                    </div>
+                </div>
             </div>
         </>
     );

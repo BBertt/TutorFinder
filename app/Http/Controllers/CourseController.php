@@ -18,12 +18,12 @@ class CourseController extends Controller
         $query = Course::with('user')->withAvg('reviews', 'rating');
         $query->where('status', 'published');
 
-        if(request('search')) {
-            $query->where('title', 'like', '%' . request('search') . '%')
-                  ->orWhereHas('user', function (Builder $query) {
-                    $query->where('first_name', 'like', '%' . request('search') . '%')
-                          ->orWhere('last_name', 'like', '%' . request('search') . '%');
-                    });
+        if (request('search')) {
+            $query->where('title', 'like', '%'.request('search').'%')
+                ->orWhereHas('user', function (Builder $query) {
+                    $query->where('first_name', 'like', '%'.request('search').'%')
+                        ->orWhere('last_name', 'like', '%'.request('search').'%');
+                });
         }
 
         if (request('category')) {
@@ -63,6 +63,7 @@ class CourseController extends Controller
         $isEnrolled = false;
         if (Auth::check()) {
             $user = Auth::user();
+            /** @var \App\Models\User $user */
             $isEnrolled = $user->enrollments()->where('course_id', $course->id)->exists();
         }
 
@@ -76,28 +77,43 @@ class CourseController extends Controller
     {
         $user = Auth::user();
         /** @var \App\Models\User $user */
-
-        // Check if the user is enrolled in the course
         $isEnrolled = $user->enrollments()->where('course_id', $course->id)->exists();
 
-        if (!$isEnrolled) {
+        if (! $isEnrolled) {
             return redirect()->back()->with('error', 'You are not enrolled in this course.');
         }
 
-        $course->load('sections.lessons', 'user');
+        $course->load(
+            'user',
+            'sections.lessons',
+            'sections.quiz.questions.options',
+            'sections.quiz.attempts'
+        );
 
         $progress = $user->progress()->where('course_id', $course->id)->get();
 
         $lastWatched = $progress->sortByDesc('updated_at')->first();
 
-        // Check if the user has reviewed this course
         $hasReviewedByUser = $course->reviews()->where('user_id', $user->id)->exists();
+
+        $courseCompleted = false;
+        if ($course->finalQuiz) {
+            $finalAttempts = $course->finalQuiz->attempts->where('user_id', $user->id);
+            $courseCompleted = $finalAttempts->contains(function ($a) {
+                return $a->total_questions > 0 && ($a->score / $a->total_questions) >= 0.8;
+            });
+        } else {
+            $allLessonIds = $course->sections->flatMap->lessons->pluck('id');
+            $completedLessonIds = $progress->pluck('course_lesson_id');
+            $courseCompleted = $allLessonIds->count() > 0 && $allLessonIds->diff($completedLessonIds)->isEmpty();
+        }
 
         return Inertia::render('Courses/LearnCourse', [
             'course' => $course,
             'progress' => $progress,
             'last_watched_lesson_id' => $lastWatched ? $lastWatched->course_lesson_id : null,
             'has_reviewed_by_user' => $hasReviewedByUser,
+            'course_completed' => $courseCompleted,
         ]);
     }
 
@@ -123,5 +139,23 @@ class CourseController extends Controller
     public function destroy(Course $course)
     {
         //
+    }
+
+    public function complete(Request $request, Course $course)
+    {
+        $user = Auth::user();
+        /** @var \App\Models\User $user */
+        $isEnrolled = $user->enrollments()->where('course_id', $course->id)->exists();
+        if (! $isEnrolled) {
+            return redirect()->back()->with('error', 'You are not enrolled in this course.');
+        }
+
+        $course->load('sections.lessons');
+        $hasFinalQuiz = (bool) $course->finalQuiz;
+        if ($hasFinalQuiz) {
+            return redirect()->back();
+        }
+
+        return redirect()->back()->with('success', 'Course completed!');
     }
 }
