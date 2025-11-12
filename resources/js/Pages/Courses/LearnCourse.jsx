@@ -93,9 +93,9 @@ const RatingModal = ({ course, onClose }) => {
     );
 };
 
-function LearnCourse({ course, progress: initialProgress, last_watched_lesson_id, has_reviewed_by_user }) {
-    const { quiz_submitted, flash } = usePage().props;
-    const [showCompletionModal, setShowCompletionModal] = React.useState(false);
+function LearnCourse({ course, progress: initialProgress, last_watched_lesson_id, has_reviewed_by_user, course_completed }) {
+    const { quiz_submitted } = usePage().props;
+
 
     const [activeContent, setActiveContent] = React.useState(() => {
         const lastWatchedLesson = course.sections.flatMap(s => s.lessons).find(l => l.id === last_watched_lesson_id);
@@ -117,9 +117,7 @@ function LearnCourse({ course, progress: initialProgress, last_watched_lesson_id
         }
     }, [quiz_submitted]);
 
-    useEffect(() => {
-        if (flash?.success) setShowCompletionModal(true);
-    }, [flash?.success]);
+
 
     const isLessonCompleted = (lessonId) => progress.some(p => p.course_lesson_id === lessonId);
     const isQuizPassed = (quiz) => quiz && quiz.attempts.some(a => (a.score / a.total_questions) >= 0.8);
@@ -184,10 +182,10 @@ function LearnCourse({ course, progress: initialProgress, last_watched_lesson_id
         return null;
     };
 
-    const markLessonAsCompleted = (lessonId) => {
-        if (isLessonCompleted(lessonId)) return Promise.resolve();
-        return axios.post(`/course-progress/${lessonId}`, { course_id: course.id })
-            .then(() => setProgress(prev => [...prev, { course_lesson_id: lessonId }]));
+    const markLessonAsCompleted = async (lessonId) => {
+        if (isLessonCompleted(lessonId)) return;
+        await axios.post(`/course-progress/${lessonId}`, { course_id: course.id });
+        setProgress(prev => [...prev, { course_lesson_id: lessonId }]);
     };
 
     const handleNext = async () => {
@@ -250,6 +248,26 @@ function LearnCourse({ course, progress: initialProgress, last_watched_lesson_id
         const next = getNextContent();
         const buttons = [];
 
+        const isOnLastLesson = activeContent?.type === 'lesson' && (() => {
+            const allLessons = course.sections.flatMap(s => s.lessons);
+            return allLessons.length && allLessons[allLessons.length - 1].id === activeContent.content.id;
+        })();
+
+        const completeCourse = async () => {
+            if (activeContent?.type === 'lesson' && !isLessonCompleted(activeContent.content.id)) {
+                await markLessonAsCompleted(activeContent.content.id);
+            }
+            router.post(`/courses/${course.id}/complete`);
+        };
+
+        // Allow starting final quiz if all quizzes passed and either all lessons are completed
+        // or the only remaining incomplete lesson is the current one (we'll mark it on click)
+        const allLessonsCompletedIfCurrentMarked = course.sections.every(s =>
+            s.lessons.every(l => isLessonCompleted(l.id) || (activeContent?.type === 'lesson' && l.id === activeContent.content.id))
+        );
+        const allQuizzesPassed = course.sections.every(s => !s.quiz || isQuizPassed(s.quiz));
+        const canStartFinalQuiz = Boolean(course.finalQuiz) && allQuizzesPassed && (areAllSectionsCompleted || allLessonsCompletedIfCurrentMarked);
+
         if (!has_reviewed_by_user) {
             buttons.push(
                 <button key="review" onClick={() => setShowRatingModal(true)} className="px-4 py-2 bg-primary text-white rounded-md">Review Course</button>
@@ -257,7 +275,7 @@ function LearnCourse({ course, progress: initialProgress, last_watched_lesson_id
         }
 
         // If there's a final quiz available and we're not on it, prefer offering to start it
-        if (!next && course.finalQuiz && areAllSectionsCompleted && !(activeContent?.type === 'quiz' && activeContent.content.id === course.finalQuiz?.id)) {
+        if (!next && canStartFinalQuiz && !(activeContent?.type === 'quiz' && activeContent.content.id === course.finalQuiz?.id)) {
             buttons.push(
                 <button key="start-final" onClick={startFinalQuiz} className="px-4 py-2 bg-primary text-white rounded-md">Start Final Quiz</button>
             );
@@ -265,13 +283,27 @@ function LearnCourse({ course, progress: initialProgress, last_watched_lesson_id
         }
 
         if (!next) {
-            if (!course.finalQuiz && areAllSectionsCompleted) {
-                buttons.push(
-                    <button key="complete" onClick={() => router.post(`/courses/${course.id}/complete`)} className="px-4 py-2 bg-primary text-white rounded-md">Complete Course</button>
-                );
+            if (!course.finalQuiz && activeContent?.type === 'lesson') {
+                if (course_completed) {
+                    buttons.push(
+                        <Link key="return" href="/purchased-courses" className="px-4 py-2 bg-primary text-white rounded-md">Return to Purchased</Link>
+                    );
+                } else {
+                    buttons.push(
+                        <button key="complete" onClick={completeCourse} className="px-4 py-2 bg-primary text-white rounded-md">Complete Course</button>
+                    );
+                }
             } else if (course.finalQuiz && !(activeContent?.type === 'quiz' && activeContent.content.id === course.finalQuiz?.id)) {
                 buttons.push(
-                    <button key="start-final" onClick={startFinalQuiz} className="px-4 py-2 bg-primary text-white rounded-md">Start Final Quiz</button>
+                    <button
+                        key="start-final"
+                        onClick={canStartFinalQuiz ? startFinalQuiz : undefined}
+                        disabled={!canStartFinalQuiz}
+                        title={!canStartFinalQuiz ? 'Complete all sections to unlock' : undefined}
+                        className="px-4 py-2 bg-primary text-white rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                        Start Final Quiz
+                    </button>
                 );
             } else {
                 buttons.push(
