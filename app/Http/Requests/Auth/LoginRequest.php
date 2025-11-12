@@ -43,30 +43,25 @@ class LoginRequest extends FormRequest
     {
         $this->ensureIsNotRateLimited();
 
-        $user = User::where('email', $this->email)->first();
-
-        if ($user && !$user->hasVerifiedEmail()) {
-            throw ValidationException::withMessages([
-                'email' => 'You must verify your email address before logging in.',
-            ]);
-        }
-
-        if ($user && $user->role_id === 2) {
-            $registration = TutorRegistration::where('user_id', $user->id)->first();
-
-            if ($registration && $registration->status === 'pending') {
-                throw ValidationException::withMessages([
-                    'email' => 'Your tutor registration is ' . $registration->status . '.',
-                ]);
-            }
-        }
-
-        if (! Auth::attempt($this->only('email', 'password'))) {
+        if (! Auth::attempt($this->only('email', 'password'), $this->boolean('remember'))) {
             RateLimiter::hit($this->throttleKey());
 
             throw ValidationException::withMessages([
                 'email' => trans('auth.failed'),
             ]);
+        }
+
+        $user = Auth::user();
+
+        if ($user && $user->role_id === 2) {
+            $registration = TutorRegistration::where('user_id', $user->id)->first();
+
+            if ($registration && $registration->status === 'pending') {
+                Auth::logout();
+                throw ValidationException::withMessages([
+                    'email' => 'Your tutor registration is ' . $registration->status . '.',
+                ]);
+            }
         }
 
         RateLimiter::clear($this->throttleKey());

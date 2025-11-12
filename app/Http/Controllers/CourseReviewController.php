@@ -32,6 +32,6 @@ class CourseReviewController extends Controller
         $courseReview->comment = $request->comment;
         $courseReview->save();
 
-        return response()->json(['message' => 'Course review submitted successfully.'], 201);
+        return redirect()->back()->with('success', 'Thank you for your review!');
     }
 }

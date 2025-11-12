@@ -18,6 +18,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PurchasedCoursesController;
 use App\Http\Controllers\CourseProgressController;
 use App\Http\Controllers\CourseReviewController;
+use App\Http\Controllers\QuizController;
 use App\Http\Controllers\Tutor\CourseController as TutorCourseController;
 use App\Http\Controllers\Tutor\CourseLessonController;
 use App\Http\Controllers\Tutor\CourseSectionController;
@@ -85,6 +86,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/courses/{course}', [CourseController::class, 'show'])->name('courses.show');
     Route::get('/courses/{course}/learn', [CourseController::class, 'learn'])->name('courses.learn');
     Route::post('/courses/{course}/reviews', [CourseReviewController::class, 'store'])->name('courses.reviews.store'); // NEW
+    Route::post('/courses/{course}/complete', [CourseController::class, 'complete'])->name('courses.complete');
 
     // Purchased Courses
     Route::get('/purchased-courses', [PurchasedCoursesController::class, 'index'])->name('purchased-courses.index');
@@ -125,6 +127,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/home', [HomeController::class, 'index'])->name('home');
 
     Route::post('/course-progress/{course_lesson_id}', [CourseProgressController::class, 'update'])->name('course-progress.update');
+
+    Route::post('/quizzes/{quiz}/submit', [QuizController::class, 'submit'])->name('quizzes.submit');
 });
 
 Route::middleware('admin')->group(function() {

@@ -60,9 +60,8 @@ const AppNavbar = ({ logoSrc }) => {
                             />
                             <div className="relative ml-2">
                                 <img
-                                    className={`w-7 h-7 cursor-pointer ${
-                                        !dropdown && "dark:invert"
-                                    }`}
+                                    className={`w-7 h-7 cursor-pointer ${!dropdown && "dark:invert"
+                                        }`}
                                     src={
                                         dropdown
                                             ? "/assets/icons/arrow-down-primary.svg"
@@ -95,9 +94,8 @@ const AppNavbar = ({ logoSrc }) => {
                     <div className="hidden md:flex items-center space-x-10">
                         <Link href="/cart">
                             <img
-                                className={`w-7 h-7 ${
-                                    !url.startsWith("/cart") && "dark:invert"
-                                }`}
+                                className={`w-7 h-7 ${!url.startsWith("/cart") && "dark:invert"
+                                    }`}
                                 src={
                                     url.startsWith("/cart")
                                         ? "/assets/icons/cart-primary.svg"
@@ -108,9 +106,8 @@ const AppNavbar = ({ logoSrc }) => {
                         </Link>
                         <Link href="/forums">
                             <img
-                                className={`w-7 h-7 ${
-                                    !url.startsWith("/forums") && "dark:invert"
-                                }`}
+                                className={`w-7 h-7 ${!url.startsWith("/forums") && "dark:invert"
+                                    }`}
                                 src={
                                     url.startsWith("/forums")
                                         ? "/assets/icons/forum-primary.svg"
@@ -121,9 +118,8 @@ const AppNavbar = ({ logoSrc }) => {
                         </Link>
                         <Link href="/chat">
                             <img
-                                className={`w-7 h-7 ${
-                                    !url.startsWith("/chat") && "dark:invert"
-                                }`}
+                                className={`w-7 h-7 ${!url.startsWith("/chat") && "dark:invert"
+                                    }`}
                                 src={
                                     url.startsWith("/chat")
                                         ? "/assets/icons/messages-primary.svg"
