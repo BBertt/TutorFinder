@@ -36,9 +36,7 @@ export default function ForumPostCard({ post, showDeleteButton = false }) {
             <div className="block bg-white p-6 rounded-lg border border-gray-200 transition-shadow dark:bg-darkSecondary dark:border-dark hover:shadow-lg dark:hover:bg-gray-700">
                 <div className="flex items-start space-x-4">
                     <img
-                        className={`w-12 h-12 rounded-full ${
-                            !post.user.profile_image_path && "dark:invert"
-                        }`}
+                        className="w-12 h-12 rounded-full"
                         src={
                             post.user.profile_image_path
                                 ? post.user.profile_image_path
