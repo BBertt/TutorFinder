@@ -332,23 +332,23 @@ function LearnCourse({ course, progress: initialProgress, last_watched_lesson_id
             {showRatingModal && <RatingModal course={course} onClose={() => setShowRatingModal(false)} />}
             <Head title={course.title} />
             <div className="flex flex-col md:flex-row h-[92vh]">
-                <div className="w-full md:w-1/4 bg-white border-r overflow-y-auto">
+                <div className="w-full md:w-1/4 bg-white dark:bg-gray-900 border-r dark:border-gray-700 overflow-y-auto">
                     <ul>
                         {course.sections.map((section) => (
                             <li key={section.id} className="mb-1">
-                                <h3 className="text-lg font-bold p-4 flex items-center justify-between bg-gray-100">
+                                <h3 className="text-lg font-bold p-4 flex items-center justify-between bg-gray-100 dark:bg-gray-800 dark:text-gray-100">
                                     {section.title}
                                     {isSectionCompleted(section) && <CheckmarkIcon className="w-5 h-5 text-green-500" />}
                                 </h3>
                                 <ul>
                                     {section.lessons.map((lesson, index) => (
-                                        <li key={lesson.id} className={`p-4 cursor-pointer flex items-center justify-between ${activeContent?.type === 'lesson' && activeContent.content.id === lesson.id ? 'bg-gray-300' : ''}`} onClick={() => setActiveContent({ type: 'lesson', content: lesson })}>
+                                        <li key={lesson.id} className={`p-4 cursor-pointer flex items-center justify-between dark:text-gray-200 ${activeContent?.type === 'lesson' && activeContent.content.id === lesson.id ? 'bg-gray-300 dark:bg-gray-700' : ''}`} onClick={() => setActiveContent({ type: 'lesson', content: lesson })}>
                                             <div>Episode {index + 1}: {lesson.title}</div>
                                             {isLessonCompleted(lesson.id) && <CheckmarkIcon className="w-5 h-5 text-green-500" />}
                                         </li>
                                     ))}
                                     {section.quiz && (
-                                        <li className={`p-4 cursor-pointer flex items-center justify-between font-semibold text-blue-600 ${activeContent?.type === 'quiz' && activeContent.content.id === section.quiz.id ? 'bg-gray-300' : ''}`} onClick={() => setActiveContent({ type: 'quiz', content: section.quiz })}>
+                                        <li className={`p-4 cursor-pointer flex items-center justify-between font-semibold text-blue-600 dark:text-blue-400 ${activeContent?.type === 'quiz' && activeContent.content.id === section.quiz.id ? 'bg-gray-300 dark:bg-gray-700' : ''}`} onClick={() => setActiveContent({ type: 'quiz', content: section.quiz })}>
                                             <div>Take Quiz: {section.quiz.title}</div>
                                             {isQuizPassed(section.quiz) && <CheckmarkIcon className="w-5 h-5 text-green-500" />}
                                         </li>
@@ -359,7 +359,7 @@ function LearnCourse({ course, progress: initialProgress, last_watched_lesson_id
                         {course.finalQuiz && (
                             <li
                                 title={!areAllSectionsCompleted ? "Complete all sections to unlock" : "Take the Final Quiz"}
-                                className={`p-4 cursor-pointer flex items-center justify-between font-bold text-purple-600 bg-purple-100 ${activeContent?.type === 'quiz' && activeContent.content.id === course.finalQuiz.id ? 'bg-gray-300' : ''} ${!areAllSectionsCompleted ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                className={`p-4 cursor-pointer flex items-center justify-between font-bold text-purple-600 dark:text-purple-400 bg-purple-100 dark:bg-purple-900 ${activeContent?.type === 'quiz' && activeContent.content.id === course.finalQuiz.id ? 'bg-gray-300 dark:bg-gray-700' : ''} ${!areAllSectionsCompleted ? 'opacity-50 cursor-not-allowed' : ''}`}
                                 onClick={() => areAllSectionsCompleted && setActiveContent({ type: 'quiz', content: course.finalQuiz })}
                             >
                                 <div className="flex items-center">
@@ -371,7 +371,7 @@ function LearnCourse({ course, progress: initialProgress, last_watched_lesson_id
                         )}
                     </ul>
                 </div>
-                <div className="w-full md:w-3/4 p-4 overflow-y-auto">
+                <div className="w-full md:w-3/4 p-4 overflow-y-auto dark:bg-gray-900 dark:text-gray-100">
                     {renderContent()}
                     <div className="flex justify-between mt-4">
                         <button onClick={() => { const prev = getPreviousLesson(); if (prev) setActiveContent({ type: 'lesson', content: prev }) }} disabled={!getPreviousLesson()} className="px-4 py-2 bg-gray-300 text-gray-800 rounded-md disabled:opacity-50">

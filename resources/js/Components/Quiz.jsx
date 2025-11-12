@@ -49,18 +49,18 @@ const Quiz = ({ quiz }) => {
 
     if (view === 'submitting') {
         return (
-            <div className="p-8 bg-white rounded-lg shadow-lg text-center">
+            <div className="p-8 bg-white dark:bg-gray-900 dark:text-gray-100 rounded-lg shadow-lg text-center">
                 <h2 className="text-2xl font-bold mb-4">Submitting Quiz...</h2>
-                <p className="text-gray-600">Please wait while we process your answers.</p>
+                <p className="text-gray-600 dark:text-gray-300">Please wait while we process your answers.</p>
             </div>
         );
     }
 
     if (view === 'question') {
         return (
-            <div className="p-8 bg-white rounded-lg shadow-lg">
+            <div className="p-8 bg-white dark:bg-gray-900 dark:text-gray-100 rounded-lg shadow-lg">
                 <h2 className="text-2xl font-bold mb-2">{quiz.title}</h2>
-                <p className="mb-6 text-gray-600">Question {currentQuestionIndex + 1} of {quiz.questions.length}</p>
+                <p className="mb-6 text-gray-600 dark:text-gray-300">Question {currentQuestionIndex + 1} of {quiz.questions.length}</p>
                 <div>
                     <h3 className="text-xl font-semibold mb-4">{quiz.questions[currentQuestionIndex].question}</h3>
                     <div className="space-y-3">
@@ -68,7 +68,7 @@ const Quiz = ({ quiz }) => {
                             <div
                                 key={option.id}
                                 onClick={() => handleAnswerSelect(option.id)}
-                                className={`p-4 border rounded-lg cursor-pointer hover:bg-accent ${selectedAnswers[quiz.questions[currentQuestionIndex].id] === option.id ? 'bg-accent border-primary' : 'border-gray-300'}`}
+                                className={`p-4 border rounded-lg cursor-pointer hover:bg-accent dark:hover:bg-gray-800 dark:text-gray-100 ${selectedAnswers[quiz.questions[currentQuestionIndex].id] === option.id ? 'bg-accent dark:bg-gray-800 border-primary dark:border-primary' : 'border-gray-300 dark:border-gray-700'}`}
                             >
                                 {option.option}
                             </div>
@@ -100,12 +100,12 @@ const Quiz = ({ quiz }) => {
         const canRetry = !passed || !isPerfectScore;
 
         return (
-            <div className="p-8 bg-white rounded-lg shadow-lg text-center">
+            <div className="p-8 bg-white dark:bg-gray-900 dark:text-gray-100 rounded-lg shadow-lg text-center">
                 <h2 className="text-3xl font-bold mb-4">Quiz Complete!</h2>
                 <p className={`text-xl mb-2 ${passed ? 'text-primary' : 'text-red-800'}`}>
                     You scored {latestAttempt.score} out of {latestAttempt.total_questions} ({percentage.toFixed(0)}%)
                 </p>
-                <p className="text-gray-600 mb-6">{passed ? "Congratulations, you've passed!" : "You have not met the passing score of 80%."}</p>
+                <p className="text-gray-600 dark:text-gray-300 mb-6">{passed ? "Congratulations, you've passed!" : "You have not met the passing score of 80%."}</p>
                 <div className="flex justify-center gap-4">
                     {canRetry ? (
                         <button onClick={handleRetry} className="px-6 py-2 bg-primary text-white rounded-md">
@@ -123,15 +123,15 @@ const Quiz = ({ quiz }) => {
 
     if (view === 'review') {
         return (
-            <div className="p-8 bg-white rounded-lg shadow-lg">
+            <div className="p-8 bg-white dark:bg-gray-900 dark:text-gray-100 rounded-lg shadow-lg">
                 <h2 className="text-3xl font-bold mb-6 text-center">Review Answers</h2>
                 <div className="space-y-6">
                     {quiz.questions.map((question, index) => (
-                        <div key={question.id} className="p-4 rounded-lg bg-gray-100">
+                        <div key={question.id} className="p-4 rounded-lg bg-gray-100 dark:bg-gray-800 dark:text-gray-100">
                             <h3 className="font-semibold text-lg">{index + 1}. {question.question}</h3>
                             <ul>
                                 {question.options.map(option => (
-                                    <li key={option.id} className={`mt-2 p-2 rounded border ${option.is_correct ? 'bg-accent font-bold text-primary border-primary' : 'border-transparent'}`}>
+                                    <li key={option.id} className={`mt-2 p-2 rounded border ${option.is_correct ? 'bg-accent dark:bg-gray-800 font-bold text-primary border-primary dark:border-primary' : 'border-transparent dark:border-gray-700 dark:text-gray-200'}`}>
                                         {option.option} {option.is_correct ? '(Correct Answer)' : ''}
                                     </li>
                                 ))}
