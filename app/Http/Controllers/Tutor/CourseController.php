@@ -90,7 +90,7 @@ class CourseController extends Controller
             'status' => 'required|in:draft,published',
 
             'thumbnail_image' => $isNew ? 'required|image' : 'nullable|image',
-            'intro_video' => 'nullable|mimetypes:video/mp4,video/quicktime',
+            'intro_video' => 'nullable',
 
             'sections' => ['nullable', 'array', Rule::when($status === 'published', 'min:1', 'nullable')],
 
@@ -103,6 +103,7 @@ class CourseController extends Controller
             'sections.*.lessons.*.title' => [Rule::when($status === 'published', 'required', 'nullable'), 'string', 'max:255'],
             'sections.*.lessons.*.description' => [Rule::when($status === 'published', 'required', 'nullable'), 'string'],
             'sections.*.lessons.*.video' => ['nullable', 'file', 'mimetypes:video/mp4,video/quicktime'],
+            'sections.*.lessons.*.video_url' => ['nullable','string','regex:/^(https?:\\/\\/)?(www\\.)?(youtube\\.com\\/watch\\?v=|youtu\\.be\\/)[A-Za-z0-9_-]{11}(?:[&#?].*)?$/'],
         ]);
     }
 
@@ -121,6 +122,7 @@ class CourseController extends Controller
                 'category_id' => $validated['category_id'],
                 'status' => $validated['status'],
                 'user_id' => Auth::id(),
+                
             ];
 
             if ($request->hasFile('thumbnail_image')) {
@@ -128,8 +130,13 @@ class CourseController extends Controller
                 $courseData['thumbnail_image'] = $request->file('thumbnail_image')->store('course-thumbnails');
             }
             if ($request->hasFile('intro_video')) {
-                if (!$isNew && $course->intro_video) { Storage::delete($course->intro_video); }
+                if (!$isNew && $course->intro_video && str_starts_with($course->intro_video,'course-intros')) { Storage::delete($course->intro_video); }
                 $courseData['intro_video'] = $request->file('intro_video')->store('course-intros');
+            } else {
+                $yt = $request->input('intro_video');
+                if ($yt && preg_match('/^(https?:\/\/)?(www\.)?(youtube\.com\/watch\?v=|youtu\.be\/)[A-Za-z0-9_-]{11}/',$yt)) {
+                    $courseData['intro_video'] = $yt;
+                }
             }
 
             $course = Course::updateOrCreate(['id' => $isNew ? null : $course->id], $courseData);
@@ -176,9 +183,14 @@ class CourseController extends Controller
                     $lessonIds = [];
                     if (isset($sectionData['lessons']) && is_array($sectionData['lessons'])) {
                         foreach ($sectionData['lessons'] as $l_index => $lessonData) {
+                            $inputVideoUrl = $request->input("sections.$s_index.lessons.$l_index.video_url");
                             $lesson = $section->lessons()->updateOrCreate(
                                 ['id' => $lessonData['id'] ?? 0],
-                                ['title' => $lessonData['title'], 'description' => $lessonData['description']]
+                                [
+                                    'title' => $lessonData['title'],
+                                    'description' => $lessonData['description'],
+                                    'video_url' => $inputVideoUrl ?? ($lessonData['video_url'] ?? null),
+                                ]
                             );
                             $lessonIds[] = $lesson->id;
 

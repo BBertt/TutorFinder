@@ -11,7 +11,7 @@ export default function EditLessonModal({
         id: "",
         title: "",
         description: "",
-        video: null,
+        video_url: "",
     });
 
     useEffect(() => {
@@ -20,13 +20,16 @@ export default function EditLessonModal({
                 id: lessonData.lesson.id,
                 title: lessonData.lesson.title,
                 description: lessonData.lesson.description,
-                video: null,
+                video_url: lessonData.lesson.video_url || "",
             });
         }
     }, [lessonData]);
 
+    const isValidYouTubeUrl = (url) => /^(https?:\/\/)?(www\.)?(youtube\.com\/watch\?v=|youtu\.be\/)[A-Za-z0-9_-]{11}(?:[&#?].*)?$/.test((url||"").trim());
+
     const submit = (e) => {
         e.preventDefault();
+        if (data.video_url && !isValidYouTubeUrl(data.video_url)) return;
         const updatedLesson = { ...lessonData.lesson, ...data };
         onSave(updatedLesson);
         reset();
@@ -76,20 +79,34 @@ export default function EditLessonModal({
                     </div>
                     <div className="mb-6">
                         <label
-                            htmlFor="edit_lesson_video"
+                            htmlFor="edit_lesson_video_url"
                             className="block text-sm font-medium text-gray-700 dark:text-gray-300"
                         >
-                            Replace Video (Optional)
+                            YouTube Video URL (Optional)
                         </label>
                         <input
-                            type="file"
-                            id="edit_lesson_video"
-                            accept="video/*"
-                            onChange={(e) =>
-                                setData("video", e.target.files[0])
-                            }
-                            className="mt-1 block w-full text-sm text-gray-500 dark:text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-white hover:file:bg-opacity-80 dark:hover:file:bg-opacity-80 cursor-pointer"
+                            type="url"
+                            id="edit_lesson_video_url"
+                            placeholder="https://www.youtube.com/watch?v=XXXXXXXXXXX"
+                            value={data.video_url}
+                            onChange={(e) => setData("video_url", e.target.value)}
+                            className={`mt-1 block w-full border rounded-md shadow-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400 ${data.video_url && !isValidYouTubeUrl(data.video_url) ? 'border-red-500' : 'border-gray-300'}`}
                         />
+                        {data.video_url && !isValidYouTubeUrl(data.video_url) && (
+                            <p className="text-sm text-red-500 mt-1">Invalid YouTube URL.</p>
+                        )}
+                        {data.video_url && isValidYouTubeUrl(data.video_url) && (
+                            <div className="mt-3 aspect-video w-full">
+                                <iframe
+                                    className="w-full h-full rounded"
+                                    src={`https://www.youtube.com/embed/${data.video_url.match(/(?:v=|youtu\.be\/)([A-Za-z0-9_-]{11})/)?.[1]}`}
+                                    title="Lesson Video Preview"
+                                    frameBorder="0"
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                    allowFullScreen
+                                />
+                            </div>
+                        )}
                     </div>
                     <div className="flex justify-end space-x-2">
                         <button

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import VideoPlayer from '@/Components/VideoPlayer';
 
 export default function CourseOverviewForm({
     data,
@@ -9,13 +10,29 @@ export default function CourseOverviewForm({
     frontendErrors = {},
 }) {
     const [thumbnailPreview, setThumbnailPreview] = useState(null);
-    const [videoPreview, setVideoPreview] = useState(null);
+    const [videoUrl, setVideoUrl] = useState("");
+    const [videoUrlError, setVideoUrlError] = useState("");
+
+    const isValidYouTubeUrl = (url) => {
+        const re = /^(https?:\/\/)?(www\.)?(youtube\.com\/watch\?v=|youtu\.be\/)[A-Za-z0-9_-]{11}(?:[&#?].*)?$/;
+        return re.test(url.trim());
+    };
+    const getYouTubeId = (url) => {
+        try {
+            const u = new URL(url);
+            if (u.hostname.includes('youtu.be')) return u.pathname.slice(1);
+            if (u.hostname.includes('youtube.com')) return u.searchParams.get('v');
+        } catch { }
+        const m = url.match(/(?:v=|youtu\.be\/)([A-Za-z0-9_-]{11})/);
+        return m ? m[1] : null;
+    };
 
     useEffect(() => {
         if (!data.thumbnail_image && course?.thumbnail_image_url)
             setThumbnailPreview(course.thumbnail_image_url);
-        if (!data.intro_video && course?.intro_video_url)
-            setVideoPreview(course.intro_video_url);
+        if (course?.intro_video_url) {
+            setVideoUrl(course.intro_video_url);
+        }
     }, [course]);
 
     const onFileChange = (e, field, setPreview) => {
@@ -26,8 +43,11 @@ export default function CourseOverviewForm({
         }
     };
 
+    // Frontend validation integration for Next step (export helper condition)
+    const isIntroVideoValid = !videoUrl || isValidYouTubeUrl(videoUrl);
+
     return (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 mt-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 mt-8" data-intro-video-valid={isIntroVideoValid}>
             <div className="space-y-6">
                 <div>
                     <label
@@ -90,11 +110,11 @@ export default function CourseOverviewForm({
                     ></textarea>
                     {(errors.student_outcome ||
                         frontendErrors.student_outcome) && (
-                        <p className="text-sm text-red-500 mt-1">
-                            {errors.student_outcome ||
-                                frontendErrors.student_outcome}
-                        </p>
-                    )}
+                            <p className="text-sm text-red-500 mt-1">
+                                {errors.student_outcome ||
+                                    frontendErrors.student_outcome}
+                            </p>
+                        )}
                 </div>
                 <div>
                     <label
@@ -157,44 +177,46 @@ export default function CourseOverviewForm({
                     </label>
                     {(errors.thumbnail_image ||
                         frontendErrors.thumbnail_image) && (
-                        <p className="text-sm text-red-500 mt-1">
-                            {errors.thumbnail_image ||
-                                frontendErrors.thumbnail_image}
-                        </p>
-                    )}
+                            <p className="text-sm text-red-500 mt-1">
+                                {errors.thumbnail_image ||
+                                    frontendErrors.thumbnail_image}
+                            </p>
+                        )}
                 </div>
                 <div>
                     <label className="block text-sm font-medium text-black dark:text-white">
-                        Intro Video
+                        Intro Video (YouTube URL)
                     </label>
                     <input
-                        type="file"
-                        id="intro_video"
-                        accept="video/*"
-                        onChange={(e) =>
-                            onFileChange(e, "intro_video", setVideoPreview)
-                        }
-                        className="hidden"
+                        type="url"
+                        inputMode="url"
+                        placeholder="https://www.youtube.com/watch?v=XXXXXXXXXXX"
+                        value={videoUrl}
+                        onChange={(e) => {
+                            const val = e.target.value;
+                            setVideoUrl(val);
+                            if (!val || isValidYouTubeUrl(val)) {
+                                setVideoUrlError("");
+                                setData("intro_video", val);
+                            } else {
+                                setVideoUrlError("Please enter a valid YouTube URL");
+                                setData("intro_video", "");
+                            }
+                        }}
+                        className="mt-1 block w-full border-gray-200 rounded-md shadow-sm dark:bg-darkSecondary dark:border-dark dark:text-white dark:placeholder-gray-400"
                     />
-                    <label
-                        htmlFor="intro_video"
-                        className="mt-1 w-full h-48 border-2 border-dashed border-gray-200 rounded-lg flex items-center justify-center cursor-pointer hover:border-primary dark:bg-darkSecondary dark:border-dark dark:hover:border-primary"
-                    >
-                        {videoPreview ? (
-                            <video
-                                src={videoPreview}
-                                controls
-                                className="max-h-full max-w-full"
-                            ></video>
-                        ) : (
-                            <span className="text-center text-gray-400">
-                                Click to upload video
-                            </span>
-                        )}
-                    </label>
-                    {errors.intro_video && (
+                    {videoUrl && isValidYouTubeUrl(videoUrl) && (
+                        <div className="mt-3 aspect-video w-full">
+                            <VideoPlayer
+                                videoUrl={`https://www.youtube.com/embed/${getYouTubeId(videoUrl)}`}
+                                className="h-1/2"
+                            />
+
+                        </div>
+                    )}
+                    {(videoUrlError || errors.intro_video) && (
                         <p className="text-sm text-red-500 mt-1">
-                            {errors.intro_video}
+                            {videoUrlError || errors.intro_video}
                         </p>
                     )}
                 </div>

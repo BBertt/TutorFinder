@@ -42,7 +42,7 @@ class CourseLessonController extends Controller
         if ($request->hasFile('video')) {
             $validated['video_url'] = $request->file('video')->store('course-lessons');
         }
-
+        // video_url from YouTube is already in $validated
         $section->lessons()->create($validated);
 
         return back()->with('success', 'Lesson added successfully.');
@@ -77,10 +77,11 @@ class CourseLessonController extends Controller
             'title' => 'required|string|max:255',
             'description' => 'required|string',
             'video' => 'nullable|mimetypes:video/mp4,video/quicktime',
+            'video_url' => 'nullable|string|regex:/^(https?:\/\/)?(www\.)?(youtube\.com\/watch\?v=|youtu\.be\/)[A-Za-z0-9_-]{11}(?:[&#?].*)?$/',
         ]);
 
         if($request->hasFile('video')){
-            if($lesson->video_url){
+            if($lesson->video_url && str_starts_with($lesson->video_url, 'course-lessons')){
                 Storage::delete($lesson->video_url);
             }
             $validated['video_url'] = $request->file('video')->store('course-lessons');

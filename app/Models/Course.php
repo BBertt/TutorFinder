@@ -82,16 +82,15 @@ class Course extends Model
 
      public function getIntroVideoUrlAttribute()
     {
-        $path = $this->intro_video;
-
-        if (!$path) {
-            return null;
+        $value = $this->intro_video;
+        if (!$value) return null;
+        // If looks like YouTube URL return directly
+        if (preg_match('/^(https?:\/\/)?(www\.)?(youtube\.com\/watch\?v=|youtu\.be\/)[A-Za-z0-9_-]{11}/', $value)) {
+            return $value;
         }
-        if (str_starts_with($path, 'course-intros')) {
-            Log::debug("[Course.php] - Using storage path for intro video: " . $path);
-            return Storage::url($path);
+        if (str_starts_with($value, 'course-intros')) {
+            return Storage::url($value);
         }
-        Log::debug("[Course.php] - Using raw path for intro video: " . $path);
-        return '/' . ltrim($path, '/');
+        return '/' . ltrim($value, '/');
     }
 }

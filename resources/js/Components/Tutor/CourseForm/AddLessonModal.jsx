@@ -5,11 +5,14 @@ export default function AddLessonModal({ section, isOpen, onClose, onSave }) {
     const { data, setData, processing, reset } = useForm({
         title: "",
         description: "",
-        video: null,
+        video_url: "",
     });
+
+    const isValidYouTubeUrl = (url) => /^(https?:\/\/)?(www\.)?(youtube\.com\/watch\?v=|youtu\.be\/)[A-Za-z0-9_-]{11}(?:[&#?].*)?$/.test((url||"").trim());
 
     const submit = (e) => {
         e.preventDefault();
+        if (data.video_url && !isValidYouTubeUrl(data.video_url)) return;
         const newLesson = {
             id: `temp_lesson_${Date.now()}`,
             ...data,
@@ -64,19 +67,18 @@ export default function AddLessonModal({ section, isOpen, onClose, onSave }) {
                     </div>
                     <div className="mb-6">
                         <label
-                            htmlFor="lesson_video"
+                            htmlFor="lesson_video_url"
                             className="block text-sm font-medium text-gray-700 dark:text-gray-300"
                         >
-                            Upload Video (Optional)
+                            YouTube Video URL (Optional)
                         </label>
                         <input
-                            type="file"
-                            id="lesson_video"
-                            accept="video/*"
-                            onChange={(e) =>
-                                setData("video", e.target.files[0])
-                            }
-                            className="mt-1 block w-full text-sm text-gray-500 dark:text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-white hover:file:bg-opacity-80 dark:hover:file:bg-opacity-80 cursor-pointer"
+                            type="url"
+                            id="lesson_video_url"
+                            placeholder="https://www.youtube.com/watch?v=XXXXXXXXXXX"
+                            value={data.video_url}
+                            onChange={(e) => setData("video_url", e.target.value)}
+                            className="mt-1 block w-full border-gray-300 rounded-md shadow-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
                         />
                     </div>
                     <div className="flex justify-end space-x-2">

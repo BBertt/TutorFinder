@@ -100,6 +100,9 @@ export default function CourseForm({ categories }) {
         if (data.intro_video instanceof File) {
             formData.append("intro_video", data.intro_video);
         }
+        if (data.intro_video && !(data.intro_video instanceof File)) {
+            formData.append("intro_video", data.intro_video);
+        }
 
         if (data.sections.length > 0) {
             data.sections.forEach((section, s_index) => {
@@ -140,6 +143,12 @@ export default function CourseForm({ categories }) {
                             formData.append(
                                 `sections[${s_index}][lessons][${l_index}][video]`,
                                 lesson.video
+                            );
+                        }
+                        if (lesson.video_url) {
+                            formData.append(
+                                `sections[${s_index}][lessons][${l_index}][video_url]`,
+                                lesson.video_url
                             );
                         }
                     });
@@ -198,6 +207,12 @@ export default function CourseForm({ categories }) {
             !course?.thumbnail_image_url
         ) {
             newErrors.thumbnail_image = "The thumbnail image is required.";
+        }
+
+        // Validate YouTube URL when present
+        const ytRegex = /^(https?:\/\/)?(www\.)?(youtube\.com\/watch\?v=|youtu\.be\/)[A-Za-z0-9_-]{11}(?:[&#?].*)?$/;
+        if (data.intro_video && !(data.intro_video instanceof File) && data.intro_video.trim() !== '' && !ytRegex.test(String(data.intro_video).trim())) {
+            newErrors.intro_video = "Please enter a valid YouTube URL.";
         }
 
         setFrontendErrors(newErrors);
