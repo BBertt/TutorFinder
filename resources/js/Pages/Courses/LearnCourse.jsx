@@ -64,14 +64,14 @@ const RatingModal = ({ course, onClose }) => {
 
     return (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white p-8 rounded-lg shadow-xl w-full max-w-2xl">
+            <div className="bg-white dark:bg-gray-900 dark:text-gray-100 p-8 rounded-lg shadow-xl w-full max-w-2xl">
                 <h2 className="text-2xl font-bold mb-6 text-center">Rate Your Course</h2>
                 <form onSubmit={handleSubmit}>
                     <div className="mb-6">
                         <h3 className="text-xl font-semibold mb-2">Rate the Course: "{course.title}"</h3>
                         <StarRating rating={courseRating} onRatingChange={setCourseRating} />
                         <textarea
-                            className="w-full mt-4 p-2 border rounded"
+                            className="w-full mt-4 p-2 border rounded dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100"
                             rows="3"
                             placeholder="Tell us about your experience with the course..."
                             value={courseComment}
@@ -80,7 +80,7 @@ const RatingModal = ({ course, onClose }) => {
                     </div>
 
                     <div className="flex justify-end gap-4">
-                        <button type="button" onClick={onClose} className="px-6 py-2 rounded text-gray-700 bg-gray-200 hover:bg-gray-300">
+                        <button type="button" onClick={onClose} className="px-6 py-2 rounded text-gray-700 bg-gray-200 hover:bg-gray-300 dark:text-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600">
                             Maybe Later
                         </button>
                         <button type="submit" disabled={isSubmitting || courseRating === 0} className="px-6 py-2 rounded text-white bg-primary hover:bg-primary-dark disabled:bg-gray-400">

@@ -2,11 +2,11 @@ import React from "react";
 
 export default function CourseReview({ courseData, existingCourse }) {
     return (
-        <div className="mt-8">
+        <div className="mt-8 dark:text-gray-100">
             <h2 className="text-2xl font-bold mb-4 dark:text-white">
                 Review and Publish
             </h2>
-            <p className="text-gray-400 mb-6">
+            <p className="text-gray-400 dark:text-gray-400 mb-6">
                 This is a preview of the data that will be saved. Once you are
                 satisfied, click "Publish" or "Save to Draft".
             </p>
@@ -75,7 +75,7 @@ export default function CourseReview({ courseData, existingCourse }) {
                                     Section {index + 1}: {section.title}
                                 </p>
                                 {section.description && (
-                                    <p className="text-sm text-gray-400 mt-1">
+                                    <p className="text-sm text-gray-400 dark:text-gray-400 mt-1">
                                         {section.description}
                                     </p>
                                 )}
@@ -84,7 +84,7 @@ export default function CourseReview({ courseData, existingCourse }) {
                                         <li key={lesson.id}>{lesson.title}</li>
                                     ))}
                                     {section.lessons.length === 0 && (
-                                        <li className="text-gray-400 italic">
+                                        <li className="text-gray-400 dark:text-gray-400 italic">
                                             No lessons in this section yet.
                                         </li>
                                     )}
@@ -92,7 +92,7 @@ export default function CourseReview({ courseData, existingCourse }) {
                             </div>
                         ))}
                         {courseData.sections.length === 0 && (
-                            <p className="text-gray-400 italic">
+                            <p className="text-gray-400 dark:text-gray-400 italic">
                                 No sections or lessons have been added yet.
                             </p>
                         )}
