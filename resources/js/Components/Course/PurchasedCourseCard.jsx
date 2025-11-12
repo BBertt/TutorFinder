@@ -56,12 +56,14 @@ export default function PurchasedCourseCard({ enrollment }) {
                                 </span>
                             </div>
                         </div>
-                        <Link
-                            href={route("courses.learn", course.id)}
-                            className="px-6 py-1 text-sm bg-primary text-white font-semibold rounded-md hover:bg-opacity-90 w-1/5 mt-2 text-center"
-                        >
-                            Learn
-                        </Link>
+                        <div className="flex items-center justify-between mt-3">
+                            <Link
+                                href={route("courses.learn", course.id)}
+                                className="px-6 py-1 text-sm bg-primary text-white font-semibold rounded-md hover:bg-opacity-90"
+                            >
+                                Learn
+                            </Link>
+                        </div>
                     </div>
                 </div>
             </Link>
