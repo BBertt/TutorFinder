@@ -31,9 +31,7 @@ export default function ReplyCard({ reply, type = "reply", forumId }) {
     return (
         <div className="flex items-start space-x-4">
             <img
-                className={`w-12 h-12 rounded-full ${
-                    !reply.user.profile_image_url && "dark:invert"
-                }`}
+                className="w-12 h-12 rounded-full"
                 src={
                     reply.user.profile_image_url
                         ? reply.user.profile_image_url
@@ -78,19 +76,17 @@ export default function ReplyCard({ reply, type = "reply", forumId }) {
                             <img
                                 src="/assets/icons/arrow-down-primary.svg"
                                 alt="toggle replies"
-                                className={`w-4 h-4 transition-transform ${
-                                    showNestedReplies ? "rotate-180" : ""
-                                }`}
+                                className={`w-4 h-4 transition-transform ${showNestedReplies ? "rotate-180" : ""
+                                    }`}
                             />
                             <span>
                                 {/* CHANGE 2: Use childrenCount (which is based on all_children) */}
                                 {showNestedReplies
                                     ? "Hide Replies"
-                                    : `View ${childrenCount} ${
-                                          childrenCount > 1
-                                              ? "Replies"
-                                              : "Reply"
-                                      }`}
+                                    : `View ${childrenCount} ${childrenCount > 1
+                                        ? "Replies"
+                                        : "Reply"
+                                    }`}
                             </span>
                         </button>
                     )}
