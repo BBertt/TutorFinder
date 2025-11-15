@@ -14,28 +14,31 @@ const Stepper = ({ currentStep }) => {
                 <React.Fragment key={index}>
                     <div className="flex items-center">
                         <div
-                            className={`w-8 h-8 rounded-full flex items-center justify-center font-bold transition-colors ${index + 1 <= currentStep
-                                ? "bg-primary text-white"
-                                : "bg-gray-200 text-gray-400 dark:bg-gray-700 dark:text-gray-400"
-                                }`}
+                            className={`w-8 h-8 rounded-full flex items-center justify-center font-bold transition-colors ${
+                                index + 1 <= currentStep
+                                    ? "bg-primary text-white"
+                                    : "bg-gray-200 text-gray-400 dark:bg-gray-700 dark:text-gray-400"
+                            }`}
                         >
                             {index + 1}
                         </div>
                         <p
-                            className={`ml-2 transition-colors ${index + 1 <= currentStep
-                                ? "text-primary font-semibold"
-                                : "text-gray-400"
-                                }`}
+                            className={`ml-2 transition-colors ${
+                                index + 1 <= currentStep
+                                    ? "text-primary font-semibold"
+                                    : "text-gray-400"
+                            }`}
                         >
                             {step}
                         </p>
                     </div>
                     {index < steps.length - 1 && (
                         <div
-                            className={`flex-auto border-t-2 transition-colors mx-4 ${index + 1 < currentStep
-                                ? "border-primary"
-                                : "border-gray-200 dark:border-dark"
-                                }`}
+                            className={`flex-auto border-t-2 transition-colors mx-4 ${
+                                index + 1 < currentStep
+                                    ? "border-primary"
+                                    : "border-gray-200 dark:border-dark"
+                            }`}
                         ></div>
                     )}
                 </React.Fragment>
@@ -58,13 +61,19 @@ export default function CourseForm({ categories }) {
         description: course?.description || "",
         student_outcome: course?.student_outcome || "",
         requirements: course?.requirements || "",
-        price: course?.price || "0",
+        price: course?.price || "",
         category_id: course?.category_id || "",
         thumbnail_image: null,
         intro_video: null,
-        sections: (course?.sections || []).map(s => ({ ...s, quiz_title: s.quiz?.title || s.quiz_title || "" })),
+        sections: (course?.sections || []).map((s) => ({
+            ...s,
+            quiz_title: s.quiz?.title || s.quiz_title || "",
+        })),
         final_quiz_title: course?.finalQuiz?.title || "",
-        final_quiz: course?.finalQuiz || { title: course?.finalQuiz?.title || "", questions: [] },
+        final_quiz: course?.finalQuiz || {
+            title: course?.finalQuiz?.title || "",
+            questions: [],
+        },
         status: course?.status || "draft",
     });
 
@@ -107,13 +116,27 @@ export default function CourseForm({ categories }) {
         if (data.sections.length > 0) {
             data.sections.forEach((section, s_index) => {
                 formData.append(`sections[${s_index}][id]`, section.id || "");
-                formData.append(`sections[${s_index}][quiz_title]`, (section.quiz && section.quiz.title) || section.quiz_title || "");
+                formData.append(
+                    `sections[${s_index}][quiz_title]`,
+                    (section.quiz && section.quiz.title) ||
+                        section.quiz_title ||
+                        ""
+                );
                 if (section.quiz && Array.isArray(section.quiz.questions)) {
                     section.quiz.questions.forEach((q, q_index) => {
-                        formData.append(`sections[${s_index}][quiz][questions][${q_index}][question]`, q.question || '');
+                        formData.append(
+                            `sections[${s_index}][quiz][questions][${q_index}][question]`,
+                            q.question || ""
+                        );
                         (q.options || []).forEach((opt, o_index) => {
-                            formData.append(`sections[${s_index}][quiz][questions][${q_index}][options][${o_index}][option]`, opt.option || '');
-                            formData.append(`sections[${s_index}][quiz][questions][${q_index}][options][${o_index}][is_correct]`, opt.is_correct ? '1' : '0');
+                            formData.append(
+                                `sections[${s_index}][quiz][questions][${q_index}][options][${o_index}][option]`,
+                                opt.option || ""
+                            );
+                            formData.append(
+                                `sections[${s_index}][quiz][questions][${q_index}][options][${o_index}][is_correct]`,
+                                opt.is_correct ? "1" : "0"
+                            );
                         });
                     });
                 }
@@ -156,14 +179,23 @@ export default function CourseForm({ categories }) {
             });
         }
 
-        formData.append('final_quiz_title', data.final_quiz_title || '');
+        formData.append("final_quiz_title", data.final_quiz_title || "");
 
         if (data.final_quiz && Array.isArray(data.final_quiz.questions)) {
             data.final_quiz.questions.forEach((q, q_index) => {
-                formData.append(`final_quiz[questions][${q_index}][question]`, q.question || '');
+                formData.append(
+                    `final_quiz[questions][${q_index}][question]`,
+                    q.question || ""
+                );
                 (q.options || []).forEach((opt, o_index) => {
-                    formData.append(`final_quiz[questions][${q_index}][options][${o_index}][option]`, opt.option || '');
-                    formData.append(`final_quiz[questions][${q_index}][options][${o_index}][is_correct]`, opt.is_correct ? '1' : '0');
+                    formData.append(
+                        `final_quiz[questions][${q_index}][options][${o_index}][option]`,
+                        opt.option || ""
+                    );
+                    formData.append(
+                        `final_quiz[questions][${q_index}][options][${o_index}][is_correct]`,
+                        opt.is_correct ? "1" : "0"
+                    );
                 });
             });
         }
@@ -198,8 +230,13 @@ export default function CourseForm({ categories }) {
                 "The 'What will they learn' field is required.";
         if (!data.requirements)
             newErrors.requirements = "The requirements field is required.";
+        if (!data.price && data.price !== 0)
+            newErrors.price = "The price field is required.";
         if (!data.category_id)
             newErrors.category_id = "The category field is required.";
+        if (!data.intro_video) {
+            newErrors.intro_video = "The introduction video field is required.";
+        }
 
         if (
             !isEditing &&
@@ -210,8 +247,14 @@ export default function CourseForm({ categories }) {
         }
 
         // Validate YouTube URL when present
-        const ytRegex = /^(https?:\/\/)?(www\.)?(youtube\.com\/watch\?v=|youtu\.be\/)[A-Za-z0-9_-]{11}(?:[&#?].*)?$/;
-        if (data.intro_video && !(data.intro_video instanceof File) && data.intro_video.trim() !== '' && !ytRegex.test(String(data.intro_video).trim())) {
+        const ytRegex =
+            /^(https?:\/\/)?(www\.)?(youtube\.com\/watch\?v=|youtu\.be\/)[A-Za-z0-9_-]{11}(?:[&#?].*)?$/;
+        if (
+            data.intro_video &&
+            !(data.intro_video instanceof File) &&
+            data.intro_video.trim() !== "" &&
+            !ytRegex.test(String(data.intro_video).trim())
+        ) {
             newErrors.intro_video = "Please enter a valid YouTube URL.";
         }
 
@@ -304,7 +347,15 @@ export default function CourseForm({ categories }) {
 
                     <div className={currentStep === 1 ? "block" : "hidden"}>
                         <CourseOverviewForm
-                            {...{ data, setData, errors, course, categories }}
+                            {...{
+                                data,
+                                setData,
+                                errors,
+                                course,
+                                categories,
+                                clearErrors,
+                                setFrontendErrors,
+                            }}
                             frontendErrors={frontendErrors}
                         />
                     </div>
@@ -317,10 +368,16 @@ export default function CourseForm({ categories }) {
                             finalQuizTitle={data.final_quiz_title}
                             finalQuiz={data.final_quiz}
                             onFinalQuizTitleChange={(v) => {
-                                setData('final_quiz_title', v);
-                                setData('final_quiz', { ...(data.final_quiz || {}), title: v, questions: data.final_quiz?.questions || [] });
+                                setData("final_quiz_title", v);
+                                setData("final_quiz", {
+                                    ...(data.final_quiz || {}),
+                                    title: v,
+                                    questions: data.final_quiz?.questions || [],
+                                });
                             }}
-                            onFinalQuizChange={(qz) => setData('final_quiz', qz)}
+                            onFinalQuizChange={(qz) =>
+                                setData("final_quiz", qz)
+                            }
                         />
                     </div>
                     <div className={currentStep === 3 ? "block" : "hidden"}>

@@ -1,28 +1,44 @@
-import React, { useState, useEffect } from "react";
-import VideoPlayer from '@/Components/VideoPlayer';
+import React, { useState, useEffect, useRef } from "react";
+import VideoPlayer from "@/Components/VideoPlayer";
 
 export default function CourseOverviewForm({
     data,
     setData,
     errors,
+    clearErrors,
+    setFrontendErrors,
     course,
     categories,
     frontendErrors = {},
 }) {
     const [thumbnailPreview, setThumbnailPreview] = useState(null);
     const [videoUrl, setVideoUrl] = useState("");
+
+    const [titleError, setTitleError] = useState("");
+    const [descriptionError, setDescriptionError] = useState("");
+    const [outcomeError, setOutcomeError] = useState("");
+    const [requirementsError, setRequirementsError] = useState("");
+    const [thumbnailError, setThumbnailError] = useState("");
     const [videoUrlError, setVideoUrlError] = useState("");
+    const [priceError, setPriceError] = useState("");
+    const [categoryError, setCategoryError] = useState("");
+
+    const [categoryQuery, setCategoryQuery] = useState("");
+    const [isCategoryOpen, setIsCategoryOpen] = useState(false);
+    const categoryComboboxRef = useRef(null);
 
     const isValidYouTubeUrl = (url) => {
-        const re = /^(https?:\/\/)?(www\.)?(youtube\.com\/watch\?v=|youtu\.be\/)[A-Za-z0-9_-]{11}(?:[&#?].*)?$/;
+        const re =
+            /^(https?:\/\/)?(www\.)?(youtube\.com\/watch\?v=|youtu\.be\/)[A-Za-z0-9_-]{11}(?:[&#?].*)?$/;
         return re.test(url.trim());
     };
     const getYouTubeId = (url) => {
         try {
             const u = new URL(url);
-            if (u.hostname.includes('youtu.be')) return u.pathname.slice(1);
-            if (u.hostname.includes('youtube.com')) return u.searchParams.get('v');
-        } catch { }
+            if (u.hostname.includes("youtu.be")) return u.pathname.slice(1);
+            if (u.hostname.includes("youtube.com"))
+                return u.searchParams.get("v");
+        } catch {}
         const m = url.match(/(?:v=|youtu\.be\/)([A-Za-z0-9_-]{11})/);
         return m ? m[1] : null;
     };
@@ -35,19 +51,69 @@ export default function CourseOverviewForm({
         }
     }, [course]);
 
+    useEffect(() => {
+        function handleClickOutside(event) {
+            if (
+                categoryComboboxRef.current &&
+                !categoryComboboxRef.current.contains(event.target)
+            ) {
+                setIsCategoryOpen(false);
+                const currentSelection = categories.find(
+                    (c) => c.name.toLowerCase() === categoryQuery.toLowerCase()
+                );
+                if (!currentSelection) {
+                    if (!data.category_id) {
+                        setCategoryQuery("");
+                    } else {
+                        const validCategory = categories.find(
+                            (c) => c.id === data.category_id
+                        );
+                        if (validCategory) setCategoryQuery(validCategory.name);
+                    }
+                }
+            }
+        }
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, [categoryComboboxRef, categoryQuery, data.category_id, categories]);
+
+    const filteredCategories =
+        categoryQuery === ""
+            ? categories
+            : categories.filter((category) =>
+                  category.name
+                      .toLowerCase()
+                      .replace(/\s+/g, "")
+                      .includes(categoryQuery.toLowerCase().replace(/\s+/g, ""))
+              );
+
     const onFileChange = (e, field, setPreview) => {
         const file = e.target.files[0];
         if (file) {
             setData(field, file);
             setPreview(URL.createObjectURL(file));
+            errorSetter("");
+            if (clearErrors) clearErrors(field);
+            if (setFrontendErrors) setFrontendErrors({});
         }
     };
 
-    // Frontend validation integration for Next step (export helper condition)
+    const onFieldChange = (key, value, localErrorSetter, localErrorMessage) => {
+        setData(key, value);
+        if (clearErrors) clearErrors(key);
+        if (setFrontendErrors) setFrontendErrors({});
+        !value ? localErrorSetter(localErrorMessage) : localErrorSetter("");
+    };
+
     const isIntroVideoValid = !videoUrl || isValidYouTubeUrl(videoUrl);
 
     return (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 mt-8" data-intro-video-valid={isIntroVideoValid}>
+        <div
+            className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 mt-8"
+            data-intro-video-valid={isIntroVideoValid}
+        >
             <div className="space-y-6">
                 <div>
                     <label
@@ -61,12 +127,19 @@ export default function CourseOverviewForm({
                         id="title"
                         placeholder="Input your course title here..."
                         value={data.title}
-                        onChange={(e) => setData("title", e.target.value)}
+                        onChange={(e) =>
+                            onFieldChange(
+                                "title",
+                                e.target.value,
+                                setTitleError,
+                                "The title field is required."
+                            )
+                        }
                         className="mt-1 block w-full border-gray-200 rounded-md shadow-sm dark:bg-darkSecondary dark:border-dark dark:text-white dark:placeholder-gray-400"
                     />
-                    {(errors.title || frontendErrors.title) && (
+                    {(titleError || errors.title || frontendErrors.title) && (
                         <p className="text-sm text-red-500 mt-1">
-                            {errors.title || frontendErrors.title}
+                            {titleError || errors.title || frontendErrors.title}
                         </p>
                     )}
                 </div>
@@ -81,13 +154,24 @@ export default function CourseOverviewForm({
                         id="description"
                         placeholder="Input your course description here..."
                         value={data.description}
-                        onChange={(e) => setData("description", e.target.value)}
+                        onChange={(e) =>
+                            onFieldChange(
+                                "description",
+                                e.target.value,
+                                setDescriptionError,
+                                "The description field is required."
+                            )
+                        }
                         rows="5"
                         className="mt-1 block w-full border-gray-200 rounded-md shadow-sm dark:bg-darkSecondary dark:border-dark dark:text-white dark:placeholder-gray-400"
                     ></textarea>
-                    {(errors.description || frontendErrors.description) && (
+                    {(descriptionError ||
+                        errors.description ||
+                        frontendErrors.description) && (
                         <p className="text-sm text-red-500 mt-1">
-                            {errors.description || frontendErrors.description}
+                            {descriptionError ||
+                                errors.description ||
+                                frontendErrors.description}
                         </p>
                     )}
                 </div>
@@ -103,18 +187,25 @@ export default function CourseOverviewForm({
                         placeholder="Input what students will learn here..."
                         value={data.student_outcome}
                         onChange={(e) =>
-                            setData("student_outcome", e.target.value)
+                            onFieldChange(
+                                "student_outcome",
+                                e.target.value,
+                                setOutcomeError,
+                                "The 'What will they learn' field is required."
+                            )
                         }
                         rows="5"
                         className="mt-1 block w-full border-gray-200 rounded-md shadow-sm dark:bg-darkSecondary dark:border-dark dark:text-white dark:placeholder-gray-400"
                     ></textarea>
-                    {(errors.student_outcome ||
+                    {(outcomeError ||
+                        errors.student_outcome ||
                         frontendErrors.student_outcome) && (
-                            <p className="text-sm text-red-500 mt-1">
-                                {errors.student_outcome ||
-                                    frontendErrors.student_outcome}
-                            </p>
-                        )}
+                        <p className="text-sm text-red-500 mt-1">
+                            {outcomeError ||
+                                errors.student_outcome ||
+                                frontendErrors.student_outcome}
+                        </p>
+                    )}
                 </div>
                 <div>
                     <label
@@ -128,14 +219,23 @@ export default function CourseOverviewForm({
                         placeholder="Input course requirements here..."
                         value={data.requirements}
                         onChange={(e) =>
-                            setData("requirements", e.target.value)
+                            onFieldChange(
+                                "requirements",
+                                e.target.value,
+                                setRequirementsError,
+                                "The requirements field is required."
+                            )
                         }
                         rows="5"
                         className="mt-1 block w-full border-gray-200 rounded-md shadow-sm dark:bg-darkSecondary dark:border-dark dark:text-white dark:placeholder-gray-400"
                     ></textarea>
-                    {(errors.requirements || frontendErrors.requirements) && (
+                    {(requirementsError ||
+                        errors.requirements ||
+                        frontendErrors.requirements) && (
                         <p className="text-sm text-red-500 mt-1">
-                            {errors.requirements || frontendErrors.requirements}
+                            {requirementsError ||
+                                errors.requirements ||
+                                frontendErrors.requirements}
                         </p>
                     )}
                 </div>
@@ -154,7 +254,8 @@ export default function CourseOverviewForm({
                             onFileChange(
                                 e,
                                 "thumbnail_image",
-                                setThumbnailPreview
+                                setThumbnailPreview,
+                                setThumbnailError
                             )
                         }
                         className="hidden"
@@ -175,13 +276,15 @@ export default function CourseOverviewForm({
                             </span>
                         )}
                     </label>
-                    {(errors.thumbnail_image ||
+                    {(thumbnailError ||
+                        errors.thumbnail_image ||
                         frontendErrors.thumbnail_image) && (
-                            <p className="text-sm text-red-500 mt-1">
-                                {errors.thumbnail_image ||
-                                    frontendErrors.thumbnail_image}
-                            </p>
-                        )}
+                        <p className="text-sm text-red-500 mt-1">
+                            {thumbnailError ||
+                                errors.thumbnail_image ||
+                                frontendErrors.thumbnail_image}
+                        </p>
+                    )}
                 </div>
                 <div>
                     <label className="block text-sm font-medium text-black dark:text-white">
@@ -195,12 +298,16 @@ export default function CourseOverviewForm({
                         onChange={(e) => {
                             const val = e.target.value;
                             setVideoUrl(val);
+                            setData("intro_video", val);
+                            if (clearErrors) clearErrors("intro_video");
+                            if (setFrontendErrors) setFrontendErrors({});
+
                             if (!val || isValidYouTubeUrl(val)) {
                                 setVideoUrlError("");
-                                setData("intro_video", val);
                             } else {
-                                setVideoUrlError("Please enter a valid YouTube URL");
-                                setData("intro_video", "");
+                                setVideoUrlError(
+                                    "Please enter a valid YouTube URL"
+                                );
                             }
                         }}
                         className="mt-1 block w-full border-gray-200 rounded-md shadow-sm dark:bg-darkSecondary dark:border-dark dark:text-white dark:placeholder-gray-400"
@@ -208,15 +315,20 @@ export default function CourseOverviewForm({
                     {videoUrl && isValidYouTubeUrl(videoUrl) && (
                         <div className="mt-3 aspect-video w-full">
                             <VideoPlayer
-                                videoUrl={`https://www.youtube.com/embed/${getYouTubeId(videoUrl)}`}
+                                videoUrl={`https://www.youtube.com/embed/${getYouTubeId(
+                                    videoUrl
+                                )}`}
                                 className="h-1/2"
                             />
-
                         </div>
                     )}
-                    {(videoUrlError || errors.intro_video) && (
+                    {(videoUrlError ||
+                        errors.intro_video ||
+                        frontendErrors.intro_video) && (
                         <p className="text-sm text-red-500 mt-1">
-                            {videoUrlError || errors.intro_video}
+                            {videoUrlError ||
+                                errors.intro_video ||
+                                frontendErrors.intro_video}
                         </p>
                     )}
                 </div>
@@ -231,38 +343,81 @@ export default function CourseOverviewForm({
                         type="number"
                         id="price"
                         value={data.price}
-                        onChange={(e) => setData("price", e.target.value)}
+                        onChange={(e) =>
+                            onFieldChange(
+                                "price",
+                                e.target.value,
+                                setPriceError,
+                                "The price field is required."
+                            )
+                        }
                         className="mt-1 block w-full border-gray-200 rounded-md shadow-sm dark:bg-darkSecondary dark:border-dark dark:text-white dark:placeholder-gray-400"
                     />
-                    {errors.price && (
+
+                    {(priceError || errors.price || frontendErrors.price) && (
                         <p className="text-sm text-red-500 mt-1">
-                            {errors.price}
+                            {priceError || errors.price || frontendErrors.price}
                         </p>
                     )}
                 </div>
-                <div>
+                <div ref={categoryComboboxRef} className="relative">
                     <label
                         htmlFor="category_id"
                         className="block text-sm font-medium dark:text-white"
                     >
                         Category
                     </label>
-                    <select
+                    <input
                         id="category_id"
-                        value={data.category_id}
-                        onChange={(e) => setData("category_id", e.target.value)}
-                        className="mt-1 block w-full border-gray-200 rounded-md shadow-sm dark:bg-darkSecondary dark:border-dark dark:text-white"
-                    >
-                        <option value="">Select a category</option>
-                        {categories.map((category) => (
-                            <option key={category.id} value={category.id}>
-                                {category.name}
-                            </option>
-                        ))}
-                    </select>
-                    {(errors.category_id || frontendErrors.category_id) && (
+                        type="text"
+                        value={categoryQuery}
+                        onFocus={() => setIsCategoryOpen(true)}
+                        onChange={(e) => {
+                            setCategoryQuery(e.target.value);
+                            if (clearErrors) clearErrors("category_id");
+                            if (setFrontendErrors) setFrontendErrors({});
+                            setCategoryError("");
+                            setData("category_id", "");
+                        }}
+                        placeholder="Search or select a category"
+                        autoComplete="off"
+                        className="mt-1 block w-full border-gray-200 rounded-md shadow-sm dark:bg-darkSecondary dark:border-dark dark:text-white dark:placeholder-gray-400"
+                    />
+
+                    {isCategoryOpen && (
+                        <ul className="absolute z-10 w-full mt-1 bg-white dark:bg-darkSecondary border border-gray-300 dark:border-dark rounded-md shadow-lg max-h-60 overflow-auto">
+                            {filteredCategories.length > 0 ? (
+                                filteredCategories.map((category) => (
+                                    <li
+                                        key={category.id}
+                                        onClick={() => {
+                                            setCategoryQuery(category.name);
+                                            setData("category_id", category.id);
+                                            setIsCategoryOpen(false);
+                                            setCategoryError("");
+                                        }}
+                                        className="px-4 py-2 text-gray-900 dark:text-gray-200 hover:bg-primary hover:text-white dark:hover:bg-primary cursor-pointer"
+                                    >
+                                        {category.name}
+                                    </li>
+                                ))
+                            ) : (
+                                <li className="px-4 py-2 text-gray-500 dark:text-gray-400">
+                                    No categories found.
+                                </li>
+                            )}
+                        </ul>
+                    )}
+
+                    {(categoryError ||
+                        errors.category_id ||
+                        frontendErrors.category_id) && (
                         <p className="text-sm text-red-500 mt-1">
-                            {errors.category_id || frontendErrors.category_id}
+                            {data.category_id
+                                ? errors.category_id ||
+                                  frontendErrors.category_id
+                                : categoryError ||
+                                  "Please select a valid category."}
                         </p>
                     )}
                 </div>
