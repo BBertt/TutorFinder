@@ -34,6 +34,6 @@ class CourseProgressController extends Controller
             }
         }
 
-        return response()->json(['success' => true]);
+        return redirect()->back();
     }
 }

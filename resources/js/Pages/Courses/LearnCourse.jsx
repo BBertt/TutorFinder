@@ -120,6 +120,19 @@ function LearnCourse({ course, progress: initialProgress, last_watched_lesson_id
 
 
     const isLessonCompleted = (lessonId) => progress.some(p => p.course_lesson_id === lessonId);
+    const allLessons = React.useMemo(() => course.sections.flatMap(s => s.lessons), [course.sections]);
+    const firstIncompleteIndex = React.useMemo(() => allLessons.findIndex(l => !isLessonCompleted(l.id)), [allLessons, progress]);
+    const isLessonLocked = (lesson) => {
+        const idx = allLessons.findIndex(l => l.id === lesson.id);
+        if (idx === -1) return false;
+        if (isLessonCompleted(lesson.id)) return false;
+        return firstIncompleteIndex !== -1 && idx > firstIncompleteIndex;
+    };
+    const canProceedFromCurrent = React.useMemo(() => {
+        if (activeContent?.type !== 'lesson') return true;
+        const idx = allLessons.findIndex(l => l.id === activeContent.content.id);
+        return allLessons.slice(0, idx).every(l => isLessonCompleted(l.id));
+    }, [activeContent, allLessons, progress]);
     const isQuizPassed = (quiz) => quiz && quiz.attempts.some(a => (a.score / a.total_questions) >= 0.8);
 
     const isSectionCompleted = (section) => {
@@ -184,12 +197,22 @@ function LearnCourse({ course, progress: initialProgress, last_watched_lesson_id
 
     const markLessonAsCompleted = async (lessonId) => {
         if (isLessonCompleted(lessonId)) return;
-        router.post(`/course-progress/${lessonId}`, { course_id: course.id });
+        router.post(`/course-progress/${lessonId}`, { course_id: course.id }, {
+            preserveScroll: true,
+            preserveState: true,
+        });
         setProgress(prev => [...prev, { course_lesson_id: lessonId }]);
     };
 
     const handleNext = async () => {
         if (activeContent?.type === 'lesson') {
+            const currentIndex = allLessons.findIndex(l => l.id === activeContent.content.id);
+            const prevComplete = allLessons.slice(0, currentIndex).every(l => isLessonCompleted(l.id));
+            if (!prevComplete) {
+                const target = allLessons.find(l => !isLessonCompleted(l.id));
+                if (target) setActiveContent({ type: 'lesson', content: target });
+                return;
+            }
             await markLessonAsCompleted(activeContent.content.id);
         }
         const next = getNextContent();
@@ -319,7 +342,13 @@ function LearnCourse({ course, progress: initialProgress, last_watched_lesson_id
         }
 
         buttons.push(
-            <button key="next" onClick={handleNext} className="px-4 py-2 bg-primary text-white rounded-md disabled:opacity-50" disabled={isSubmitting}>
+            <button
+                key="next"
+                onClick={handleNext}
+                className="px-4 py-2 bg-primary text-white rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
+                disabled={isSubmitting || (activeContent?.type === 'lesson' && (() => { const idx = allLessons.findIndex(l => l.id === activeContent.content.id); return !allLessons.slice(0, idx).every(l => isLessonCompleted(l.id)); })())}
+                title={activeContent?.type === 'lesson' && !canProceedFromCurrent ? 'Complete previous lessons to continue' : undefined}
+            >
                 {buttonText}
             </button>
         );
@@ -342,13 +371,22 @@ function LearnCourse({ course, progress: initialProgress, last_watched_lesson_id
                                 </h3>
                                 <ul>
                                     {section.lessons.map((lesson, index) => (
-                                        <li key={lesson.id} className={`p-4 cursor-pointer flex items-center justify-between dark:text-gray-200 ${activeContent?.type === 'lesson' && activeContent.content.id === lesson.id ? 'bg-gray-300 dark:bg-gray-700' : ''}`} onClick={() => setActiveContent({ type: 'lesson', content: lesson })}>
+                                        <li
+                                            key={lesson.id}
+                                            className={`p-4 flex items-center justify-between dark:text-gray-200 ${activeContent?.type === 'lesson' && activeContent.content.id === lesson.id ? 'bg-gray-300 dark:bg-gray-700' : ''} ${isLessonLocked(lesson) ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+                                            onClick={() => { if (!isLessonLocked(lesson)) setActiveContent({ type: 'lesson', content: lesson }); }}
+                                            title={isLessonLocked(lesson) ? 'Complete previous lessons to unlock' : undefined}
+                                        >
                                             <div>Episode {index + 1}: {lesson.title}</div>
                                             {isLessonCompleted(lesson.id) && <CheckmarkIcon className="w-5 h-5 text-green-500" />}
                                         </li>
                                     ))}
                                     {section.quiz && (
-                                        <li className={`p-4 cursor-pointer flex items-center justify-between font-semibold text-blue-600 dark:text-blue-400 ${activeContent?.type === 'quiz' && activeContent.content.id === section.quiz.id ? 'bg-gray-300 dark:bg-gray-700' : ''}`} onClick={() => setActiveContent({ type: 'quiz', content: section.quiz })}>
+                                        <li
+                                            className={`p-4 flex items-center justify-between font-semibold text-blue-600 dark:text-blue-400 ${activeContent?.type === 'quiz' && activeContent.content.id === section.quiz.id ? 'bg-gray-300 dark:bg-gray-700' : ''} ${section.lessons.every(l => isLessonCompleted(l.id)) ? 'cursor-pointer' : 'opacity-50 cursor-not-allowed'}`}
+                                            onClick={() => { if (section.lessons.every(l => isLessonCompleted(l.id))) setActiveContent({ type: 'quiz', content: section.quiz }); }}
+                                            title={!section.lessons.every(l => isLessonCompleted(l.id)) ? 'Complete lessons in this section to unlock quiz' : undefined}
+                                        >
                                             <div>Take Quiz: {section.quiz.title}</div>
                                             {isQuizPassed(section.quiz) && <CheckmarkIcon className="w-5 h-5 text-green-500" />}
                                         </li>
