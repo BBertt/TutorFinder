@@ -14,8 +14,8 @@ class HomeController extends Controller
         $user = auth()->user();
         $courses = Course::with('user')->withAvg('reviews', 'rating')->orderByDesc('reviews_avg_rating')->take(3)->get();
         $tutors = User::withAvg('reviews', 'rating')->orderByDesc('reviews_avg_rating')->take(2)->get();
-        $forums = Forum::with(['user', 'replies'])->orderByDesc('likes')->take(2)->get();
-        
+        $forums = Forum::with(['user', 'replies', 'userVote'])->orderByDesc('likes')->take(2)->get();
+
         return Inertia::render('Home', [
             'user' => $user,
             'courses' => $courses,
