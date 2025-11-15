@@ -1,7 +1,7 @@
 import Layout from '@/Layouts/Layout';
 import { Head, Link, usePage, router } from '@inertiajs/react';
 import React, { useEffect } from 'react';
-import axios from 'axios';
+
 import VideoPlayer from '@/Components/VideoPlayer';
 import Quiz from '@/Components/Quiz';
 
@@ -184,7 +184,7 @@ function LearnCourse({ course, progress: initialProgress, last_watched_lesson_id
 
     const markLessonAsCompleted = async (lessonId) => {
         if (isLessonCompleted(lessonId)) return;
-        await axios.post(`/course-progress/${lessonId}`, { course_id: course.id });
+        router.post(`/course-progress/${lessonId}`, { course_id: course.id });
         setProgress(prev => [...prev, { course_lesson_id: lessonId }]);
     };
 

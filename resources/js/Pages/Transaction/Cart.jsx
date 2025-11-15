@@ -1,7 +1,7 @@
 import Layout from "@/Layouts/Layout";
 import { Head, router } from "@inertiajs/react";
 import { useState } from "react";
-import axios from "axios";
+
 import ConfirmationModal from "@/Components/Modals/ConfirmationModal";
 
 const Checkout = ({ cartItems }) => {
@@ -22,40 +22,26 @@ const Checkout = ({ cartItems }) => {
             return;
         }
         setProcessing(true);
-        try {
-            const response = await axios.post(route("checkout"), {
-                course_cart_ids: cartItemIds,
-            });
-            if (response.data.invoice_url) {
-                window.location.href = response.data.invoice_url;
-            }
-        } catch (error) {
-            console.error("Checkout error:", error);
-            if (error.response) {
-                console.error("Error data:", error.response.data);
-                console.error("Error status:", error.response.status);
-                if (error.response.status === 422) {
-                    const validationErrors = error.response.data.errors;
-                    const errorMessages = Object.values(validationErrors)
+        router.post(
+            route("checkout"),
+            { course_cart_ids: cartItemIds },
+            {
+                preserveScroll: true,
+                onSuccess: (page) => {
+                    const invoiceUrl = page.props?.invoice_url;
+                    if (invoiceUrl) {
+                        window.location.href = invoiceUrl;
+                    }
+                },
+                onError: (errors) => {
+                    const errorMessages = Object.values(errors)
                         .flat()
                         .join("\n");
                     alert("Validation failed:\n" + errorMessages);
-                } else {
-                    const message =
-                        error.response.data.message ||
-                        "An unknown server error occurred.";
-                    alert(
-                        `Error: ${message} (Status: ${error.response.status})`
-                    );
-                }
-            } else if (error.request) {
-                alert(
-                    "The server did not respond. Please check your network connection."
-                );
-            } else {
-                alert("An error occurred while setting up the request.");
+                },
+                onFinish: () => setProcessing(false),
             }
-        }
+        );
         setProcessing(false);
     };
 
