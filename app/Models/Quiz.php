@@ -14,6 +14,7 @@ class Quiz extends Model
         'description',
         'course_id',
         'course_section_id',
+        'duration_seconds',
     ];
 
     public function course()
