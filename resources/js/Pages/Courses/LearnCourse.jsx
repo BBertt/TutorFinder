@@ -135,6 +135,16 @@ function LearnCourse({ course, progress: initialProgress, last_watched_lesson_id
         const idx = allLessons.findIndex(l => l.id === lesson.id);
         if (idx === -1) return false;
         if (isLessonCompleted(lesson.id)) return false;
+
+        // Lock lessons in the next section until the previous section quiz is passed
+        const sectionIdx = course.sections.findIndex(s => s.lessons.some(l => l.id === lesson.id));
+        if (sectionIdx > 0) {
+            const prevSection = course.sections[sectionIdx - 1];
+            if (prevSection?.quiz && !isQuizPassed(prevSection.quiz)) {
+                return true;
+            }
+        }
+
         return firstIncompleteIndex !== -1 && idx > firstIncompleteIndex;
     };
     const canProceedFromCurrent = React.useMemo(() => {
@@ -325,8 +335,8 @@ function LearnCourse({ course, progress: initialProgress, last_watched_lesson_id
             );
         }
 
-        // If there's a final quiz available and we're not on it, prefer offering to start it
-        if (!next && canStartFinalQuiz && !(activeContent?.type === 'quiz' && activeContent.content.id === course.finalQuiz?.id)) {
+        // If there's a final quiz available and we're not on any quiz, prefer offering to start it
+        if (!next && canStartFinalQuiz && activeContent?.type !== 'quiz') {
             buttons.push(
                 <button key="start-final" onClick={startFinalQuiz} className="px-4 py-2 bg-primary text-white rounded-md">Start Final Quiz</button>
             );
@@ -334,6 +344,21 @@ function LearnCourse({ course, progress: initialProgress, last_watched_lesson_id
         }
 
         if (!next) {
+            // While on a section quiz, keep showing Next Lesson, but disable until passed
+            if (activeContent?.type === 'quiz' && activeContent.content.id !== course.finalQuiz?.id) {
+                buttons.push(
+                    <button
+                        key="next"
+                        onClick={handleNext}
+                        disabled={!isQuizPassed(course.sections.find(s => s.quiz?.id === activeContent.content.id)?.quiz)}
+                        title={!isQuizPassed(course.sections.find(s => s.quiz?.id === activeContent.content.id)?.quiz) ? 'Pass the quiz to continue' : undefined}
+                        className="px-4 py-2 bg-primary text-white rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                        Next Lesson
+                    </button>
+                );
+                return <div className="flex gap-3">{buttons}</div>;
+            }
             if (!course.finalQuiz && activeContent?.type === 'lesson') {
                 if (course_completed) {
                     buttons.push(
@@ -344,7 +369,7 @@ function LearnCourse({ course, progress: initialProgress, last_watched_lesson_id
                         <button key="complete" onClick={completeCourse} className="px-4 py-2 bg-primary text-white rounded-md">Complete Course</button>
                     );
                 }
-            } else if (course.finalQuiz && !(activeContent?.type === 'quiz' && activeContent.content.id === course.finalQuiz?.id)) {
+            } else if (course.finalQuiz && activeContent?.type !== 'quiz') {
                 buttons.push(
                     <button
                         key="start-final"
