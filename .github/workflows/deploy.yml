@@ -6,13 +6,14 @@ on:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    environment: dewacloud
 
     steps:
-      - name: Test secrets host name
+      - name: Test secret length
         run: |
-          echo "${#HOST}"
+          echo "Length: ${#KEY}"
         env:
-          HOST: ${{ secrets.DW_HOST }}
+          KEY: ${{ secrets.DW_HOST }}
 
       - name: Check out source
         uses: actions/checkout@v4
