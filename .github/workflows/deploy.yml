@@ -8,11 +8,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Test secret length
+      - name: Test secrets host name
         run: |
-          echo "Length: ${#KEY}"
+          echo "${#HOST}"
         env:
-          KEY: ${{ secrets.DW_HOST }}
+          HOST: ${{ secrets.DW_HOST }}
 
       - name: Check out source
         uses: actions/checkout@v4
