@@ -1,8 +1,8 @@
 name: Build and Deploy to Dewacloud via SSH
 
 on:
-  workflow_dispatch:
-
+  push:
+    branches: ["91-chore-automate-deployment"]
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
