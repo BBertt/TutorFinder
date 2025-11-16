@@ -1,8 +1,6 @@
 name: Build and Deploy to Dewacloud via SSH
 
 on:
-  # push:
-  #   branches: ["main"]
   workflow_dispatch:
 
 jobs:
@@ -43,7 +41,7 @@ jobs:
           SSH_PRIVATE_KEY: ${{ secrets.DW_SSH_KEY }}
           REMOTE_HOST: ${{ secrets.DW_HOST }}
           REMOTE_USER: ${{ secrets.DW_USER }}
-          REMOTE_PORT: 3022
+          REMOTE_PORT: ${{ secrets.DW_PORT }}
           SOURCE: "artifact/"
           TARGET: "/var/www/webroot/ROOT/public/"
           ARGS: "-rltgoDzvO --delete"
