@@ -108,6 +108,9 @@ export default function CourseForm({ categories }) {
             data.sections.forEach((section, s_index) => {
                 formData.append(`sections[${s_index}][id]`, section.id || "");
                 formData.append(`sections[${s_index}][quiz_title]`, (section.quiz && section.quiz.title) || section.quiz_title || "");
+                if ((section.quiz && (section.quiz.title || section.quiz_title))) {
+                    formData.append(`sections[${s_index}][quiz_duration_seconds]`, String((section.quiz?.duration_seconds ?? 900)));
+                }
                 if (section.quiz && Array.isArray(section.quiz.questions)) {
                     section.quiz.questions.forEach((q, q_index) => {
                         formData.append(`sections[${s_index}][quiz][questions][${q_index}][question]`, q.question || '');
@@ -157,6 +160,9 @@ export default function CourseForm({ categories }) {
         }
 
         formData.append('final_quiz_title', data.final_quiz_title || '');
+        if (data.final_quiz_title) {
+            formData.append('final_quiz_duration_seconds', String(data.final_quiz?.duration_seconds ?? 900));
+        }
 
         if (data.final_quiz && Array.isArray(data.final_quiz.questions)) {
             data.final_quiz.questions.forEach((q, q_index) => {

@@ -64,6 +64,23 @@ export default function QuizEditor({ value, onChange }) {
                     + Add Question
                 </button>
             </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                    <label className="text-sm font-medium text-gray-700 dark:text-gray-200">Quiz Duration (minutes)</label>
+                    <input
+                        type="number"
+                        min="1"
+                        step="1"
+                        value={Math.max(1, Math.round((quiz.duration_seconds || 900) / 60))}
+                        onChange={(e) => {
+                            const mins = parseInt(e.target.value || '0', 10);
+                            setQuiz({ ...quiz, duration_seconds: Math.max(1, mins) * 60 });
+                        }}
+                        className="mt-1 block w-full border-gray-300 rounded-md shadow-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
+                    />
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Students must finish within this time.</p>
+                </div>
+            </div>
             {(quiz.questions || []).length === 0 && <p className="text-sm text-gray-500">No questions yet.</p>}
             {(quiz.questions || []).map((q, qi) => (
                 <div key={qi} className="border rounded-md p-3 space-y-2">
