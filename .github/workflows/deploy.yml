@@ -37,7 +37,7 @@ jobs:
 
       - name: Deploy build to Dewacloud
         uses: easingthemes/ssh-deploy@v4.1.8
-        env:
+        with:
           SSH_PRIVATE_KEY: ${{ secrets.DW_SSH_KEY }}
           REMOTE_HOST: ${{ secrets.DW_HOST }}
           REMOTE_USER: ${{ secrets.DW_USER }}
