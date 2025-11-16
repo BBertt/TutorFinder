@@ -1,0 +1,49 @@
+name: Build and Deploy to Dewacloud via SSH
+
+on:
+  # push:
+  #   branches: ["main"]
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.2"
+
+      - name: Install Composer dependencies
+        run: composer install --no-dev --optimize-autoloader
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+
+      - name: Install npm dependencies
+        run: npm install
+
+      - name: Build frontend assets
+        run: npm run build
+
+      - name: Archive assets
+        run: |
+          mkdir artifact
+          cp -R public/build artifact/build
+
+      - name: Deploy build to Dewacloud
+        uses: easingthemes/ssh-deploy@v4.1.8
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.DW_SSH_KEY }}
+          REMOTE_HOST: ${{ secrets.DW_HOST }}
+          REMOTE_USER: ${{ secrets.DW_USER }}
+          REMOTE_PORT: 3022
+          SOURCE: "artifact/"
+          TARGET: "/var/www/webroot/ROOT/public/"
+          ARGS: "-rltgoDzvO --delete"
