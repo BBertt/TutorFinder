@@ -4,6 +4,7 @@ import React, { useEffect } from 'react';
 
 import VideoPlayer from '@/Components/VideoPlayer';
 import Quiz from '@/Components/Quiz';
+import ConfirmationModal from '@/Components/Modals/ConfirmationModal';
 
 // ... (Icons and Modal components remain the same)
 const CheckmarkIcon = ({ className }) => (
@@ -107,6 +108,14 @@ function LearnCourse({ course, progress: initialProgress, last_watched_lesson_id
     const [progress, setProgress] = React.useState(initialProgress);
     const [showRatingModal, setShowRatingModal] = React.useState(false);
     const [isSubmitting, setIsSubmitting] = React.useState(false);
+    const [showQuizConfirm, setShowQuizConfirm] = React.useState(false);
+    const [pendingQuiz, setPendingQuiz] = React.useState(null);
+
+    const formatTime = (secs) => {
+        const m = Math.floor(secs / 60).toString().padStart(2, '0');
+        const s = (secs % 60).toString().padStart(2, '0');
+        return `${m}:${s}`;
+    };
 
     useEffect(() => {
         if (quiz_submitted) {
@@ -164,8 +173,11 @@ function LearnCourse({ course, progress: initialProgress, last_watched_lesson_id
         }
 
         if (activeContent?.type === 'quiz') {
+            // Only allow proceeding to next section if this quiz is passed
             const currentSectionIndex = course.sections.findIndex(s => s.quiz?.id === activeContent.content.id);
-            if (currentSectionIndex !== -1 && currentSectionIndex < course.sections.length - 1) {
+            const quizObj = course.sections.find(s => s.quiz?.id === activeContent.content.id)?.quiz;
+            const passed = isQuizPassed(quizObj);
+            if (passed && currentSectionIndex !== -1 && currentSectionIndex < course.sections.length - 1) {
                 const nextSection = course.sections[currentSectionIndex + 1];
                 if (nextSection?.lessons.length > 0) {
                     return { type: 'lesson', content: nextSection.lessons[0] };
@@ -216,14 +228,30 @@ function LearnCourse({ course, progress: initialProgress, last_watched_lesson_id
             await markLessonAsCompleted(activeContent.content.id);
         }
         const next = getNextContent();
-        if (next) setActiveContent(next);
+        // Prevent moving forward from quiz if not passed
+        if (activeContent?.type === 'quiz') {
+            const quizObj = course.sections.find(s => s.quiz?.id === activeContent.content.id)?.quiz
+                || (course.finalQuiz?.id === activeContent.content.id ? course.finalQuiz : null);
+            if (!isQuizPassed(quizObj)) {
+                return; // stay on results until passed or retried
+            }
+        }
+        if (next) {
+            if (next.type === 'quiz') {
+                setPendingQuiz(next.content);
+                setShowQuizConfirm(true);
+            } else {
+                setActiveContent(next);
+            }
+        }
     };
 
     const startFinalQuiz = async () => {
         if (activeContent?.type === 'lesson') {
             await markLessonAsCompleted(activeContent.content.id);
         }
-        setActiveContent({ type: 'quiz', content: course.finalQuiz });
+        setPendingQuiz(course.finalQuiz);
+        setShowQuizConfirm(true);
     };
 
     const renderContent = () => {
@@ -359,6 +387,17 @@ function LearnCourse({ course, progress: initialProgress, last_watched_lesson_id
     return (
         <div>
             {showRatingModal && <RatingModal course={course} onClose={() => setShowRatingModal(false)} />}
+{showQuizConfirm && (
+    <ConfirmationModal
+        isOpen={showQuizConfirm}
+        onClose={() => { setShowQuizConfirm(false); setPendingQuiz(null); }}
+        onConfirm={() => { if (pendingQuiz) { setActiveContent({ type: 'quiz', content: pendingQuiz }); } setShowQuizConfirm(false); setPendingQuiz(null); }}
+        title="Start Quiz"
+        message={`This quiz has a time limit of ${formatTime(pendingQuiz?.duration_seconds || 900)}. The timer starts once you press Start.`}
+        confirmText="Start"
+        cancelText="Cancel"
+    />
+)}
             <Head title={course.title} />
             <div className="flex flex-col md:flex-row h-[92vh]">
                 <div className="w-full md:w-1/4 bg-white dark:bg-gray-900 border-r dark:border-gray-700 overflow-y-auto">
@@ -384,7 +423,7 @@ function LearnCourse({ course, progress: initialProgress, last_watched_lesson_id
                                     {section.quiz && (
                                         <li
                                             className={`p-4 flex items-center justify-between font-semibold text-blue-600 dark:text-blue-400 ${activeContent?.type === 'quiz' && activeContent.content.id === section.quiz.id ? 'bg-gray-300 dark:bg-gray-700' : ''} ${section.lessons.every(l => isLessonCompleted(l.id)) ? 'cursor-pointer' : 'opacity-50 cursor-not-allowed'}`}
-                                            onClick={() => { if (section.lessons.every(l => isLessonCompleted(l.id))) setActiveContent({ type: 'quiz', content: section.quiz }); }}
+                                            onClick={() => { if (section.lessons.every(l => isLessonCompleted(l.id))) { setPendingQuiz(section.quiz); setShowQuizConfirm(true); } }}
                                             title={!section.lessons.every(l => isLessonCompleted(l.id)) ? 'Complete lessons in this section to unlock quiz' : undefined}
                                         >
                                             <div>Take Quiz: {section.quiz.title}</div>
@@ -398,7 +437,7 @@ function LearnCourse({ course, progress: initialProgress, last_watched_lesson_id
                             <li
                                 title={!areAllSectionsCompleted ? "Complete all sections to unlock" : "Take the Final Quiz"}
                                 className={`p-4 cursor-pointer flex items-center justify-between font-bold text-purple-600 dark:text-purple-400 bg-purple-100 dark:bg-purple-900 ${activeContent?.type === 'quiz' && activeContent.content.id === course.finalQuiz.id ? 'bg-gray-300 dark:bg-gray-700' : ''} ${!areAllSectionsCompleted ? 'opacity-50 cursor-not-allowed' : ''}`}
-                                onClick={() => areAllSectionsCompleted && setActiveContent({ type: 'quiz', content: course.finalQuiz })}
+                                onClick={() => { if (areAllSectionsCompleted) { setPendingQuiz(course.finalQuiz); setShowQuizConfirm(true); } }}
                             >
                                 <div className="flex items-center">
                                     {!areAllSectionsCompleted && <LockIcon className="w-5 h-5 mr-2" />}
