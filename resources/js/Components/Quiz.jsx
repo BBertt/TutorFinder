@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { router, usePage } from '@inertiajs/react';
-
+import ConfirmationModal from '@/Components/Modals/ConfirmationModal';
 const Quiz = ({ quiz }) => {
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
     const [selectedAnswers, setSelectedAnswers] = useState({});
     const [view, setView] = useState('question'); // 'question', 'result', 'review'
+    const QUIZ_DURATION_SECONDS = quiz.duration_seconds || 900; // per-quiz duration (default 15m)
+    const [remainingSeconds, setRemainingSeconds] = useState(QUIZ_DURATION_SECONDS);
 
     useEffect(() => {
         const latestAttempt = quiz.attempts.length > 0 ? quiz.attempts[quiz.attempts.length - 1] : null;
@@ -12,6 +14,7 @@ const Quiz = ({ quiz }) => {
             setView('result');
         } else {
             setView('question');
+            setRemainingSeconds(QUIZ_DURATION_SECONDS); // reset timer on mount/new attempt
         }
     }, [quiz.id, quiz.attempts?.length]);
 
@@ -39,11 +42,45 @@ const Quiz = ({ quiz }) => {
         });
     };
 
+    // Countdown timer
+    useEffect(() => {
+        if (view === 'question') {
+            const interval = setInterval(() => {
+                setRemainingSeconds(prev => {
+                    if (prev <= 1) {
+                        clearInterval(interval);
+                        handleSubmit(); // auto-submit on timeout
+                        return 0;
+                    }
+                    return prev - 1;
+                });
+            }, 1000);
+            return () => clearInterval(interval);
+        }
+    }, [view]);
+
+    const formatTime = (secs) => {
+        const m = Math.floor(secs / 60).toString().padStart(2, '0');
+        const s = (secs % 60).toString().padStart(2, '0');
+        return `${m}:${s}`;
+    };
+
+    const [showRetryConfirm, setShowRetryConfirm] = useState(false);
+
     const handleRetry = () => {
+        // Show confirmation modal again on retry
+        setShowRetryConfirm(true);
+    };
+
+    const confirmRetry = () => {
+        setShowRetryConfirm(false);
         setCurrentQuestionIndex(0);
         setSelectedAnswers({});
+        setRemainingSeconds(QUIZ_DURATION_SECONDS); // reset timer
         setView('question');
     };
+
+    const cancelRetry = () => setShowRetryConfirm(false);
 
     const handleReview = () => setView('review');
 
@@ -60,7 +97,8 @@ const Quiz = ({ quiz }) => {
         return (
             <div className="p-8 bg-white dark:bg-gray-900 dark:text-gray-100 rounded-lg shadow-lg">
                 <h2 className="text-2xl font-bold mb-2">{quiz.title}</h2>
-                <p className="mb-6 text-gray-600 dark:text-gray-300">Question {currentQuestionIndex + 1} of {quiz.questions.length}</p>
+                <p className="text-gray-600 dark:text-gray-300">Question {currentQuestionIndex + 1} of {quiz.questions.length}</p>
+                <p className="mb-6 font-semibold text-red-600 dark:text-red-400">Time Remaining: {formatTime(remainingSeconds)}</p>
                 <div>
                     <h3 className="text-xl font-semibold mb-4">{quiz.questions[currentQuestionIndex].question}</h3>
                     <div className="space-y-3">
@@ -87,6 +125,20 @@ const Quiz = ({ quiz }) => {
                     )}
                 </div>
             </div>
+        );
+    }
+
+    if (showRetryConfirm) {
+        return (
+            <ConfirmationModal
+                isOpen={true}
+                onClose={cancelRetry}
+                onConfirm={confirmRetry}
+                title="Retry Quiz"
+                message={`This quiz has a time limit of ${formatTime(QUIZ_DURATION_SECONDS)}. The timer starts once you press Start. Retrying will reset your previous answers.`}
+                confirmText="Start"
+                cancelText="Cancel"
+            />
         );
     }
 

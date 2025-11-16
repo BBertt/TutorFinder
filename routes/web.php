@@ -102,6 +102,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Transaction
     Route::post('/cart/checkout', [TransactionController::class, 'checkout'])->name('checkout');
+    Route::post('/transactions/{transaction}/cancel', [TransactionController::class, 'cancel'])->name('transactions.cancel');
+    Route::post('/transactions/{transaction}/pay', [TransactionController::class, 'pay'])->name('transactions.pay');
 
     // Forum
     // Route::get('/forums', [ForumController::class, 'index'])->name('forums.index');

@@ -14,31 +14,28 @@ const Stepper = ({ currentStep }) => {
                 <React.Fragment key={index}>
                     <div className="flex items-center">
                         <div
-                            className={`w-8 h-8 rounded-full flex items-center justify-center font-bold transition-colors ${
-                                index + 1 <= currentStep
-                                    ? "bg-primary text-white"
-                                    : "bg-gray-200 text-gray-400 dark:bg-gray-700 dark:text-gray-400"
-                            }`}
+                            className={`w-8 h-8 rounded-full flex items-center justify-center font-bold transition-colors ${index + 1 <= currentStep
+                                ? "bg-primary text-white"
+                                : "bg-gray-200 text-gray-400 dark:bg-gray-700 dark:text-gray-400"
+                                }`}
                         >
                             {index + 1}
                         </div>
                         <p
-                            className={`ml-2 transition-colors ${
-                                index + 1 <= currentStep
-                                    ? "text-primary font-semibold"
-                                    : "text-gray-400"
-                            }`}
+                            className={`ml-2 transition-colors ${index + 1 <= currentStep
+                                ? "text-primary font-semibold"
+                                : "text-gray-400"
+                                }`}
                         >
                             {step}
                         </p>
                     </div>
                     {index < steps.length - 1 && (
                         <div
-                            className={`flex-auto border-t-2 transition-colors mx-4 ${
-                                index + 1 < currentStep
-                                    ? "border-primary"
-                                    : "border-gray-200 dark:border-dark"
-                            }`}
+                            className={`flex-auto border-t-2 transition-colors mx-4 ${index + 1 < currentStep
+                                ? "border-primary"
+                                : "border-gray-200 dark:border-dark"
+                                }`}
                         ></div>
                     )}
                 </React.Fragment>
@@ -116,12 +113,10 @@ export default function CourseForm({ categories }) {
         if (data.sections.length > 0) {
             data.sections.forEach((section, s_index) => {
                 formData.append(`sections[${s_index}][id]`, section.id || "");
-                formData.append(
-                    `sections[${s_index}][quiz_title]`,
-                    (section.quiz && section.quiz.title) ||
-                        section.quiz_title ||
-                        ""
-                );
+                formData.append(`sections[${s_index}][quiz_title]`, (section.quiz && section.quiz.title) || section.quiz_title || "");
+                if ((section.quiz && (section.quiz.title || section.quiz_title))) {
+                    formData.append(`sections[${s_index}][quiz_duration_seconds]`, String((section.quiz?.duration_seconds ?? 900)));
+                }
                 if (section.quiz && Array.isArray(section.quiz.questions)) {
                     section.quiz.questions.forEach((q, q_index) => {
                         formData.append(
@@ -179,7 +174,10 @@ export default function CourseForm({ categories }) {
             });
         }
 
-        formData.append("final_quiz_title", data.final_quiz_title || "");
+        formData.append('final_quiz_title', data.final_quiz_title || '');
+        if (data.final_quiz_title) {
+            formData.append('final_quiz_duration_seconds', String(data.final_quiz?.duration_seconds ?? 900));
+        }
 
         if (data.final_quiz && Array.isArray(data.final_quiz.questions)) {
             data.final_quiz.questions.forEach((q, q_index) => {

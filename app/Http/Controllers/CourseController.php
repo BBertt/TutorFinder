@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Course;
+use App\Models\TransactionHeader;
 use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -67,9 +68,20 @@ class CourseController extends Controller
             $isEnrolled = $user->enrollments()->where('course_id', $course->id)->exists();
         }
 
+        $hasPendingTransaction = false;
+        if (Auth::check()) {
+            $hasPendingTransaction = TransactionHeader::where('user_id', Auth::id())
+                ->where('status', 'pending')
+                ->whereHas('details', function ($q) use ($course) {
+                    $q->where('course_id', $course->id);
+                })
+                ->exists();
+        }
+
         return Inertia::render('Courses/CourseDetails', [
             'course' => $course,
             'isEnrolled' => $isEnrolled,
+            'hasPendingTransaction' => $hasPendingTransaction,
         ]);
     }
 
