@@ -8,6 +8,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Test secret length
+        run: |
+          echo "Length: ${#KEY}"
+        env:
+          KEY: ${{ secrets.DW_HOST }}
+
       - name: Check out source
         uses: actions/checkout@v4
 
@@ -37,7 +43,7 @@ jobs:
 
       - name: Deploy build to Dewacloud
         uses: easingthemes/ssh-deploy@v4.1.8
-        with:
+        env:
           SSH_PRIVATE_KEY: ${{ secrets.DW_SSH_KEY }}
           REMOTE_HOST: ${{ secrets.DW_HOST }}
           REMOTE_USER: ${{ secrets.DW_USER }}
