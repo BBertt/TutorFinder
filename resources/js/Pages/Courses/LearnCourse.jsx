@@ -1,6 +1,6 @@
 import Layout from '@/Layouts/Layout';
 import { Head, Link, usePage, router } from '@inertiajs/react';
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 
 import VideoPlayer from '@/Components/VideoPlayer';
 import Quiz from '@/Components/Quiz';
@@ -110,6 +110,22 @@ function LearnCourse({ course, progress: initialProgress, last_watched_lesson_id
     const [isSubmitting, setIsSubmitting] = React.useState(false);
     const [showQuizConfirm, setShowQuizConfirm] = React.useState(false);
     const [pendingQuiz, setPendingQuiz] = React.useState(null);
+    const [showCertificate, setShowCertificate] = React.useState(false);
+    const certificateRef = useRef(null);
+    const handlePrintCertificate = () => {
+        if (!certificateRef.current) return;
+        const printContents = certificateRef.current.innerHTML;
+        const styles = Array.from(document.querySelectorAll('link[rel="stylesheet"], style'))
+            .map(el => el.outerHTML)
+            .join('');
+        const printWindow = window.open('', '_blank');
+        if (!printWindow) return;
+        printWindow.document.write('<html><head><title>Certificate</title>'+ styles +'<style>@page{size:A4 landscape;margin:15mm;} body{margin:0;} .print-hide{display:none!important;} .certificate-wrapper{width:100%;}</style></head><body><div class="certificate-wrapper">'+ printContents +'</div></body></html>');
+        printWindow.document.close();
+        printWindow.focus();
+        printWindow.print();
+        printWindow.close();
+    };
 
     const formatTime = (secs) => {
         const m = Math.floor(secs / 60).toString().padStart(2, '0');
@@ -248,8 +264,12 @@ function LearnCourse({ course, progress: initialProgress, last_watched_lesson_id
         }
         if (next) {
             if (next.type === 'quiz') {
-                setPendingQuiz(next.content);
-                setShowQuizConfirm(true);
+                if ((next.content.attempts || []).length > 0) {
+                    setActiveContent(next);
+                } else {
+                    setPendingQuiz(next.content);
+                    setShowQuizConfirm(true);
+                }
             } else {
                 setActiveContent(next);
             }
@@ -260,13 +280,46 @@ function LearnCourse({ course, progress: initialProgress, last_watched_lesson_id
         if (activeContent?.type === 'lesson') {
             await markLessonAsCompleted(activeContent.content.id);
         }
+        if ((course.finalQuiz?.attempts || []).length > 0) {
+        setActiveContent({ type: 'quiz', content: course.finalQuiz });
+    } else {
         setPendingQuiz(course.finalQuiz);
         setShowQuizConfirm(true);
+    }
     };
 
     const renderContent = () => {
         if (isSubmitting) {
+            if (showCertificate) return null;
             return <div className="text-center p-8">Submitting and loading results...</div>;
+        }
+        // Show certificate overlay regardless of activeContent type
+        if (showCertificate) {
+            const completionDate = new Date().toLocaleDateString();
+            const studentFirst = usePage().props.auth?.user?.first_name || course.user?.first_name || '';
+            const studentLast = usePage().props.auth?.user?.last_name || course.user?.last_name || '';
+            return (
+                <div className="flex items-center justify-center p-8">
+                    <div ref={certificateRef} className="w-full max-w-2xl border-4 border-yellow-500 rounded-xl p-8 bg-white dark:bg-gray-800 shadow-2xl relative print:shadow-none">
+                        <div className="absolute top-0 left-0 w-full h-full pointer-events-none select-none opacity-10 bg-[radial-gradient(circle_at_center,_#fbbf24,_transparent_70%)]"></div>
+                        <h1 className="text-3xl font-extrabold text-center mb-2 tracking-wide">Certificate of Completion</h1>
+                        <p className="text-center text-sm uppercase text-gray-500 mb-6">This certifies that</p>
+                        <p className="text-center text-2xl font-semibold mb-4">{studentFirst} {studentLast}</p>
+                        <p className="text-center text-lg mb-4">has successfully completed the course</p>
+                        <p className="text-center text-2xl font-bold mb-6 italic">"{course.title}"</p>
+                        <div className="flex justify-between mt-10 text-sm">
+                            <div>
+                                <p className="font-semibold">Date</p>
+                                <p>{completionDate}</p>
+                            </div>
+                        </div>
+                        <div className="mt-8 flex justify-center gap-4">
+                            <button onClick={() => setShowCertificate(false)} className="px-4 py-2 bg-gray-300 text-gray-800 rounded-md print-hide">Back</button>
+                            <button onClick={handlePrintCertificate} className="px-4 py-2 bg-primary text-white rounded-md print-hide">Print / Save PDF</button>
+                        </div>
+                    </div>
+                </div>
+            );
         }
         if (activeContent?.type === 'quiz') {
             const quizId = activeContent.content.id;
@@ -302,6 +355,7 @@ function LearnCourse({ course, progress: initialProgress, last_watched_lesson_id
                 </div>
             );
         }
+
         return <div className="text-center p-8">Select an item to begin.</div>;
     };
 
@@ -338,7 +392,7 @@ function LearnCourse({ course, progress: initialProgress, last_watched_lesson_id
         // If there's a final quiz available and we're not on any quiz, prefer offering to start it
         if (!next && canStartFinalQuiz && activeContent?.type !== 'quiz') {
             buttons.push(
-                <button key="start-final" onClick={startFinalQuiz} className="px-4 py-2 bg-primary text-white rounded-md">Start Final Quiz</button>
+                <button key="start-final" onClick={startFinalQuiz} className="px-4 py-2 bg-primary text-white rounded-md">{(course.finalQuiz?.attempts || []).length > 0 ? 'View Final Quiz' : 'Start Final Quiz'}</button>
             );
             return <div className="flex gap-3">{buttons}</div>;
         }
@@ -362,7 +416,7 @@ function LearnCourse({ course, progress: initialProgress, last_watched_lesson_id
             if (!course.finalQuiz && activeContent?.type === 'lesson') {
                 if (course_completed) {
                     buttons.push(
-                        <Link key="return" href="/purchased-courses" className="px-4 py-2 bg-primary text-white rounded-md">Return to Purchased</Link>
+                        <button key="certificate" onClick={() => setShowCertificate(true)} className="px-4 py-2 bg-primary text-white rounded-md">View Certificate</button>
                     );
                 } else {
                     buttons.push(
@@ -383,7 +437,7 @@ function LearnCourse({ course, progress: initialProgress, last_watched_lesson_id
                 );
             } else {
                 buttons.push(
-                    <Link key="return" href="/purchased-courses" className="px-4 py-2 bg-primary text-white rounded-md">Return to Purchased</Link>
+                    <button key="certificate" onClick={() => setShowCertificate(true)} className="px-4 py-2 bg-primary text-white rounded-md">View Certificate</button>
                 );
             }
             return <div className="flex gap-3">{buttons}</div>;
@@ -448,7 +502,7 @@ function LearnCourse({ course, progress: initialProgress, last_watched_lesson_id
                                     {section.quiz && (
                                         <li
                                             className={`p-4 flex items-center justify-between font-semibold text-blue-600 dark:text-blue-400 ${activeContent?.type === 'quiz' && activeContent.content.id === section.quiz.id ? 'bg-gray-300 dark:bg-gray-700' : ''} ${section.lessons.every(l => isLessonCompleted(l.id)) ? 'cursor-pointer' : 'opacity-50 cursor-not-allowed'}`}
-                                            onClick={() => { if (section.lessons.every(l => isLessonCompleted(l.id))) { setPendingQuiz(section.quiz); setShowQuizConfirm(true); } }}
+                                            onClick={() => { if (section.lessons.every(l => isLessonCompleted(l.id))) { if ((section.quiz.attempts || []).length > 0) { setActiveContent({ type: 'quiz', content: section.quiz }); } else { setPendingQuiz(section.quiz); setShowQuizConfirm(true); } } }}
                                             title={!section.lessons.every(l => isLessonCompleted(l.id)) ? 'Complete lessons in this section to unlock quiz' : undefined}
                                         >
                                             <div>Take Quiz: {section.quiz.title}</div>
@@ -462,7 +516,7 @@ function LearnCourse({ course, progress: initialProgress, last_watched_lesson_id
                             <li
                                 title={!areAllSectionsCompleted ? "Complete all sections to unlock" : "Take the Final Quiz"}
                                 className={`p-4 cursor-pointer flex items-center justify-between font-bold text-purple-600 dark:text-purple-400 bg-purple-100 dark:bg-purple-900 ${activeContent?.type === 'quiz' && activeContent.content.id === course.finalQuiz.id ? 'bg-gray-300 dark:bg-gray-700' : ''} ${!areAllSectionsCompleted ? 'opacity-50 cursor-not-allowed' : ''}`}
-                                onClick={() => { if (areAllSectionsCompleted) { setPendingQuiz(course.finalQuiz); setShowQuizConfirm(true); } }}
+                                onClick={() => { if (areAllSectionsCompleted) { if ((course.finalQuiz?.attempts || []).length > 0) { setActiveContent({ type: 'quiz', content: course.finalQuiz }); } else { setPendingQuiz(course.finalQuiz); setShowQuizConfirm(true); } } }}
                             >
                                 <div className="flex items-center">
                                     {!areAllSectionsCompleted && <LockIcon className="w-5 h-5 mr-2" />}
