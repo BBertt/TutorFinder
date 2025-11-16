@@ -4,10 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Course;
 use App\Models\CourseCart;
+use App\Models\TransactionHeader;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 
 class CourseCartController extends Controller
@@ -19,6 +19,16 @@ class CourseCartController extends Controller
         ]);
 
         $course = Course::findOrFail($request->course_id);
+
+        $inPendingTransaction = TransactionHeader::where('user_id', Auth::id())
+            ->where('status', 'pending')
+            ->whereHas('details', function ($q) use ($course) {
+                $q->where('course_id', $course->id);
+            })
+            ->exists();
+        if ($inPendingTransaction) {
+            return redirect()->back()->with('error', 'This course is already included in a pending transaction.');
+        }
 
         CourseCart::firstOrCreate([
             'user_id' => Auth::id(),

@@ -3,9 +3,15 @@ import Layout from "@/Layouts/Layout";
 import { Head, router, Link } from "@inertiajs/react";
 import Breadcrumb from "@/Components/Course/Breadcrumb";
 
-function CourseDetails({ course, isEnrolled }) {
+import SuccessModal from "@/Components/Modals/SuccessModal";
+function CourseDetails({ course, isEnrolled, hasPendingTransaction }) {
+    const [showBlockedModal, setShowBlockedModal] = React.useState(false);
     const handleAddToCart = (e) => {
         e.preventDefault();
+        if (hasPendingTransaction) {
+            setShowBlockedModal(true);
+            return;
+        }
         router.post(route("cart.store"), { course_id: course.id });
     };
 
@@ -41,12 +47,20 @@ function CourseDetails({ course, isEnrolled }) {
                                 Learn
                             </Link>
                         ) : (
-                            <button
-                                onClick={handleAddToCart}
-                                className="mt-6 bg-white text-primary px-8 py-3 rounded-lg font-semibold hover:bg-gray-200 transition-colors"
-                            >
-                                Add to Cart
-                            </button>
+                            <>
+                                <button
+                                    onClick={handleAddToCart}
+                                    className="mt-6 bg-white text-primary px-8 py-3 rounded-lg font-semibold hover:bg-gray-200 transition-colors"
+                                >
+                                    {hasPendingTransaction ? 'Pending Payment' : 'Add to Cart'}
+                                </button>
+                                <SuccessModal
+                                    isOpen={showBlockedModal}
+                                    onClose={() => setShowBlockedModal(false)}
+                                    title="Pending Transaction"
+                                    message="You already have a pending transaction for this course. Please complete or cancel it before adding again."
+                                />
+                            </>
                         )}
                     </div>
 

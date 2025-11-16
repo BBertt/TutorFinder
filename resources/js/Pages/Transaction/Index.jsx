@@ -1,7 +1,14 @@
 import Layout from "@/Layouts/Layout";
-import { Head, Link } from "@inertiajs/react";
+import { Head, Link, router } from "@inertiajs/react";
 
 const Index = ({ transactions, auth }) => {
+    const handleCancel = (id) => {
+        router.post(route('transactions.cancel', id), {}, { preserveScroll: true });
+    };
+    const handlePay = (id) => {
+        router.post(route('transactions.pay', id), {}, { preserveScroll: true });
+    };
+
     const getStatusClass = (status) => {
         switch (status) {
             case "paid":
@@ -62,6 +69,12 @@ const Index = ({ transactions, auth }) => {
                                                             "id-ID"
                                                         )}
                                                     </p>
+                                                    {transaction.status === 'pending' && (
+                                                        <div className="mt-2 flex gap-2 justify-end">
+                                                            <button onClick={() => handleCancel(transaction.id)} className="px-3 py-1 rounded bg-red-600 text-white">Cancel</button>
+                                                            <button onClick={() => handlePay(transaction.id)} className="px-3 py-1 rounded bg-primary text-white">Pay</button>
+                                                        </div>
+                                                    )}
                                                 </div>
                                             </div>
                                             <div>
