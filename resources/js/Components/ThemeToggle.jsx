@@ -4,19 +4,20 @@ import { useTheme } from "@/Context/ThemeContext";
 const SunIcon = (props) => (
     <svg
         xmlns="http://www.w3.org/2000/svg"
-        fill="none"
         viewBox="0 0 24 24"
-        strokeWidth={1.5}
+        fill="none"
         stroke="currentColor"
+        strokeWidth={1.5}
         {...props}
     >
         <path
             strokeLinecap="round"
             strokeLinejoin="round"
-            d="M12 3v2.25m6.364.386-1.591 1.591M21 12h-2.25m-.386 6.364-1.591-1.591M12 18.75V21m-6.364-.386 1.591-1.591M3 12h2.25m.386-6.364 1.591 1.591"
+            d="M12 4.5v-2m0 19v-2M4.5 12h-2m19 0h-2M6.4 6.4l-1.4-1.4m13.99 13.99-1.4-1.4M6.4 17.6l-1.4 1.4m13.99-13.99-1.4 1.4M12 8a4 4 0 100 8 4 4 0 000-8z"
         />
     </svg>
 );
+
 const MoonIcon = (props) => (
     <svg
         xmlns="http://www.w3.org/2000/svg"

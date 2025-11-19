@@ -60,8 +60,9 @@ const AppNavbar = ({ logoSrc }) => {
                             />
                             <div className="relative ml-2">
                                 <img
-                                    className={`w-7 h-7 cursor-pointer ${!dropdown && "dark:invert"
-                                        }`}
+                                    className={`w-7 h-7 cursor-pointer ${
+                                        !dropdown && "dark:invert"
+                                    }`}
                                     src={
                                         dropdown
                                             ? "/assets/icons/arrow-down-primary.svg"
@@ -92,10 +93,11 @@ const AppNavbar = ({ logoSrc }) => {
                     </div>
 
                     <div className="hidden md:flex items-center space-x-10">
-                        <Link href="/cart">
+                        <Link href="/cart" className="flex gap-2 items-center">
                             <img
-                                className={`w-7 h-7 ${!url.startsWith("/cart") && "dark:invert"
-                                    }`}
+                                className={`w-7 h-7 ${
+                                    !url.startsWith("/cart") && "dark:invert"
+                                }`}
                                 src={
                                     url.startsWith("/cart")
                                         ? "/assets/icons/cart-primary.svg"
@@ -103,11 +105,16 @@ const AppNavbar = ({ logoSrc }) => {
                                 }
                                 alt="Cart"
                             />
+                            Cart
                         </Link>
-                        <Link href="/forums">
+                        <Link
+                            href="/forums"
+                            className="flex gap-2 items-center"
+                        >
                             <img
-                                className={`w-7 h-7 ${!url.startsWith("/forums") && "dark:invert"
-                                    }`}
+                                className={`w-7 h-7 ${
+                                    !url.startsWith("/forums") && "dark:invert"
+                                }`}
                                 src={
                                     url.startsWith("/forums")
                                         ? "/assets/icons/forum-primary.svg"
@@ -115,11 +122,13 @@ const AppNavbar = ({ logoSrc }) => {
                                 }
                                 alt="Forums"
                             />
+                            Forum
                         </Link>
-                        <Link href="/chat">
+                        <Link href="/chat" className="flex gap-2 items-center">
                             <img
-                                className={`w-7 h-7 ${!url.startsWith("/chat") && "dark:invert"
-                                    }`}
+                                className={`w-7 h-7 ${
+                                    !url.startsWith("/chat") && "dark:invert"
+                                }`}
                                 src={
                                     url.startsWith("/chat")
                                         ? "/assets/icons/messages-primary.svg"
@@ -127,6 +136,7 @@ const AppNavbar = ({ logoSrc }) => {
                                 }
                                 alt="Messages"
                             />
+                            Chat
                         </Link>
 
                         <ThemeToggle />
@@ -267,7 +277,7 @@ export default function Layout({ children, showFooter = true }) {
     }, [flash]);
 
     return (
-        <div className="flex flex-col min-h-screen bg-white dark:bg-gray-900 dark:text-white">
+        <div className="flex flex-col min-h-screen bg-white dark:bg-darkPrimary dark:text-white">
             {auth.user ? <AppNavbar logoSrc={logoSrc} /> : <GuestNavbar />}
             <main className="flex-grow">{children}</main>
             {showFooter && <AppFooter logoSrc={logoSrc} />}
