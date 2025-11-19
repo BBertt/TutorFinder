@@ -103,7 +103,7 @@ const UserEdit = () => {
                         }}
                         name="firstName"
                         placeholder="John"
-                        className="px-4 py-2 rounded-full text-black w-full"
+                        className="px-4 py-2 text-black w-full border-gray-200 rounded-full shadow-sm dark:bg-darkSecondary dark:border-dark dark:text-white dark:placeholder-gray-400"
                     />
                     {(firstNameError || errors.firstName) && (
                         <p className="text-red-500 text-sm mt-1">
@@ -136,7 +136,7 @@ const UserEdit = () => {
                         }}
                         name="lastName"
                         placeholder="Doe"
-                        className="px-4 py-2 rounded-full text-black w-full"
+                        className="px-4 py-2 text-black w-full border-gray-200 rounded-full shadow-sm dark:bg-darkSecondary dark:border-dark dark:text-white dark:placeholder-gray-400"
                     />
                     {(lastNameError || errors.lastName) && (
                         <p className="text-red-500 text-sm mt-1">
@@ -171,7 +171,7 @@ const UserEdit = () => {
                         }}
                         name="phoneNumber"
                         placeholder="081234567890"
-                        className="px-4 py-2 rounded-full text-black w-full"
+                        className="px-4 py-2 text-black w-full border-gray-200 rounded-full shadow-sm dark:bg-darkSecondary dark:border-dark dark:text-white dark:placeholder-gray-400"
                     />
                     {(phoneNumberError || errors.phoneNumber) && (
                         <p className="text-red-500 text-sm mt-1">
@@ -194,7 +194,7 @@ const UserEdit = () => {
                             setData("dateOfBirth", e.target.value);
                         }}
                         name="dateOfBirth"
-                        className="px-4 py-2 rounded-full text-black w-full"
+                        className="px-4 py-2 text-black w-full border-gray-200 rounded-full shadow-sm dark:bg-darkSecondary dark:border-dark dark:text-white dark:placeholder-gray-400"
                     />
                 </div>
 
@@ -210,7 +210,7 @@ const UserEdit = () => {
                             onChange={(e) => setData("bio", e.target.value)}
                             name="bio"
                             placeholder="Write something about yourself"
-                            className="px-4 py-2 rounded-full text-black w-full"
+                            className="px-4 py-2 text-black w-full border-gray-200 rounded-full shadow-sm dark:bg-darkSecondary dark:border-dark dark:text-white dark:placeholder-gray-400"
                         />
                     </div>
                 )}

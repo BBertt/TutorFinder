@@ -82,7 +82,7 @@ const Login = () => {
                         }}
                         name="email"
                         placeholder="example@email.com"
-                        className="px-4 py-2 rounded-full text-black w-full"
+                        className="px-4 py-2 text-black w-full border-gray-200 rounded-full shadow-sm"
                     />
                     {(emailError || errors.email) && (
                         <p className="text-red-500 text-sm mt-1">
@@ -125,7 +125,7 @@ const Login = () => {
                         }}
                         name="password"
                         placeholder="••••••••"
-                        className="px-4 py-2 rounded-full text-black w-full"
+                        className="px-4 py-2 text-black w-full border-gray-200 rounded-full shadow-sm"
                     />
                     {(passwordError || errors.password) && (
                         <p className="text-red-500 text-sm mt-1">
