@@ -59,7 +59,7 @@ const Register = () => {
                             }}
                             name="firstName"
                             placeholder="John"
-                            className="px-4 py-2 rounded-full text-black w-full"
+                            className="px-4 py-2 text-black w-full border-gray-200 rounded-full shadow-sm"
                         />
                         {(firstNameError || errors.firstName) && (
                             <p className="text-red-500 text-sm mt-1">
@@ -91,7 +91,7 @@ const Register = () => {
                             }}
                             name="lastName"
                             placeholder="Doe"
-                            className="px-4 py-2 rounded-full text-black w-full"
+                            className="px-4 py-2 text-black w-full border-gray-200 rounded-full shadow-sm"
                         />
                         {(lastNameError || errors.lastName) && (
                             <p className="text-red-500 text-sm mt-1">
@@ -126,7 +126,7 @@ const Register = () => {
                         }}
                         name="email"
                         placeholder="example@email.com"
-                        className="px-4 py-2 rounded-full text-black w-full"
+                        className="px-4 py-2 text-black w-full border-gray-200 rounded-full shadow-sm"
                     />
                     {(emailError || errors.email) && (
                         <p className="text-red-500 text-sm mt-1">
@@ -160,7 +160,7 @@ const Register = () => {
                         }}
                         name="password"
                         placeholder="••••••••"
-                        className="px-4 py-2 rounded-full text-black w-full"
+                        className="px-4 py-2 text-black w-full border-gray-200 rounded-full shadow-sm"
                     />
                     {(passwordError || errors.password) && (
                         <p className="text-red-500 text-sm mt-1">
@@ -193,7 +193,7 @@ const Register = () => {
                         }}
                         name="confirmPassword"
                         placeholder="••••••••"
-                        className="px-4 py-2 rounded-full text-black w-full"
+                        className="px-4 py-2 text-black w-full border-gray-200 rounded-full shadow-sm"
                     />
                     {(confirmPasswordError || errors.confirmPassword) && (
                         <p className="text-red-500 text-sm mt-1">
@@ -230,7 +230,7 @@ const Register = () => {
                         }}
                         name="phoneNumber"
                         placeholder="081234567890"
-                        className="px-4 py-2 rounded-full text-black w-full"
+                        className="px-4 py-2 text-black w-full border-gray-200 rounded-full shadow-sm"
                     />
                     {(phoneNumberError || errors.phoneNumber) && (
                         <p className="text-red-500 text-sm mt-1">
@@ -294,7 +294,7 @@ const Register = () => {
                                 clearErrors("dateOfBirth");
                             }}
                             name="dateOfBirth"
-                            className="px-4 py-2 rounded-full text-black w-full"
+                            className="px-4 py-2 text-black w-full border-gray-200 rounded-full shadow-sm"
                         />
                         {errors.dateOfBirth && (
                             <p className="text-red-500 text-sm mt-1">
