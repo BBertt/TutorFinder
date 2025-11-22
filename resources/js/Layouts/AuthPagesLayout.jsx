@@ -5,7 +5,7 @@ const AuthPagesLayout = ({ children }) => {
                 <img src="/assets/images/tutor-finder.svg" alt="TutorFinder" />
             </div>
 
-            <div className="w-1/3 flex items-center justify-center bg-[#4F6D40] text-white">
+            <div className="w-1/3 flex items-center justify-center bg-primary text-white">
                 {children}
             </div>
         </div>

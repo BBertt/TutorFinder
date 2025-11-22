@@ -22,21 +22,21 @@ const Failure = () => {
                                     d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
                                 />
                             </svg>
-                            <h1 className="mt-4 text-2xl font-bold text-gray-900">
+                            <h1 className="mt-4 text-2xl font-bold text-black">
                                 Payment Failed
                             </h1>
-                            <p className="mt-2 text-gray-600">
+                            <p className="mt-2 text-gray-400">
                                 Unfortunately, we were unable to process your
                                 payment.
                             </p>
-                            <p className="text-gray-600">
+                            <p className="text-gray-400">
                                 Please try again or check your transaction
                                 history for more details.
                             </p>
                             <div className="mt-6">
                                 <Link
                                     href={route("transactions.index")}
-                                    className="inline-flex items-center px-4 py-2 bg-primary border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-opacity-80 active:bg-opacity-80 focus:outline-none focus:border-primary focus:ring ring-blue-300 disabled:opacity-25 transition ease-in-out duration-150"
+                                    className="inline-flex items-center px-4 py-2 bg-primary border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-opacity-80 active:bg-opacity-80 focus:outline-none focus:border-primary focus:ring ring-blue-400 disabled:opacity-25 transition ease-in-out duration-150"
                                 >
                                     Go to My Transactions
                                 </Link>

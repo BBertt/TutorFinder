@@ -22,7 +22,7 @@ const AppNavbar = ({ logoSrc }) => {
     const { url } = usePage();
 
     return (
-        <nav className="bg-accent shadow-sm sticky top-0 z-50 dark:bg-gray-800 dark:border-b dark:border-gray-700">
+        <nav className="bg-accent shadow-sm sticky top-0 z-50 dark:bg-darkSecondary dark:border-b dark:border-dark">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex items-center justify-between h-20">
                     <div className="flex-shrink-0">
@@ -78,7 +78,7 @@ const AppNavbar = ({ logoSrc }) => {
                                             <Link
                                                 key={category.id}
                                                 href={`/courses?category=${category.id}`}
-                                                className="block w-full text-left px-4 py-2 text-sm text-secondary hover:bg-gray-200 hover:text-gray-800 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-white"
+                                                className="block w-full text-left px-4 py-2 text-sm text-secondary hover:bg-gray-200 dark:text-white dark:hover:bg-gray-700"
                                                 onClick={() =>
                                                     setDropdown(false)
                                                 }
@@ -157,24 +157,24 @@ const AppNavbar = ({ logoSrc }) => {
                             </div>
 
                             {open && (
-                                <div className="absolute right-0 mt-2 w-64 bg-white rounded-md border border-gray-200 z-1 dark:bg-gray-800 dark:border-gray-700">
+                                <div className="absolute right-0 mt-2 w-64 bg-white rounded-md border border-gray-200 z-1 dark:bg-darkSecondary dark:border-dark">
                                     <Link
                                         href="/profile"
-                                        className="block px-4 py-2 text-secondary hover:bg-gray-200 hover:text-gray-800 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-white"
+                                        className="block px-4 py-2 text-secondary hover:bg-gray-200 dark:text-white dark:hover:bg-gray-700"
                                         onClick={() => setOpen(false)}
                                     >
                                         Profile
                                     </Link>
                                     <Link
                                         href="/purchased-courses"
-                                        className="block px-4 py-2 text-secondary hover:bg-gray-200 hover:text-gray-800 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-white"
+                                        className="block px-4 py-2 text-secondary hover:bg-gray-200 dark:text-white dark:hover:bg-gray-700"
                                         onClick={() => setOpen(false)}
                                     >
                                         Purchased Courses
                                     </Link>
                                     <Link
                                         href="/transactions"
-                                        className="block px-4 py-2 text-secondary hover:bg-gray-200 hover:text-gray-800 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-white"
+                                        className="block px-4 py-2 text-secondary hover:bg-gray-200 dark:text-white dark:hover:bg-gray-700"
                                         onClick={() => setOpen(false)}
                                     >
                                         Transaction History
@@ -183,7 +183,7 @@ const AppNavbar = ({ logoSrc }) => {
                                         href="/logout"
                                         method="post"
                                         as="button"
-                                        className="w-full text-left px-4 py-2 text-secondary hover:bg-gray-200 hover:text-gray-800 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-white"
+                                        className="w-full text-left block px-4 py-2 text-secondary hover:bg-gray-200 dark:text-white dark:hover:bg-gray-700"
                                     >
                                         Logout
                                     </Link>
@@ -218,7 +218,7 @@ const AppFooter = ({ logoSrc }) => {
                             <li>
                                 <Link
                                     href="/"
-                                    className="text-base text-white hover:text-gray-300 font-bold"
+                                    className="text-base text-white font-bold"
                                 >
                                     Home
                                 </Link>
@@ -226,7 +226,7 @@ const AppFooter = ({ logoSrc }) => {
                             <li>
                                 <Link
                                     href="/courses"
-                                    className="text-base text-white hover:text-gray-300 font-bold"
+                                    className="text-base text-white font-bold"
                                 >
                                     Courses
                                 </Link>
@@ -234,7 +234,7 @@ const AppFooter = ({ logoSrc }) => {
                             <li>
                                 <Link
                                     href="/forums"
-                                    className="text-base text-white hover:text-gray-300 font-bold"
+                                    className="text-base text-white font-bold"
                                 >
                                     Forums
                                 </Link>
@@ -252,7 +252,7 @@ const AppFooter = ({ logoSrc }) => {
                     </div>
                 </div>
 
-                <div className="mt-12 border-t border-gray-600 pt-8">
+                <div className="mt-12 border-t pt-8">
                     <p className="text-base text-white font-bold text-left">
                         &copy; 2025 TutorFinder, Inc.
                     </p>

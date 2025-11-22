@@ -396,13 +396,13 @@ export default function CourseOverviewForm({
                                             setIsCategoryOpen(false);
                                             setCategoryError("");
                                         }}
-                                        className="px-4 py-2 text-gray-900 dark:text-gray-200 hover:bg-primary hover:text-white dark:hover:bg-primary cursor-pointer"
+                                        className="px-4 py-2 text-black dark:text-white hover:bg-primary hover:text-white dark:hover:bg-primary cursor-pointer"
                                     >
                                         {category.name}
                                     </li>
                                 ))
                             ) : (
-                                <li className="px-4 py-2 text-gray-500 dark:text-gray-400">
+                                <li className="px-4 py-2 text-gray-400">
                                     No categories found.
                                 </li>
                             )}
