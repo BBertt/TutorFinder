@@ -101,7 +101,7 @@ function ForumIndex({ forums, topStudents, topTutors, filters }) {
                                     className={`py-2 text-lg font-semibold transition-colors ${
                                         activeView === "all"
                                             ? "border-b-2 border-primary text-primary dark:text-primary"
-                                            : "text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200"
+                                            : "text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
                                     }`}
                                     preserveState
                                     preserveScroll
@@ -118,7 +118,7 @@ function ForumIndex({ forums, topStudents, topTutors, filters }) {
                                         className={`py-2 text-lg font-semibold transition-colors ${
                                             activeView === "my_forums"
                                                 ? "border-b-2 border-primary text-primary dark:text-primary"
-                                                : "text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200"
+                                                : "text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
                                         }`}
                                         preserveState
                                         preserveScroll
@@ -149,7 +149,7 @@ function ForumIndex({ forums, topStudents, topTutors, filters }) {
                                 </div>
                             ))
                         ) : (
-                            <div className="text-center text-gray-500 bg-white p-12 rounded-lg shadow-sm border dark:bg-darkSecondary dark:border-dark dark:text-gray-400">
+                            <div className="text-center text-gray-400 bg-white p-12 rounded-lg shadow-sm border dark:bg-darkSecondary dark:border-dark">
                                 <h2 className="text-2xl font-bold dark:text-white">
                                     {filters.search
                                         ? "No forums found matching your search."

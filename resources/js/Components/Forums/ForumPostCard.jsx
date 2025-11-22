@@ -57,22 +57,20 @@ export default function ForumPostCard({ post, showDeleteButton = false }) {
                             {showDeleteButton && (
                                 <button
                                     onClick={() => setIsDeleteModalOpen(true)}
-                                    className="text-sm font-semibold text-red-500 hover:text-red-700 dark:hover:text-red-400"
+                                    className="text-sm font-semibold text-red-500 hover:text-red-700"
                                 >
                                     Delete
                                 </button>
                             )}
                         </div>
 
-                        <p className="text-sm text-gray-500 dark:text-gray-400">
-                            By {authorName}
-                        </p>
-                        <p className="mt-2 text-gray-700 line-clamp-2 dark:text-gray-300">
+                        <p className="text-sm text-gray-400">By {authorName}</p>
+                        <p className="mt-2 text-gray-700 line-clamp-2 dark:text-gray-400">
                             {post.description}
                         </p>
                         <div className="flex items-center justify-between mt-4">
                             <VoteButtons item={post} type="forum" />
-                            <div className="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-400">
+                            <div className="flex items-center space-x-4 text-sm text-gray-400">
                                 <Link
                                     href={route("forums.show", post.id)}
                                     className="hover:underline"

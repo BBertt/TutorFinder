@@ -33,13 +33,13 @@ export default function ConfirmationModal({
                     <div className="flex justify-center mt-4 space-x-4">
                         <button
                             onClick={onClose}
-                            className="px-4 py-2 bg-gray-200 text-base font-medium rounded-md w-24 hover:bg-gray-400 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
+                            className="px-4 py-2 bg-gray-200 text-black dark:text-white font-medium rounded-md w-24 hover:bg-gray-400 dark:bg-gray-700 dark:hover:bg-gray-600"
                         >
                             {cancelText}
                         </button>
                         <button
                             onClick={onConfirm}
-                            className={`px-4 py-2 text-white text-base font-medium rounded-md w-24 ${confirmColor} hover:bg-opacity-80 dark:hover:bg-opacity-80`}
+                            className={`px-4 py-2 text-white font-medium rounded-md w-24 ${confirmColor} hover:bg-opacity-80 dark:hover:bg-opacity-80`}
                         >
                             {confirmText}
                         </button>

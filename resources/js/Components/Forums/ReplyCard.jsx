@@ -41,7 +41,7 @@ export default function ReplyCard({ reply, type = "reply", forumId }) {
             />
             <div className="flex-1">
                 <div className="flex items-center justify-between">
-                    <p className="font-bold dark:text-gray-200">{authorName}</p>
+                    <p className="font-bold dark:text-white">{authorName}</p>
                     <span className="text-xs text-gray-400">
                         {timeAgo(reply.created_at)}
                     </span>
@@ -76,17 +76,19 @@ export default function ReplyCard({ reply, type = "reply", forumId }) {
                             <img
                                 src="/assets/icons/arrow-down-primary.svg"
                                 alt="toggle replies"
-                                className={`w-4 h-4 transition-transform ${showNestedReplies ? "rotate-180" : ""
-                                    }`}
+                                className={`w-4 h-4 transition-transform ${
+                                    showNestedReplies ? "rotate-180" : ""
+                                }`}
                             />
                             <span>
                                 {/* CHANGE 2: Use childrenCount (which is based on all_children) */}
                                 {showNestedReplies
                                     ? "Hide Replies"
-                                    : `View ${childrenCount} ${childrenCount > 1
-                                        ? "Replies"
-                                        : "Reply"
-                                    }`}
+                                    : `View ${childrenCount} ${
+                                          childrenCount > 1
+                                              ? "Replies"
+                                              : "Reply"
+                                      }`}
                             </span>
                         </button>
                     )}

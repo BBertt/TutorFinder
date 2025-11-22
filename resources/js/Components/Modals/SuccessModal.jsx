@@ -38,7 +38,7 @@ export default function SuccessModal({
             >
                 <div className="text-center">
                     <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-100 dark:bg-green-800">
-                        <CheckIcon className="h-8 w-8 text-green-600 dark:text-green-300" />
+                        <CheckIcon className="h-8 w-8 text-green-500" />
                     </div>
 
                     <h3 className="mt-5 text-2xl font-bold text-black dark:text-white">
@@ -46,9 +46,7 @@ export default function SuccessModal({
                     </h3>
 
                     <div className="mt-2 px-7 py-3">
-                        <p className="text-lg text-gray-500 dark:text-gray-400">
-                            {message}
-                        </p>
+                        <p className="text-lg text-gray-400">{message}</p>
                     </div>
 
                     <div className="flex justify-center mt-4">
