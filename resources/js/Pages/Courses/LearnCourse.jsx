@@ -454,9 +454,11 @@ function LearnCourse({ course, progress: initialProgress, last_watched_lesson_id
                     </button>
                 );
             } else {
-                buttons.push(
-                    <button key="certificate" onClick={() => setShowCertificate(true)} className="px-4 py-2 bg-primary text-white rounded-md">View Certificate</button>
-                );
+                if (isQuizPassed(course.finalQuiz)) {
+                    buttons.push(
+                        <button key="certificate" onClick={() => setShowCertificate(true)} className="px-4 py-2 bg-primary text-white rounded-md">View Certificate</button>
+                    );
+                }
             }
             return <div className="flex gap-3">{buttons}</div>;
         }
