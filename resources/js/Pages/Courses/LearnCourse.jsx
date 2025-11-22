@@ -94,7 +94,7 @@ const RatingModal = ({ course, onClose }) => {
     );
 };
 
-function LearnCourse({ course, progress: initialProgress, last_watched_lesson_id, has_reviewed_by_user, course_completed }) {
+function LearnCourse({ course, progress: initialProgress, last_watched_lesson_id, has_reviewed_by_user, course_completed, final_quiz_attempts }) {
     const { quiz_submitted } = usePage().props;
 
 
@@ -168,7 +168,15 @@ function LearnCourse({ course, progress: initialProgress, last_watched_lesson_id
         const idx = allLessons.findIndex(l => l.id === activeContent.content.id);
         return allLessons.slice(0, idx).every(l => isLessonCompleted(l.id));
     }, [activeContent, allLessons, progress]);
-    const isQuizPassed = (quiz) => quiz && quiz.attempts.some(a => (a.score / a.total_questions) >= 0.8);
+    const isQuizPassed = (quiz) => {
+        if (!quiz) return false;
+        // If this is the final quiz, use the dedicated prop
+        if (quiz.id === course.finalQuiz?.id) {
+            return final_quiz_attempts.some(a => (a.score / a.total_questions) >= 0.8);
+        }
+        // Otherwise, use the attempts on the quiz object (for section quizzes)
+        return quiz.attempts.some(a => (a.score / a.total_questions) >= 0.8);
+    };
 
     const isSectionCompleted = (section) => {
         const lessonsCompleted = section.lessons.every(l => isLessonCompleted(l.id));
@@ -177,7 +185,7 @@ function LearnCourse({ course, progress: initialProgress, last_watched_lesson_id
     };
 
     const areAllSectionsCompleted = React.useMemo(() => course.sections.every(isSectionCompleted), [course.sections, progress]);
-    const isCourseFullyCompleted = React.useMemo(() => areAllSectionsCompleted && isQuizPassed(course.finalQuiz), [areAllSectionsCompleted, course.finalQuiz]);
+    const isCourseFullyCompleted = React.useMemo(() => areAllSectionsCompleted && isQuizPassed(course.finalQuiz), [areAllSectionsCompleted, course.finalQuiz, final_quiz_attempts]);
 
     const getNextContent = () => {
         if (activeContent?.type === 'lesson') {
@@ -280,7 +288,7 @@ function LearnCourse({ course, progress: initialProgress, last_watched_lesson_id
         if (activeContent?.type === 'lesson') {
             await markLessonAsCompleted(activeContent.content.id);
         }
-        if ((course.finalQuiz?.attempts || []).length > 0) {
+        if (final_quiz_attempts.length > 0) {
         setActiveContent({ type: 'quiz', content: course.finalQuiz });
     } else {
         setPendingQuiz(course.finalQuiz);
@@ -323,9 +331,19 @@ function LearnCourse({ course, progress: initialProgress, last_watched_lesson_id
         }
         if (activeContent?.type === 'quiz') {
             const quizId = activeContent.content.id;
-            const latestQuiz = course.sections.find(s => s.quiz?.id === quizId)?.quiz
+            let quizForComponent = course.sections.find(s => s.quiz?.id === quizId)?.quiz
                 || (course.finalQuiz?.id === quizId ? course.finalQuiz : null);
-            return <Quiz quiz={latestQuiz || activeContent.content} />;
+
+            // If rendering the final quiz, create a new quiz object for the component
+            // with the user-specific attempts from the dedicated prop.
+            if (quizForComponent && course.finalQuiz?.id === quizForComponent.id) {
+                quizForComponent = {
+                    ...quizForComponent,
+                    attempts: final_quiz_attempts
+                };
+            }
+
+            return <Quiz quiz={quizForComponent || activeContent.content} />;
         }
         if (activeContent?.type === 'lesson') {
             return (
@@ -392,7 +410,7 @@ function LearnCourse({ course, progress: initialProgress, last_watched_lesson_id
         // If there's a final quiz available and we're not on any quiz, prefer offering to start it
         if (!next && canStartFinalQuiz && activeContent?.type !== 'quiz') {
             buttons.push(
-                <button key="start-final" onClick={startFinalQuiz} className="px-4 py-2 bg-primary text-white rounded-md">{(course.finalQuiz?.attempts || []).length > 0 ? 'View Final Quiz' : 'Start Final Quiz'}</button>
+                <button key="start-final" onClick={startFinalQuiz} className="px-4 py-2 bg-primary text-white rounded-md">{final_quiz_attempts.length > 0 ? 'View Final Quiz' : 'Start Final Quiz'}</button>
             );
             return <div className="flex gap-3">{buttons}</div>;
         }
@@ -516,7 +534,7 @@ function LearnCourse({ course, progress: initialProgress, last_watched_lesson_id
                             <li
                                 title={!areAllSectionsCompleted ? "Complete all sections to unlock" : "Take the Final Quiz"}
                                 className={`p-4 cursor-pointer flex items-center justify-between font-bold text-purple-600 dark:text-purple-400 bg-purple-100 dark:bg-purple-900 ${activeContent?.type === 'quiz' && activeContent.content.id === course.finalQuiz.id ? 'bg-gray-300 dark:bg-gray-700' : ''} ${!areAllSectionsCompleted ? 'opacity-50 cursor-not-allowed' : ''}`}
-                                onClick={() => { if (areAllSectionsCompleted) { if ((course.finalQuiz?.attempts || []).length > 0) { setActiveContent({ type: 'quiz', content: course.finalQuiz }); } else { setPendingQuiz(course.finalQuiz); setShowQuizConfirm(true); } } }}
+                                onClick={() => { if (areAllSectionsCompleted) { if (final_quiz_attempts.length > 0) { setActiveContent({ type: 'quiz', content: course.finalQuiz }); } else { setPendingQuiz(course.finalQuiz); setShowQuizConfirm(true); } } }}
                             >
                                 <div className="flex items-center">
                                     {!areAllSectionsCompleted && <LockIcon className="w-5 h-5 mr-2" />}

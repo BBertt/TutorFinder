@@ -95,12 +95,14 @@ class CourseController extends Controller
             return redirect()->back()->with('error', 'You are not enrolled in this course.');
         }
 
-        $course->load(
+        $course->load([
             'user',
             'sections.lessons',
             'sections.quiz.questions.options',
-            'sections.quiz.attempts'
-        );
+            'sections.quiz.attempts' => function ($query) use ($user) {
+                $query->where('user_id', $user->id);
+            },
+        ]);
 
         $progress = $user->progress()->where('course_id', $course->id)->get();
 
@@ -108,9 +110,13 @@ class CourseController extends Controller
 
         $hasReviewedByUser = $course->reviews()->where('user_id', $user->id)->exists();
 
+        $finalAttempts = collect();
+        if ($course->finalQuiz) {
+            $finalAttempts = $course->finalQuiz->attempts->where('user_id', $user->id)->values();
+        }
+
         $courseCompleted = false;
         if ($course->finalQuiz) {
-            $finalAttempts = $course->finalQuiz->attempts->where('user_id', $user->id);
             $courseCompleted = $finalAttempts->contains(function ($a) {
                 return $a->total_questions > 0 && ($a->score / $a->total_questions) >= 0.8;
             });
@@ -126,6 +132,7 @@ class CourseController extends Controller
             'last_watched_lesson_id' => $lastWatched ? $lastWatched->course_lesson_id : null,
             'has_reviewed_by_user' => $hasReviewedByUser,
             'course_completed' => $courseCompleted,
+            'final_quiz_attempts' => $finalAttempts,
         ]);
     }
 
