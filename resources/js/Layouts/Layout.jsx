@@ -108,6 +108,23 @@ const AppNavbar = ({ logoSrc }) => {
                             Cart
                         </Link>
                         <Link
+                            href="/courses"
+                            className="flex gap-2 items-center"
+                        >
+                            <img
+                                className={`w-7 h-7 ${
+                                    !url.startsWith("/courses") && "dark:invert"
+                                }`}
+                                src={
+                                    url.startsWith("/courses")
+                                        ? "/assets/icons/course-primary.svg"
+                                        : "/assets/icons/course-secondary.svg"
+                                }
+                                alt="Courses"
+                            />
+                            Course
+                        </Link>
+                        <Link
                             href="/forums"
                             className="flex gap-2 items-center"
                         >

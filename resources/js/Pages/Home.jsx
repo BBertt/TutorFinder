@@ -5,7 +5,8 @@ import CourseCard from "@/Components/Course/CourseCard";
 import ForumPostCard from "@/Components/Forums/ForumPostCard";
 
 function Home() {
-    const { user, courses, tutors, forums } = usePage().props;
+    const { user, myCourses, recommendedCourses, tutors, forums } =
+        usePage().props;
 
     const getCourses = () => {
         if (user.role_id === 2) {
@@ -16,31 +17,78 @@ function Home() {
 
     return (
         <div className="flex flex-col">
-            {/* Learn course blm */}
             <section className="px-8 py-16 flex flex-col gap-8">
                 <h1 className="text-2xl font-extrabold">
                     Welcome back, {user.first_name}!
                 </h1>
                 <Link
                     href={getCourses()}
-                    className="mt-4 inline-block text-lg font-semibold text-primary"
+                    className="mt-4 inline-block text-lg font-semibold text-primary hover:underline dark:text-white"
                 >
                     Your Courses
                 </Link>
+
+                <div>
+                    {myCourses.length > 0 ? (
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                            {myCourses.map((course) => (
+                                <div key={course.id} className="flex-1">
+                                    <CourseCard course={course} />
+                                </div>
+                            ))}
+                        </div>
+                    ) : (
+                        <div className="p-8 text-center bg-gray-50 rounded-xl border border-gray-200 dark:bg-darkSecondary dark:border-dark">
+                            <p className="text-gray-500 dark:text-gray-400">
+                                You don't have any courses yet.
+                            </p>
+                            {user.role_id === 2 ? (
+                                <Link
+                                    href={route("tutor.courses.create")}
+                                    className="mt-4 inline-block text-primary font-bold hover:underline"
+                                >
+                                    Create your first course
+                                </Link>
+                            ) : (
+                                <Link
+                                    href={route("courses.index")}
+                                    className="mt-4 inline-block text-primary font-bold hover:underline dark:text-white"
+                                >
+                                    Browse courses
+                                </Link>
+                            )}
+                        </div>
+                    )}
+                </div>
             </section>
 
             {/* Course Section */}
-            <section className="px-8 py-16">
-                <h2 className="text-xl font-extrabold mb-12">
-                    Recommended course for you
-                </h2>
-                <div className="flex flex-wrap justify-between gap-8">
-                    {courses.map((course) => (
-                        <div key={course.id} className="flex-1">
-                            <CourseCard course={course} />
-                        </div>
-                    ))}
+            <section className="px-8 py-16 bg-gray-50 dark:bg-gray-900">
+                <div className="flex justify-between items-center mb-12">
+                    <h2 className="text-xl font-extrabold dark:text-white">
+                        Recommended courses for you
+                    </h2>
+                    <Link
+                        href={route("courses.index")}
+                        className="text-sm font-semibold text-primary hover:underline dark:text-white"
+                    >
+                        Browse All &rarr;
+                    </Link>
                 </div>
+
+                {recommendedCourses.length > 0 ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                        {recommendedCourses.map((course) => (
+                            <div key={course.id} className="flex-1">
+                                <CourseCard course={course} />
+                            </div>
+                        ))}
+                    </div>
+                ) : (
+                    <p className="text-gray-500 dark:text-gray-400">
+                        No new recommendations available right now.
+                    </p>
+                )}
             </section>
 
             {/* Tutor Section */}

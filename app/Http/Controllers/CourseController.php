@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Course;
+use App\Models\CourseCart;
 use App\Models\TransactionHeader;
 use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
@@ -62,15 +63,20 @@ class CourseController extends Controller
         $course->load('user', 'category', 'reviews.user', 'sections.lessons');
 
         $isEnrolled = false;
+        $isInCart = false; // 2. Initialize isInCart
+        $hasPendingTransaction = false;
+
         if (Auth::check()) {
             $user = Auth::user();
-            /** @var \App\Models\User $user */
-            $isEnrolled = $user->enrollments()->where('course_id', $course->id)->exists();
-        }
 
-        $hasPendingTransaction = false;
-        if (Auth::check()) {
-            $hasPendingTransaction = TransactionHeader::where('user_id', Auth::id())
+            $isEnrolled = $user->enrollments()->where('course_id', $course->id)->exists();
+
+            $isInCart = CourseCart::where('user_id', $user->id)
+                ->where('course_id', $course->id)
+                ->exists();
+
+            // Check pending transactions
+            $hasPendingTransaction = TransactionHeader::where('user_id', $user->id)
                 ->where('status', 'pending')
                 ->whereHas('details', function ($q) use ($course) {
                     $q->where('course_id', $course->id);
@@ -81,6 +87,7 @@ class CourseController extends Controller
         return Inertia::render('Courses/CourseDetails', [
             'course' => $course,
             'isEnrolled' => $isEnrolled,
+            'isInCart' => $isInCart,
             'hasPendingTransaction' => $hasPendingTransaction,
         ]);
     }
