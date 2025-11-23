@@ -41,9 +41,8 @@ const StarRating = ({ rating, onRatingChange }) => (
         {[1, 2, 3, 4, 5].map((star) => (
             <svg
                 key={star}
-                className={`w-8 h-8 cursor-pointer ${
-                    rating >= star ? "text-yellow-400" : "text-gray-400"
-                }`}
+                className={`w-8 h-8 cursor-pointer ${rating >= star ? "text-yellow-400" : "text-gray-400"
+                    }`}
                 fill="currentColor"
                 viewBox="0 0 20 20"
                 onClick={() => onRatingChange(star)}
@@ -132,13 +131,7 @@ const RatingModal = ({ course, onClose }) => {
     );
 };
 
-function LearnCourse({
-    course,
-    progress: initialProgress,
-    last_watched_lesson_id,
-    has_reviewed_by_user,
-    course_completed,
-}) {
+function LearnCourse({ course, progress: initialProgress, last_watched_lesson_id, has_reviewed_by_user, course_completed, final_quiz_attempts }) {
     const { quiz_submitted } = usePage().props;
 
     const [activeContent, setActiveContent] = React.useState(() => {
@@ -170,10 +163,10 @@ function LearnCourse({
         if (!printWindow) return;
         printWindow.document.write(
             "<html><head><title>Certificate</title>" +
-                styles +
-                '<style>@page{size:A4 landscape;margin:15mm;} body{margin:0;} .print-hide{display:none!important;} .certificate-wrapper{width:100%;}</style></head><body><div class="certificate-wrapper">' +
-                printContents +
-                "</div></body></html>"
+            styles +
+            '<style>@page{size:A4 landscape;margin:15mm;} body{margin:0;} .print-hide{display:none!important;} .certificate-wrapper{width:100%;}</style></head><body><div class="certificate-wrapper">' +
+            printContents +
+            "</div></body></html>"
         );
         printWindow.document.close();
         printWindow.focus();
@@ -233,8 +226,15 @@ function LearnCourse({
         );
         return allLessons.slice(0, idx).every((l) => isLessonCompleted(l.id));
     }, [activeContent, allLessons, progress]);
-    const isQuizPassed = (quiz) =>
-        quiz && quiz.attempts.some((a) => a.score / a.total_questions >= 0.8);
+    const isQuizPassed = (quiz) => {
+        if (!quiz) return false;
+        // If this is the final quiz, use the dedicated prop
+        if (quiz.id === course.finalQuiz?.id) {
+            return final_quiz_attempts.some(a => (a.score / a.total_questions) >= 0.8);
+        }
+        // Otherwise, use the attempts on the quiz object (for section quizzes)
+        return quiz.attempts.some(a => (a.score / a.total_questions) >= 0.8);
+    };
 
     const isSectionCompleted = (section) => {
         const lessonsCompleted = section.lessons.every((l) =>
@@ -244,14 +244,8 @@ function LearnCourse({
         return lessonsCompleted && quizPassed;
     };
 
-    const areAllSectionsCompleted = React.useMemo(
-        () => course.sections.every(isSectionCompleted),
-        [course.sections, progress]
-    );
-    const isCourseFullyCompleted = React.useMemo(
-        () => areAllSectionsCompleted && isQuizPassed(course.finalQuiz),
-        [areAllSectionsCompleted, course.finalQuiz]
-    );
+    const areAllSectionsCompleted = React.useMemo(() => course.sections.every(isSectionCompleted), [course.sections, progress]);
+    const isCourseFullyCompleted = React.useMemo(() => areAllSectionsCompleted && isQuizPassed(course.finalQuiz), [areAllSectionsCompleted, course.finalQuiz, final_quiz_attempts]);
 
     const getNextContent = () => {
         if (activeContent?.type === "lesson") {
@@ -391,8 +385,8 @@ function LearnCourse({
         if (activeContent?.type === "lesson") {
             await markLessonAsCompleted(activeContent.content.id);
         }
-        if ((course.finalQuiz?.attempts || []).length > 0) {
-            setActiveContent({ type: "quiz", content: course.finalQuiz });
+        if (final_quiz_attempts.length > 0) {
+            setActiveContent({ type: 'quiz', content: course.finalQuiz });
         } else {
             setPendingQuiz(course.finalQuiz);
             setShowQuizConfirm(true);
@@ -467,26 +461,35 @@ function LearnCourse({
         }
         if (activeContent?.type === "quiz") {
             const quizId = activeContent.content.id;
-            const latestQuiz =
-                course.sections.find((s) => s.quiz?.id === quizId)?.quiz ||
-                (course.finalQuiz?.id === quizId ? course.finalQuiz : null);
-            return <Quiz quiz={latestQuiz || activeContent.content} />;
+            let quizForComponent = course.sections.find(s => s.quiz?.id === quizId)?.quiz
+                || (course.finalQuiz?.id === quizId ? course.finalQuiz : null);
+
+            // If rendering the final quiz, create a new quiz object for the component
+            // with the user-specific attempts from the dedicated prop.
+            if (quizForComponent && course.finalQuiz?.id === quizForComponent.id) {
+                quizForComponent = {
+                    ...quizForComponent,
+                    attempts: final_quiz_attempts
+                };
+            }
+
+            return <Quiz quiz={quizForComponent || activeContent.content} />;
         }
         if (activeContent?.type === "lesson") {
             return (
                 <div>
                     {(activeContent.content.s3_video_url ||
                         activeContent.content.video_url) && (
-                        <VideoPlayer
-                            videoUrl={
-                                activeContent.content.s3_video_url ||
-                                activeContent.content.video_url
-                            }
-                            onVideoEnded={() =>
-                                markLessonAsCompleted(activeContent.content.id)
-                            }
-                        />
-                    )}
+                            <VideoPlayer
+                                videoUrl={
+                                    activeContent.content.s3_video_url ||
+                                    activeContent.content.video_url
+                                }
+                                onVideoEnded={() =>
+                                    markLessonAsCompleted(activeContent.content.id)
+                                }
+                            />
+                        )}
                     <div className="mt-4">
                         <h2 className="text-2xl font-bold">
                             {activeContent.title}
@@ -537,7 +540,7 @@ function LearnCourse({
                 return (
                     allLessons.length &&
                     allLessons[allLessons.length - 1].id ===
-                        activeContent.content.id
+                    activeContent.content.id
                 );
             })();
 
@@ -584,15 +587,7 @@ function LearnCourse({
         // If there's a final quiz available and we're not on any quiz, prefer offering to start it
         if (!next && canStartFinalQuiz && activeContent?.type !== "quiz") {
             buttons.push(
-                <button
-                    key="start-final"
-                    onClick={startFinalQuiz}
-                    className="px-4 py-2 bg-primary text-white rounded-md"
-                >
-                    {(course.finalQuiz?.attempts || []).length > 0
-                        ? "View Final Quiz"
-                        : "Start Final Quiz"}
-                </button>
+                <button key="start-final" onClick={startFinalQuiz} className="px-4 py-2 bg-primary text-white rounded-md">{final_quiz_attempts.length > 0 ? 'View Final Quiz' : 'Start Final Quiz'}</button>
             );
             return <div className="flex gap-3">{buttons}</div>;
         }
@@ -671,15 +666,11 @@ function LearnCourse({
                     </button>
                 );
             } else {
-                buttons.push(
-                    <button
-                        key="certificate"
-                        onClick={() => setShowCertificate(true)}
-                        className="px-4 py-2 bg-primary text-white rounded-md"
-                    >
-                        View Certificate
-                    </button>
-                );
+                if (isQuizPassed(course.finalQuiz)) {
+                    buttons.push(
+                        <button key="certificate" onClick={() => setShowCertificate(true)} className="px-4 py-2 bg-primary text-white rounded-md">View Certificate</button>
+                    );
+                }
             }
             return <div className="flex gap-3">{buttons}</div>;
         }
@@ -771,18 +762,16 @@ function LearnCourse({
                                     {section.lessons.map((lesson, index) => (
                                         <li
                                             key={lesson.id}
-                                            className={`p-4 flex items-center justify-between dark:text-gray-200 ${
-                                                activeContent?.type ===
-                                                    "lesson" &&
+                                            className={`p-4 flex items-center justify-between dark:text-gray-200 ${activeContent?.type ===
+                                                "lesson" &&
                                                 activeContent.content.id ===
-                                                    lesson.id
-                                                    ? "bg-gray-200 dark:bg-gray-700"
-                                                    : ""
-                                            } ${
-                                                isLessonLocked(lesson)
+                                                lesson.id
+                                                ? "bg-gray-200 dark:bg-gray-700"
+                                                : ""
+                                                } ${isLessonLocked(lesson)
                                                     ? "opacity-50 cursor-not-allowed"
                                                     : "cursor-pointer"
-                                            }`}
+                                                }`}
                                             onClick={() => {
                                                 if (!isLessonLocked(lesson))
                                                     setActiveContent({
@@ -807,20 +796,18 @@ function LearnCourse({
                                     ))}
                                     {section.quiz && (
                                         <li
-                                            className={`p-4 flex items-center justify-between font-semibold text-blue-400 ${
-                                                activeContent?.type ===
-                                                    "quiz" &&
+                                            className={`p-4 flex items-center justify-between font-semibold text-blue-400 ${activeContent?.type ===
+                                                "quiz" &&
                                                 activeContent.content.id ===
-                                                    section.quiz.id
-                                                    ? "bg-gray-200 dark:bg-gray-700"
-                                                    : ""
-                                            } ${
-                                                section.lessons.every((l) =>
+                                                section.quiz.id
+                                                ? "bg-gray-200 dark:bg-gray-700"
+                                                : ""
+                                                } ${section.lessons.every((l) =>
                                                     isLessonCompleted(l.id)
                                                 )
                                                     ? "cursor-pointer"
                                                     : "opacity-50 cursor-not-allowed"
-                                            }`}
+                                                }`}
                                             onClick={() => {
                                                 if (
                                                     section.lessons.every((l) =>
@@ -869,38 +856,9 @@ function LearnCourse({
                         ))}
                         {course.finalQuiz && (
                             <li
-                                title={
-                                    !areAllSectionsCompleted
-                                        ? "Complete all sections to unlock"
-                                        : "Take the Final Quiz"
-                                }
-                                className={`p-4 cursor-pointer flex items-center justify-between font-bold text-purple-400 bg-purple-200 dark:bg-purple-700 ${
-                                    activeContent?.type === "quiz" &&
-                                    activeContent.content.id ===
-                                        course.finalQuiz.id
-                                        ? "bg-gray-200 dark:bg-gray-700"
-                                        : ""
-                                } ${
-                                    !areAllSectionsCompleted
-                                        ? "opacity-50 cursor-not-allowed"
-                                        : ""
-                                }`}
-                                onClick={() => {
-                                    if (areAllSectionsCompleted) {
-                                        if (
-                                            (course.finalQuiz?.attempts || [])
-                                                .length > 0
-                                        ) {
-                                            setActiveContent({
-                                                type: "quiz",
-                                                content: course.finalQuiz,
-                                            });
-                                        } else {
-                                            setPendingQuiz(course.finalQuiz);
-                                            setShowQuizConfirm(true);
-                                        }
-                                    }
-                                }}
+                                title={!areAllSectionsCompleted ? "Complete all sections to unlock" : "Take the Final Quiz"}
+                                className={`p-4 cursor-pointer flex items-center justify-between font-bold text-purple-600 dark:text-purple-400 bg-purple-100 dark:bg-purple-900 ${activeContent?.type === 'quiz' && activeContent.content.id === course.finalQuiz.id ? 'bg-gray-300 dark:bg-gray-700' : ''} ${!areAllSectionsCompleted ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                onClick={() => { if (areAllSectionsCompleted) { if (final_quiz_attempts.length > 0) { setActiveContent({ type: 'quiz', content: course.finalQuiz }); } else { setPendingQuiz(course.finalQuiz); setShowQuizConfirm(true); } } }}
                             >
                                 <div className="flex items-center">
                                     {!areAllSectionsCompleted && (
