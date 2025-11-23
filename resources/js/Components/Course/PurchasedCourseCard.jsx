@@ -59,7 +59,7 @@ export default function PurchasedCourseCard({ enrollment }) {
                         <div className="flex items-center justify-between mt-3">
                             <Link
                                 href={route("courses.learn", course.id)}
-                                className="px-6 py-1 text-sm bg-primary text-white font-semibold rounded-md hover:bg-opacity-90"
+                                className="px-6 py-1 text-sm bg-primary text-white font-semibold rounded-md hover:bg-opacity-80"
                             >
                                 Learn
                             </Link>

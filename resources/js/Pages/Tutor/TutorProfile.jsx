@@ -27,7 +27,7 @@ function TutorProfile({ tutor }) {
                             <h1 className="text-4xl lg:text-5xl font-bold">
                                 {tutorName}
                             </h1>
-                            <p className="mt-4 text-lg max-w-2xl mx-auto italic opacity-90">
+                            <p className="mt-4 text-lg max-w-2xl mx-auto italic opacity-80">
                                 "
                                 {tutor.bio ||
                                     "This tutor has not written a bio yet."}
