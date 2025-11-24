@@ -17,6 +17,13 @@ class CourseController extends Controller
      */
     public function index()
     {
+        if(Auth::check()) {
+            $user = Auth::user();
+            if ($user->role_id === 2) {
+                return redirect()->route('tutor.courses.index')
+                    ->with('error', 'Tutors cannot access the course catalog.');
+            }
+        }
         $query = Course::with('user')->withAvg('reviews', 'rating');
         $query->where('status', 'published');
 
@@ -62,9 +69,9 @@ class CourseController extends Controller
     {
         if (Auth::check()) {
             $user = Auth::user();
-            if ($user->role_id === 2 && $course->user_id !== $user->id) {
+            if ($user->role_id === 2) {
                 return redirect()->route('tutor.courses.index')
-                    ->with('error', 'Tutors cannot access courses owned by others.');
+                    ->with('error', 'Unauthorized action.');
             }
         }
 

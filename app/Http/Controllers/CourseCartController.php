@@ -52,6 +52,13 @@ class CourseCartController extends Controller
 
     public function show()
     {
+        if (Auth::check()) {
+            $user = Auth::user();
+            if ($user->role_id === 2) {
+                return redirect()->route('tutor.courses.index')
+                    ->with('error', 'Unauthorized action.');
+            }
+        }
         $user = User::with('role')->find(Auth::id());
         $cartItems = CourseCart::where('user_id', $user->id)->with('course.user')->get();
 

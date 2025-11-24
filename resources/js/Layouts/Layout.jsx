@@ -3,6 +3,7 @@ import { Link, usePage, useForm } from "@inertiajs/react";
 import GuestNavbar from "@/Components/Landing/GuestNavbar";
 import { ThemeToggle } from "@/Components/ThemeToggle";
 import SuccessModal from "@/Components/Modals/SuccessModal";
+import ErrorModal from "@/Components/Modals/ErrorModal";
 
 const AppNavbar = ({ logoSrc }) => {
     const { categories, auth, filters } = usePage().props;
@@ -328,10 +329,18 @@ export default function Layout({ children, showFooter = true }) {
     const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
     const [successMessage, setSuccessMessage] = useState("");
 
+    const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
+    const [errorMessage, setErrorMessage] = useState("");
+
     useEffect(() => {
         if (flash.success) {
             setSuccessMessage(flash.success);
             setIsSuccessModalOpen(true);
+        }
+
+        if (flash.error) {
+            setErrorMessage(flash.error);
+            setIsErrorModalOpen(true);
         }
     }, [flash]);
 
@@ -346,6 +355,13 @@ export default function Layout({ children, showFooter = true }) {
                 onClose={() => setIsSuccessModalOpen(false)}
                 title="Success!"
                 message={successMessage}
+            />
+
+            <ErrorModal
+                isOpen={isErrorModalOpen}
+                onClose={() => setIsErrorModalOpen(false)}
+                title="Error!"
+                message={errorMessage}
             />
         </div>
     );
