@@ -60,6 +60,14 @@ class CourseController extends Controller
      */
     public function show(Course $course)
     {
+        if (Auth::check()) {
+            $user = Auth::user();
+            if ($user->role_id === 2 && $course->user_id !== $user->id) {
+                return redirect()->route('tutor.courses.index')
+                    ->with('error', 'Tutors cannot access courses owned by others.');
+            }
+        }
+
         $course->load('user', 'category', 'reviews.user', 'sections.lessons');
 
         $isEnrolled = false;
@@ -95,10 +103,17 @@ class CourseController extends Controller
     public function learn(Course $course)
     {
         $user = Auth::user();
+
+        if ($user->role_id === 2 && $course->user_id !== $user->id) {
+             return redirect()->route('tutor.courses.index')->with('error', 'Unauthorized action.');
+        }
+
         /** @var \App\Models\User $user */
         $isEnrolled = $user->enrollments()->where('course_id', $course->id)->exists();
 
-        if (! $isEnrolled) {
+        $isOwner = $user->id === $course->user_id;
+
+        if (! $isEnrolled && !$isOwner) {
             return redirect()->back()->with('error', 'You are not enrolled in this course.');
         }
 
@@ -172,7 +187,10 @@ class CourseController extends Controller
         $user = Auth::user();
         /** @var \App\Models\User $user */
         $isEnrolled = $user->enrollments()->where('course_id', $course->id)->exists();
-        if (! $isEnrolled) {
+
+        $isOwner = $user->id === $course->user_id;
+
+        if (! $isEnrolled && !$isOwner) {
             return redirect()->back()->with('error', 'You are not enrolled in this course.');
         }
 
