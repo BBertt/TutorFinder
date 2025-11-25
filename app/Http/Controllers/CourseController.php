@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Course;
+use App\Models\CourseCart;
 use App\Models\TransactionHeader;
 use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
@@ -16,6 +17,13 @@ class CourseController extends Controller
      */
     public function index()
     {
+        if(Auth::check()) {
+            $user = Auth::user();
+            if ($user->role_id === 2) {
+                return redirect()->route('tutor.courses.index')
+                    ->with('error', 'Tutors cannot access the course catalog.');
+            }
+        }
         $query = Course::with('user')->withAvg('reviews', 'rating');
         $query->where('status', 'published');
 
@@ -59,18 +67,31 @@ class CourseController extends Controller
      */
     public function show(Course $course)
     {
+        if (Auth::check()) {
+            $user = Auth::user();
+            if ($user->role_id === 2) {
+                return redirect()->route('tutor.courses.index')
+                    ->with('error', 'Unauthorized action.');
+            }
+        }
+
         $course->load('user', 'category', 'reviews.user', 'sections.lessons');
 
         $isEnrolled = false;
+        $isInCart = false; // 2. Initialize isInCart
+        $hasPendingTransaction = false;
+
         if (Auth::check()) {
             $user = Auth::user();
-            /** @var \App\Models\User $user */
-            $isEnrolled = $user->enrollments()->where('course_id', $course->id)->exists();
-        }
 
-        $hasPendingTransaction = false;
-        if (Auth::check()) {
-            $hasPendingTransaction = TransactionHeader::where('user_id', Auth::id())
+            $isEnrolled = $user->enrollments()->where('course_id', $course->id)->exists();
+
+            $isInCart = CourseCart::where('user_id', $user->id)
+                ->where('course_id', $course->id)
+                ->exists();
+
+            // Check pending transactions
+            $hasPendingTransaction = TransactionHeader::where('user_id', $user->id)
                 ->where('status', 'pending')
                 ->whereHas('details', function ($q) use ($course) {
                     $q->where('course_id', $course->id);
@@ -81,6 +102,7 @@ class CourseController extends Controller
         return Inertia::render('Courses/CourseDetails', [
             'course' => $course,
             'isEnrolled' => $isEnrolled,
+            'isInCart' => $isInCart,
             'hasPendingTransaction' => $hasPendingTransaction,
         ]);
     }
@@ -88,10 +110,17 @@ class CourseController extends Controller
     public function learn(Course $course)
     {
         $user = Auth::user();
+
+        if ($user->role_id === 2 && $course->user_id !== $user->id) {
+             return redirect()->route('tutor.courses.index')->with('error', 'Unauthorized action.');
+        }
+
         /** @var \App\Models\User $user */
         $isEnrolled = $user->enrollments()->where('course_id', $course->id)->exists();
 
-        if (! $isEnrolled) {
+        $isOwner = $user->id === $course->user_id;
+
+        if (! $isEnrolled && !$isOwner) {
             return redirect()->back()->with('error', 'You are not enrolled in this course.');
         }
 
@@ -165,7 +194,10 @@ class CourseController extends Controller
         $user = Auth::user();
         /** @var \App\Models\User $user */
         $isEnrolled = $user->enrollments()->where('course_id', $course->id)->exists();
-        if (! $isEnrolled) {
+
+        $isOwner = $user->id === $course->user_id;
+
+        if (! $isEnrolled && !$isOwner) {
             return redirect()->back()->with('error', 'You are not enrolled in this course.');
         }
 

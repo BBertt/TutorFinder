@@ -1,25 +1,39 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, usePage, useForm } from "@inertiajs/react";
 import GuestNavbar from "@/Components/Landing/GuestNavbar";
 import { ThemeToggle } from "@/Components/ThemeToggle";
 import SuccessModal from "@/Components/Modals/SuccessModal";
+import ErrorModal from "@/Components/Modals/ErrorModal";
 
 const AppNavbar = ({ logoSrc }) => {
-    const { categories } = usePage().props;
+    const { categories, auth, filters } = usePage().props;
+    const { url } = usePage();
+
     const [open, setOpen] = useState(false);
     const [dropdown, setDropdown] = useState(false);
-    const { auth } = usePage().props;
+
+    const isForumsPage = url.startsWith("/forums");
+
+    const isTutor = auth.user?.role_id === 2;
+
     const { data, setData, get } = useForm({
-        search: "",
+        search: filters?.search || "",
     });
 
     const handleSearch = (e) => {
         e.preventDefault();
-        get("/courses");
-        setData("search", "");
+        const targetUrl = isForumsPage
+            ? route("forums.index")
+            : route("courses.index");
+        get(targetUrl, {
+            preserveState: true,
+            preserveScroll: true,
+        });
     };
 
-    const { url } = usePage();
+    const placeholder = isForumsPage ? "Search Forums..." : "Search Courses...";
+
+    const showCategories = !isForumsPage && !isTutor;
 
     return (
         <nav className="bg-accent shadow-sm sticky top-0 z-50 dark:bg-darkSecondary dark:border-b dark:border-dark">
@@ -36,77 +50,118 @@ const AppNavbar = ({ logoSrc }) => {
                     </div>
 
                     <div className="hidden md:block flex-1 max-w-xl mx-4">
-                        <form
-                            className="relative flex items-center"
-                            onSubmit={handleSearch}
-                        >
-                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <img
-                                    className="w-4 h-4 dark:invert"
-                                    src="/assets/icons/magnifying-glass.svg"
-                                    alt="Search"
-                                />
-                            </div>
-                            <input
-                                id="search"
-                                name="search"
-                                value={data.search}
-                                onChange={(e) =>
-                                    setData("search", e.target.value)
-                                }
-                                className="block w-full pl-10 pr-3 py-2 border border-gray-200 rounded-full leading-5 bg-white placeholder-gray-400 sm:text-sm dark:bg-darkSecondary dark:border-g dark:text-white dark:placeholder-gray-400"
-                                placeholder="Search..."
-                                type="Search"
-                            />
-                            <div className="relative ml-2">
-                                <img
-                                    className={`w-7 h-7 cursor-pointer ${
-                                        !dropdown && "dark:invert"
-                                    }`}
-                                    src={
-                                        dropdown
-                                            ? "/assets/icons/arrow-down-primary.svg"
-                                            : "/assets/icons/arrow-down-secondary.svg"
+                        {!isTutor && (
+                            <form
+                                className="relative flex items-center"
+                                onSubmit={handleSearch}
+                            >
+                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <img
+                                        className="w-4 h-4 dark:invert"
+                                        src="/assets/icons/magnifying-glass.svg"
+                                        alt="Search"
+                                    />
+                                </div>
+                                <input
+                                    id="search"
+                                    name="search"
+                                    value={data.search}
+                                    onChange={(e) =>
+                                        setData("search", e.target.value)
                                     }
-                                    alt="Filter"
-                                    onClick={() => setDropdown(!dropdown)}
+                                    className="block w-full pl-10 pr-3 py-2 border border-gray-200 rounded-full leading-5 bg-white placeholder-gray-400 sm:text-sm dark:bg-darkSecondary dark:border-g dark:text-white dark:placeholder-gray-400"
+                                    placeholder={placeholder}
+                                    type="Search"
                                 />
-
-                                {dropdown && (
-                                    <div className="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-xl border dark:bg-darkSecondary dark:border-dark z-20">
-                                        {categories.map((category) => (
-                                            <Link
-                                                key={category.id}
-                                                href={`/courses?category=${category.id}`}
-                                                className="block w-full text-left px-4 py-2 text-sm text-secondary hover:bg-gray-200 dark:text-white dark:hover:bg-gray-700"
-                                                onClick={() =>
-                                                    setDropdown(false)
-                                                }
-                                            >
-                                                {category.name}
-                                            </Link>
-                                        ))}
+                                {showCategories && (
+                                    <div className="relative ml-2">
+                                        <img
+                                            className={`w-7 h-7 cursor-pointer ${
+                                                !dropdown && "dark:invert"
+                                            }`}
+                                            src={
+                                                dropdown
+                                                    ? "/assets/icons/arrow-down-primary.svg"
+                                                    : "/assets/icons/arrow-down-secondary.svg"
+                                            }
+                                            alt="Filter"
+                                            onClick={() =>
+                                                setDropdown(!dropdown)
+                                            }
+                                        />
+                                        {dropdown && (
+                                            <div className="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-xl border dark:bg-darkSecondary dark:border-dark z-20">
+                                                {categories.map((category) => (
+                                                    <Link
+                                                        key={category.id}
+                                                        href={`/courses?category=${category.id}`}
+                                                        className="block w-full text-left px-4 py-2 text-sm text-secondary hover:bg-gray-200 hover:text-gray-800 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-white"
+                                                        onClick={() =>
+                                                            setDropdown(false)
+                                                        }
+                                                    >
+                                                        {category.name}
+                                                    </Link>
+                                                ))}
+                                            </div>
+                                        )}
                                     </div>
                                 )}
-                            </div>
-                        </form>
+                            </form>
+                        )}
                     </div>
 
                     <div className="hidden md:flex items-center space-x-10">
-                        <Link href="/cart" className="flex gap-2 items-center">
+                        {!isTutor && (
+                            <Link
+                                href="/cart"
+                                className="flex gap-2 items-center"
+                            >
+                                <img
+                                    className={`w-7 h-7 ${
+                                        !url.startsWith("/cart") &&
+                                        "dark:invert"
+                                    }`}
+                                    src={
+                                        url.startsWith("/cart")
+                                            ? "/assets/icons/cart-primary.svg"
+                                            : "/assets/icons/cart-secondary.svg"
+                                    }
+                                    alt="Cart"
+                                />
+                                <span className="font-medium text-gray-700 dark:text-gray-200">
+                                    Cart
+                                </span>
+                            </Link>
+                        )}
+
+                        <Link
+                            href={
+                                isTutor
+                                    ? route("tutor.courses.index")
+                                    : route("courses.index")
+                            }
+                            className="flex gap-2 items-center"
+                        >
                             <img
                                 className={`w-7 h-7 ${
-                                    !url.startsWith("/cart") && "dark:invert"
+                                    !url.startsWith("/courses") &&
+                                    !url.startsWith("/tutor/courses") &&
+                                    "dark:invert"
                                 }`}
                                 src={
-                                    url.startsWith("/cart")
-                                        ? "/assets/icons/cart-primary.svg"
-                                        : "/assets/icons/cart-secondary.svg"
+                                    url.startsWith("/courses") ||
+                                    url.startsWith("/tutor/courses")
+                                        ? "/assets/icons/course-primary.svg"
+                                        : "/assets/icons/course-secondary.svg"
                                 }
-                                alt="Cart"
+                                alt="Courses"
                             />
-                            Cart
+                            <span className="font-medium text-gray-700 dark:text-gray-200">
+                                {isTutor ? "Your Courses" : "Courses"}
+                            </span>
                         </Link>
+
                         <Link
                             href="/forums"
                             className="flex gap-2 items-center"
@@ -122,8 +177,11 @@ const AppNavbar = ({ logoSrc }) => {
                                 }
                                 alt="Forums"
                             />
-                            Forum
+                            <span className="font-medium text-gray-700 dark:text-gray-200">
+                                Forum
+                            </span>
                         </Link>
+
                         <Link href="/chat" className="flex gap-2 items-center">
                             <img
                                 className={`w-7 h-7 ${
@@ -136,7 +194,9 @@ const AppNavbar = ({ logoSrc }) => {
                                 }
                                 alt="Messages"
                             />
-                            Chat
+                            <span className="font-medium text-gray-700 dark:text-gray-200">
+                                Chat
+                            </span>
                         </Link>
 
                         <ThemeToggle />
@@ -147,7 +207,7 @@ const AppNavbar = ({ logoSrc }) => {
                                 className="cursor-pointer"
                             >
                                 <img
-                                    className="w-7 h-7 rounded-full"
+                                    className="w-7 h-7 rounded-full object-cover"
                                     src={
                                         auth.user.profile_image_url ||
                                         "/assets/icons/profile.svg"
@@ -160,21 +220,24 @@ const AppNavbar = ({ logoSrc }) => {
                                 <div className="absolute right-0 mt-2 w-64 bg-white rounded-md border border-gray-200 z-1 dark:bg-darkSecondary dark:border-dark">
                                     <Link
                                         href="/profile"
-                                        className="block px-4 py-2 text-secondary hover:bg-gray-200 dark:text-white dark:hover:bg-gray-700"
+                                        className="block px-4 py-2 text-secondary hover:bg-gray-200 hover:text-gray-800 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-white"
                                         onClick={() => setOpen(false)}
                                     >
                                         Profile
                                     </Link>
-                                    <Link
-                                        href="/purchased-courses"
-                                        className="block px-4 py-2 text-secondary hover:bg-gray-200 dark:text-white dark:hover:bg-gray-700"
-                                        onClick={() => setOpen(false)}
-                                    >
-                                        Purchased Courses
-                                    </Link>
+
+                                    {!isTutor && (
+                                        <Link
+                                            href="/purchased-courses"
+                                            className="block px-4 py-2 text-secondary hover:bg-gray-200 hover:text-gray-800 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-white"
+                                            onClick={() => setOpen(false)}
+                                        >
+                                            Purchased Courses
+                                        </Link>
+                                    )}
                                     <Link
                                         href="/transactions"
-                                        className="block px-4 py-2 text-secondary hover:bg-gray-200 dark:text-white dark:hover:bg-gray-700"
+                                        className="block px-4 py-2 text-secondary hover:bg-gray-200 hover:text-gray-800 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-white"
                                         onClick={() => setOpen(false)}
                                     >
                                         Transaction History
@@ -183,7 +246,7 @@ const AppNavbar = ({ logoSrc }) => {
                                         href="/logout"
                                         method="post"
                                         as="button"
-                                        className="w-full text-left block px-4 py-2 text-secondary hover:bg-gray-200 dark:text-white dark:hover:bg-gray-700"
+                                        className="w-full text-left px-4 py-2 text-secondary hover:bg-gray-200 hover:text-gray-800 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-white"
                                     >
                                         Logout
                                     </Link>
@@ -209,7 +272,6 @@ const AppFooter = ({ logoSrc }) => {
                             alt="TutorFinder Logo"
                         />
                     </div>
-
                     <div>
                         <h3 className="text-sm font-semibold tracking-wider uppercase text-white">
                             Navigation
@@ -218,7 +280,7 @@ const AppFooter = ({ logoSrc }) => {
                             <li>
                                 <Link
                                     href="/"
-                                    className="text-base text-white font-bold"
+                                    className="text-base text-white hover:text-gray-300 font-bold"
                                 >
                                     Home
                                 </Link>
@@ -226,7 +288,7 @@ const AppFooter = ({ logoSrc }) => {
                             <li>
                                 <Link
                                     href="/courses"
-                                    className="text-base text-white font-bold"
+                                    className="text-base text-white hover:text-gray-300 font-bold"
                                 >
                                     Courses
                                 </Link>
@@ -234,25 +296,23 @@ const AppFooter = ({ logoSrc }) => {
                             <li>
                                 <Link
                                     href="/forums"
-                                    className="text-base text-white font-bold"
+                                    className="text-base text-white hover:text-gray-300 font-bold"
                                 >
                                     Forums
                                 </Link>
                             </li>
                         </ul>
                     </div>
-
                     <div>
                         <h3 className="text-sm font-semibold tracking-wider uppercase text-white">
                             Get in touch
                         </h3>
                         <ul className="mt-4 space-y-2 text-white">
-                            <li>tutorfinderindonesia@gmail.com</li>
+                            <li>tutorfinder@example.com</li>
                         </ul>
                     </div>
                 </div>
-
-                <div className="mt-12 border-t pt-8">
+                <div className="mt-12 border-t border-gray-600 pt-8">
                     <p className="text-base text-white font-bold text-left">
                         &copy; 2025 TutorFinder, Inc.
                     </p>
@@ -269,10 +329,18 @@ export default function Layout({ children, showFooter = true }) {
     const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
     const [successMessage, setSuccessMessage] = useState("");
 
+    const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
+    const [errorMessage, setErrorMessage] = useState("");
+
     useEffect(() => {
         if (flash.success) {
             setSuccessMessage(flash.success);
             setIsSuccessModalOpen(true);
+        }
+
+        if (flash.error) {
+            setErrorMessage(flash.error);
+            setIsErrorModalOpen(true);
         }
     }, [flash]);
 
@@ -287,6 +355,13 @@ export default function Layout({ children, showFooter = true }) {
                 onClose={() => setIsSuccessModalOpen(false)}
                 title="Success!"
                 message={successMessage}
+            />
+
+            <ErrorModal
+                isOpen={isErrorModalOpen}
+                onClose={() => setIsErrorModalOpen(false)}
+                title="Error!"
+                message={errorMessage}
             />
         </div>
     );

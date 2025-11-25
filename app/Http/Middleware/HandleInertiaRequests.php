@@ -39,6 +39,9 @@ class HandleInertiaRequests extends Middleware
                 'success' => function() use ($request) {
                     return $request->session()->get('success');
                 },
+                'error' => function() use ($request) {
+                    return $request->session()->get('error');
+                },
             ],
             'categories' => Category::all()
         ];

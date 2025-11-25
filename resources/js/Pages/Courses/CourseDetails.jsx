@@ -4,7 +4,12 @@ import { Head, router, Link } from "@inertiajs/react";
 import Breadcrumb from "@/Components/Course/Breadcrumb";
 
 import SuccessModal from "@/Components/Modals/SuccessModal";
-function CourseDetails({ course, isEnrolled, hasPendingTransaction }) {
+function CourseDetails({
+    course,
+    isEnrolled,
+    isInCart,
+    hasPendingTransaction,
+}) {
     const [showBlockedModal, setShowBlockedModal] = React.useState(false);
     const handleAddToCart = (e) => {
         e.preventDefault();
@@ -48,12 +53,24 @@ function CourseDetails({ course, isEnrolled, hasPendingTransaction }) {
                             </Link>
                         ) : (
                             <>
-                                <button
-                                    onClick={handleAddToCart}
-                                    className="mt-6 bg-white text-primary px-8 py-3 rounded-lg font-semibold hover:bg-gray-200 transition-colors"
-                                >
-                                    {hasPendingTransaction ? 'Pending Payment' : 'Add to Cart'}
-                                </button>
+                                {isInCart ? (
+                                    <Link
+                                        href={route("cart.show")}
+                                        className="mt-6 bg-gray-200 text-gray-800 px-8 py-3 rounded-lg font-semibold hover:bg-gray-300 transition-colors inline-block text-center"
+                                    >
+                                        Go to Cart
+                                    </Link>
+                                ) : (
+                                    <button
+                                        onClick={handleAddToCart}
+                                        className="mt-6 bg-white text-primary px-8 py-3 rounded-lg font-semibold hover:bg-gray-200 transition-colors"
+                                    >
+                                        {hasPendingTransaction
+                                            ? "Pending Payment"
+                                            : "Add to Cart"}
+                                    </button>
+                                )}
+
                                 <SuccessModal
                                     isOpen={showBlockedModal}
                                     onClose={() => setShowBlockedModal(false)}
