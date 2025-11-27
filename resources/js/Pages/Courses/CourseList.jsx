@@ -4,6 +4,7 @@ import { Head, usePage } from "@inertiajs/react";
 import CourseCard from "@/Components/Course/CourseCard";
 import Breadcrumb from "@/Components/Course/Breadcrumb";
 import LoginModal from "@/Components/LoginModal";
+import Pagination from "@/Components/Pagination";
 
 function CourseList({ courses }) {
     const params = new URLSearchParams(window.location.search);
@@ -65,6 +66,8 @@ function CourseList({ courses }) {
                         </div>
                     ))}
                 </div>
+
+                <Pagination links={courses.links} />
             </main>
             <LoginModal
                 isOpen={isLoginModalOpen}
