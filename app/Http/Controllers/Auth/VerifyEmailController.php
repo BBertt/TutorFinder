@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Models\Course;
+use App\Models\CourseEnrollment;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Auth\Events\Verified;
@@ -28,6 +30,16 @@ class VerifyEmailController extends Controller
 
         if ($user->markEmailAsVerified()) {
             event(new Verified($user));
+
+            // Assign 3 random courses to the user
+            $randomCourses = Course::inRandomOrder()->limit(3)->get();
+            foreach ($randomCourses as $course) {
+                CourseEnrollment::create([
+                    'user_id' => $user->id,
+                    'course_id' => $course->id,
+                    'enrollment_date' => now(),
+                ]);
+            }
         }
 
         Auth::login($user);
