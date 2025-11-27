@@ -26,7 +26,7 @@ class CourseSeeder extends Seeder
             return;
         }
 
-        $coursesData = [[ 
+        $coursesData = [[
             'title' => 'UI/UX Design 30-Day Challenge',
             'description' => 'A 30-day challenge to learn UI/UX design from scratch, covering everything from fundamentals to building a portfolio.',
             'user_id' => $tutors->random()->id,
@@ -55,7 +55,7 @@ class CourseSeeder extends Seeder
                                         Deploy Next.js applications to Vercel.',
                 'requirements' => 'Basic knowledge of React and JavaScript is required.',
                 'intro_video' => 'https://www.youtube.com/watch?v=b4ba60j_4o8',
-                'thumbnail_image' => 'assets/images/dummy/nextjs_course.png',
+                'thumbnail_image' => 'assets/images/dummy/nextjs_course.jpg',
                 'status' => 'published',
                 'price' => 250000,
             ],
@@ -85,7 +85,7 @@ class CourseSeeder extends Seeder
                                         Learn database migrations and raw SQL queries.",
                 'requirements' => 'Basic PHP knowledge is recommended.',
                 'intro_video' => 'https://www.youtube.com/watch?v=w6Mr6Nlf-lE',
-                'thumbnail_image' => 'assets/images/dummy/laravel_course.png',
+                'thumbnail_image' => 'assets/images/dummy/laravel_course.jpg',
                 'status' => 'published',
                 'price' => 200000,
             ],
@@ -148,7 +148,7 @@ class CourseSeeder extends Seeder
             }
         });
     }
-    
+
     private function createPandasLessons(Course $course)
     {
         $videos = [
