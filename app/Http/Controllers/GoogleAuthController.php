@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Course;
+use App\Models\CourseEnrollment;
 use App\Models\User;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Laravel\Socialite\Facades\Socialite;
@@ -28,13 +29,13 @@ class GoogleAuthController extends Controller
 
             $user = User::where('google_id', $googleUser->getId())->first();
 
-            if (!$user) {
+            if (! $user) {
                 $user = User::where('email', $googleUser->getEmail())->first();
 
                 if ($user) {
                     $user->update([
                         'google_id' => $googleUser->getId(),
-                        'email_verified_at' => now()
+                        'email_verified_at' => now(),
                     ]);
                 } else {
                     $user = User::create([
@@ -46,6 +47,16 @@ class GoogleAuthController extends Controller
                         'email_verified_at' => now(),
                         'role_id' => 3, // Default to student role
                     ]);
+
+                    // Assign 3 random courses to the user
+                    $randomCourses = Course::inRandomOrder()->limit(3)->get();
+                    foreach ($randomCourses as $course) {
+                        CourseEnrollment::create([
+                            'user_id' => $user->id,
+                            'course_id' => $course->id,
+                            'enrollment_date' => now(),
+                        ]);
+                    }
                 }
             }
 
@@ -58,7 +69,8 @@ class GoogleAuthController extends Controller
             return redirect()->route('home');
 
         } catch (\Exception $e) {
-            Log::error('Google Auth Callback Error: ' . $e->getMessage());
+            Log::error('Google Auth Callback Error: '.$e->getMessage());
+
             return redirect('/')->with('error', 'Login with Google failed. Please try again.');
         }
     }
