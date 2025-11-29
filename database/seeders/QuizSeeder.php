@@ -77,46 +77,52 @@ class QuizSeeder extends Seeder
 
     private function createCourseQuizzes(Course $course, string $type)
     {
-        // Create a final quiz
-        $finalQuiz = Quiz::create([
-            'title' => 'Final Quiz for ' . $course->title,
-            'description' => 'Test your overall knowledge of this course.',
-            'course_id' => $course->id,
-        ]);
-        if ($type === 'uiux') {
-            $this->createUiUxQuestions($finalQuiz);
-        } elseif ($type === 'nextjs') {
-            $this->createNextJsQuestions($finalQuiz);
-        } elseif ($type === 'business') {
-            $this->createBusinessQuestions($finalQuiz);
-        } elseif ($type === 'laravel') {
-            $this->createLaravelQuestions($finalQuiz);
-        } elseif ($type === 'pandas') {
-            $this->createPandasQuestions($finalQuiz);
+        $getQuestionsMethod = 'get' . ucfirst($type) . 'Questions';
+
+        // Create a final quiz if questions exist
+        $finalQuestions = $this->{$getQuestionsMethod}();
+        if (!empty($finalQuestions)) {
+            $finalQuiz = Quiz::create([
+                'title' => 'Final Quiz for ' . $course->title,
+                'description' => 'Test your overall knowledge of this course.',
+                'course_id' => $course->id,
+            ]);
+            $this->createQuestions($finalQuiz, $finalQuestions);
         }
 
-        // Create a quiz for each section
+        // Create a quiz for each section that has questions
         foreach ($course->sections as $section) {
-            $sectionQuiz = Quiz::create([
-                'title' => 'Quiz for ' . $section->title,
-                'description' => 'Test your knowledge from this chapter.',
-                'course_section_id' => $section->id,
-            ]);
-            if ($type === 'uiux') {
-                $this->createUiUxQuestions($sectionQuiz, $section);
-            } elseif ($type === 'nextjs') {
-                $this->createNextJsQuestions($sectionQuiz, $section);
-            } elseif ($type === 'business') {
-                $this->createBusinessQuestions($sectionQuiz, $section);
-            } elseif ($type === 'laravel') {
-                $this->createLaravelQuestions($sectionQuiz, $section);
-            } elseif ($type === 'pandas') {
-                $this->createPandasQuestions($sectionQuiz, $section);
+            $sectionQuestions = $this->{$getQuestionsMethod}($section);
+            if (!empty($sectionQuestions)) {
+                $sectionQuiz = Quiz::create([
+                    'title' => 'Quiz for ' . $section->title,
+                    'description' => 'Test your knowledge from this chapter.',
+                    'course_section_id' => $section->id,
+                ]);
+                $this->createQuestions($sectionQuiz, $sectionQuestions);
             }
         }
     }
 
-    private function createPandasQuestions(Quiz $quiz, CourseSection $section = null)
+    private function createQuestions(Quiz $quiz, array $questionsData)
+    {
+        foreach ($questionsData as $q) {
+            $question = QuizQuestion::create([
+                'quiz_id' => $quiz->id,
+                'question' => $q['question'],
+            ]);
+
+            foreach ($q['options'] as $opt) {
+                QuizQuestionOption::create([
+                    'quiz_question_id' => $question->id,
+                    'option' => $opt['option'],
+                    'is_correct' => $opt['is_correct'],
+                ]);
+            }
+        }
+    }
+
+    private function getPandasQuestions(CourseSection $section = null): array
     {
         $questions = [];
 
@@ -146,6 +152,18 @@ class QuizSeeder extends Seeder
                         ],
                     ];
                     break;
+                case 'Advanced Topics':
+                    $questions = [
+                        [
+                            'question' => 'Which method is used to group data in a Pandas DataFrame for aggregation?',
+                            'options' => [
+                                ['option' => 'groupby()', 'is_correct' => true],
+                                ['option' => 'group()', 'is_correct' => false],
+                                ['option' => 'aggregate()', 'is_correct' => false],
+                            ],
+                        ],
+                    ];
+                    break;
             }
         } else { // Final Quiz
             $questions = [
@@ -168,23 +186,10 @@ class QuizSeeder extends Seeder
             ];
         }
 
-        foreach ($questions as $q) {
-            $question = QuizQuestion::create([
-                'quiz_id' => $quiz->id,
-                'question' => $q['question'],
-            ]);
-
-            foreach ($q['options'] as $opt) {
-                QuizQuestionOption::create([
-                    'quiz_question_id' => $question->id,
-                    'option' => $opt['option'],
-                    'is_correct' => $opt['is_correct'],
-                ]);
-            }
-        }
+        return $questions;
     }
 
-    private function createLaravelQuestions(Quiz $quiz, CourseSection $section = null)
+    private function getLaravelQuestions(CourseSection $section = null): array
     {
         $questions = [];
 
@@ -198,6 +203,30 @@ class QuizSeeder extends Seeder
                                 ['option' => 'Building web applications.', 'is_correct' => true],
                                 ['option' => 'Data analysis.', 'is_correct' => false],
                                 ['option' => 'Mobile app development.', 'is_correct' => false],
+                            ],
+                        ],
+                    ];
+                    break;
+                case 'Core Concepts & Architecture':
+                    $questions = [
+                        [
+                            'question' => 'What is MVC?',
+                            'options' => [
+                                ['option' => 'A software architectural pattern that separates the representation of information from the user\'s interaction with it.', 'is_correct' => true],
+                                ['option' => 'A popular Javascript framework.', 'is_correct' => false],
+                                ['option' => 'A database management system.', 'is_correct' => false],
+                            ],
+                        ],
+                    ];
+                    break;
+                case 'Command Line & Configuration':
+                    $questions = [
+                        [
+                            'question' => 'What is the name of Laravel\'s command-line tool?',
+                            'options' => [
+                                ['option' => 'Artisan', 'is_correct' => true],
+                                ['option' => 'Composer', 'is_correct' => false],
+                                ['option' => 'Tinker', 'is_correct' => false],
                             ],
                         ],
                     ];
@@ -226,6 +255,18 @@ class QuizSeeder extends Seeder
                         ],
                     ];
                     break;
+                case 'Frontend & Data':
+                    $questions = [
+                        [
+                            'question' => 'What templating engine does Laravel use by default?',
+                            'options' => [
+                                ['option' => 'Blade', 'is_correct' => true],
+                                ['option' => 'Twig', 'is_correct' => false],
+                                ['option' => 'React', 'is_correct' => false],
+                            ],
+                        ],
+                    ];
+                    break;
             }
         } else { // Final Quiz
             $questions = [
@@ -248,23 +289,10 @@ class QuizSeeder extends Seeder
             ];
         }
 
-        foreach ($questions as $q) {
-            $question = QuizQuestion::create([
-                'quiz_id' => $quiz->id,
-                'question' => $q['question'],
-            ]);
-
-            foreach ($q['options'] as $opt) {
-                QuizQuestionOption::create([
-                    'quiz_question_id' => $question->id,
-                    'option' => $opt['option'],
-                    'is_correct' => $opt['is_correct'],
-                ]);
-            }
-        }
+        return $questions;
     }
 
-    private function createBusinessQuestions(Quiz $quiz, CourseSection $section = null)
+    private function getBusinessQuestions(CourseSection $section = null): array
     {
         $questions = [];
 
@@ -278,6 +306,42 @@ class QuizSeeder extends Seeder
                                 ['option' => 'The management of money and other valuable assets.', 'is_correct' => true],
                                 ['option' => 'The marketing of a business.', 'is_correct' => false],
                                 ['option' => 'The hiring of employees.', 'is_correct' => false],
+                            ],
+                        ],
+                    ];
+                    break;
+                case 'Starting a Business':
+                    $questions = [
+                        [
+                            'question' => 'What is a business plan?',
+                            'options' => [
+                                ['option' => 'A document setting out a business\'s future objectives and strategies for achieving them.', 'is_correct' => true],
+                                ['option' => 'A list of employees.', 'is_correct' => false],
+                                ['option' => 'A marketing brochure.', 'is_correct' => false],
+                            ],
+                        ],
+                    ];
+                    break;
+                case 'Core Business Knowledge':
+                    $questions = [
+                        [
+                            'question' => 'What does HRM stand for?',
+                            'options' => [
+                                ['option' => 'Human Resource Management', 'is_correct' => true],
+                                ['option' => 'High-Risk Management', 'is_correct' => false],
+                                ['option' => 'Human Relations Model', 'is_correct' => false],
+                            ],
+                        ],
+                    ];
+                    break;
+                case 'Growth and Leadership':
+                    $questions = [
+                        [
+                            'question' => 'Why is customer service important for business growth?',
+                            'options' => [
+                                ['option' => 'It helps retain customers and build a loyal following.', 'is_correct' => true],
+                                ['option' => 'It is not important.', 'is_correct' => false],
+                                ['option' => 'It is only for large companies.', 'is_correct' => false],
                             ],
                         ],
                     ];
@@ -296,23 +360,10 @@ class QuizSeeder extends Seeder
             ];
         }
 
-        foreach ($questions as $q) {
-            $question = QuizQuestion::create([
-                'quiz_id' => $quiz->id,
-                'question' => $q['question'],
-            ]);
-
-            foreach ($q['options'] as $opt) {
-                QuizQuestionOption::create([
-                    'quiz_question_id' => $question->id,
-                    'option' => $opt['option'],
-                    'is_correct' => $opt['is_correct'],
-                ]);
-            }
-        }
+        return $questions;
     }
 
-    private function createNextJsQuestions(Quiz $quiz, CourseSection $section = null)
+    private function getNextjsQuestions(CourseSection $section = null): array
     {
         $questions = [];
 
@@ -342,6 +393,42 @@ class QuizSeeder extends Seeder
                         ],
                     ];
                     break;
+                case 'Layouts and Metadata':
+                    $questions = [
+                        [
+                            'question' => 'How do you define metadata for a page in Next.js?',
+                            'options' => [
+                                ['option' => 'By exporting a `metadata` object from a `layout.js` or `page.js` file.', 'is_correct' => true],
+                                ['option' => 'By using a special `<Metadata>` component.', 'is_correct' => false],
+                                ['option' => 'By calling a `setMetadata()` function.', 'is_correct' => false],
+                            ],
+                        ],
+                    ];
+                    break;
+                case 'Data Fetching':
+                    $questions = [
+                        [
+                            'question' => 'In the App Router, how do you fetch data on the server that will be rendered statically?',
+                            'options' => [
+                                ['option' => 'By using `fetch` within an async Server Component.', 'is_correct' => true],
+                                ['option' => 'By using the `getStaticProps` function.', 'is_correct' => false],
+                                ['option' => 'Data can only be fetched on the client.', 'is_correct' => false],
+                            ],
+                        ],
+                    ];
+                    break;
+                case 'Authentication':
+                    $questions = [
+                        [
+                            'question' => 'What is a common library used for authentication in Next.js applications?',
+                            'options' => [
+                                ['option' => 'NextAuth.js or Clerk', 'is_correct' => true],
+                                ['option' => 'React Router', 'is_correct' => false],
+                                ['option' => 'Redux', 'is_correct' => false],
+                            ],
+                        ],
+                    ];
+                    break;
             }
         } else { // Final Quiz
             $questions = [
@@ -364,23 +451,10 @@ class QuizSeeder extends Seeder
             ];
         }
 
-        foreach ($questions as $q) {
-            $question = QuizQuestion::create([
-                'quiz_id' => $quiz->id,
-                'question' => $q['question'],
-            ]);
-
-            foreach ($q['options'] as $opt) {
-                QuizQuestionOption::create([
-                    'quiz_question_id' => $question->id,
-                    'option' => $opt['option'],
-                    'is_correct' => $opt['is_correct'],
-                ]);
-            }
-        }
+        return $questions;
     }
 
-    private function createUiUxQuestions(Quiz $quiz, CourseSection $section = null)
+    private function getUiuxQuestions(CourseSection $section = null): array
     {
         $questions = [];
 
@@ -410,6 +484,42 @@ class QuizSeeder extends Seeder
                         ],
                     ];
                     break;
+                case 'Responsive Design and Forms':
+                    $questions = [
+                        [
+                            'question' => 'What is the primary goal of responsive design?',
+                            'options' => [
+                                ['option' => 'To ensure a consistent user experience across different devices and screen sizes.', 'is_correct' => true],
+                                ['option' => 'To make the website load faster.', 'is_correct' => false],
+                                ['option' => 'To use only one layout for all devices.', 'is_correct' => false],
+                            ],
+                        ],
+                    ];
+                    break;
+                case 'Advanced Techniques':
+                    $questions = [
+                        [
+                            'question' => 'What is a wireframe in UI/UX design?',
+                            'options' => [
+                                ['option' => 'A low-fidelity, simplified outline of a product\'s structure and layout.', 'is_correct' => true],
+                                ['option' => 'A high-fidelity mockup with colors and images.', 'is_correct' => false],
+                                ['option' => 'A final, coded version of the product.', 'is_correct' => false],
+                            ],
+                        ],
+                    ];
+                    break;
+                case 'Building a Portfolio':
+                    $questions = [
+                        [
+                            'question' => 'What is the most important part of a UI/UX design portfolio?',
+                            'options' => [
+                                ['option' => 'Case studies that detail your design process and the problems you solved.', 'is_correct' => true],
+                                ['option' => 'As many projects as possible, regardless of quality.', 'is_correct' => false],
+                                ['option' => 'Only showing the final, polished UI designs.', 'is_correct' => false],
+                            ],
+                        ],
+                    ];
+                    break;
             }
         } else { // Final Quiz
             $questions = [
@@ -432,20 +542,7 @@ class QuizSeeder extends Seeder
             ];
         }
 
-        foreach ($questions as $q) {
-            $question = QuizQuestion::create([
-                'quiz_id' => $quiz->id,
-                'question' => $q['question'],
-            ]);
-
-            foreach ($q['options'] as $opt) {
-                QuizQuestionOption::create([
-                    'quiz_question_id' => $question->id,
-                    'option' => $opt['option'],
-                    'is_correct' => $opt['is_correct'],
-                ]);
-            }
-        }
+        return $questions;
     }
 
     private function createQuestionsForQuiz(Quiz $quiz, $type)
