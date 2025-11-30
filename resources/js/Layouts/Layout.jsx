@@ -15,6 +15,7 @@ const AppNavbar = ({ logoSrc }) => {
     const isForumsPage = url.startsWith("/forums");
 
     const isTutor = auth.user?.role_id === 2;
+    const isAdmin = auth.user?.role_id === 1;
 
     const { data, setData, get } = useForm({
         search: filters?.search || "",
@@ -33,7 +34,7 @@ const AppNavbar = ({ logoSrc }) => {
 
     const placeholder = isForumsPage ? "Search Forums..." : "Search Courses...";
 
-    const showCategories = !isForumsPage && !isTutor;
+    const showCategories = !isForumsPage && !isTutor && !isAdmin;
 
     return (
         <nav className="bg-accent shadow-sm sticky top-0 z-50 dark:bg-darkSecondary dark:border-b dark:border-dark">
@@ -50,7 +51,7 @@ const AppNavbar = ({ logoSrc }) => {
                     </div>
 
                     <div className="hidden md:block flex-1 max-w-xl mx-4">
-                        {!isTutor && (
+                        {!isTutor && !isAdmin && (
                             <form
                                 className="relative flex items-center"
                                 onSubmit={handleSearch}
@@ -112,7 +113,7 @@ const AppNavbar = ({ logoSrc }) => {
                     </div>
 
                     <div className="hidden md:flex items-center space-x-10">
-                        {!isTutor && (
+                        {!isTutor && !isAdmin && (
                             <Link
                                 href="/cart"
                                 className="flex gap-2 items-center"
@@ -135,32 +136,34 @@ const AppNavbar = ({ logoSrc }) => {
                             </Link>
                         )}
 
-                        <Link
-                            href={
-                                isTutor
-                                    ? route("tutor.courses.index")
-                                    : route("courses.index")
-                            }
-                            className="flex gap-2 items-center"
-                        >
-                            <img
-                                className={`w-7 h-7 ${
-                                    !url.startsWith("/courses") &&
-                                    !url.startsWith("/tutor/courses") &&
-                                    "dark:invert"
-                                }`}
-                                src={
-                                    url.startsWith("/courses") ||
-                                    url.startsWith("/tutor/courses")
-                                        ? "/assets/icons/course-primary.svg"
-                                        : "/assets/icons/course-secondary.svg"
+                        {!isAdmin && (
+                            <Link
+                                href={
+                                    isTutor
+                                        ? route("tutor.courses.index")
+                                        : route("courses.index")
                                 }
-                                alt="Courses"
-                            />
-                            <span className="font-medium text-gray-700 dark:text-gray-200">
-                                {isTutor ? "Your Courses" : "Courses"}
-                            </span>
-                        </Link>
+                                className="flex gap-2 items-center"
+                            >
+                                <img
+                                    className={`w-7 h-7 ${
+                                        !url.startsWith("/courses") &&
+                                        !url.startsWith("/tutor/courses") &&
+                                        "dark:invert"
+                                    }`}
+                                    src={
+                                        url.startsWith("/courses") ||
+                                        url.startsWith("/tutor/courses")
+                                            ? "/assets/icons/course-primary.svg"
+                                            : "/assets/icons/course-secondary.svg"
+                                    }
+                                    alt="Courses"
+                                />
+                                <span className="font-medium text-gray-700 dark:text-gray-200">
+                                    {isTutor ? "Your Courses" : "Courses"}
+                                </span>
+                            </Link>
+                        )}
 
                         <Link
                             href="/forums"
@@ -226,7 +229,7 @@ const AppNavbar = ({ logoSrc }) => {
                                         Profile
                                     </Link>
 
-                                    {!isTutor && (
+                                    {!isTutor && !isAdmin && (
                                         <Link
                                             href="/purchased-courses"
                                             className="block px-4 py-2 text-secondary hover:bg-gray-200 hover:text-gray-800 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-white"
@@ -235,13 +238,15 @@ const AppNavbar = ({ logoSrc }) => {
                                             Purchased Courses
                                         </Link>
                                     )}
-                                    <Link
-                                        href="/transactions"
-                                        className="block px-4 py-2 text-secondary hover:bg-gray-200 hover:text-gray-800 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-white"
-                                        onClick={() => setOpen(false)}
-                                    >
-                                        Transaction History
-                                    </Link>
+                                    {!isTutor && !isAdmin && (
+                                        <Link
+                                            href="/transactions"
+                                            className="block px-4 py-2 text-secondary hover:bg-gray-200 hover:text-gray-800 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-white"
+                                            onClick={() => setOpen(false)}
+                                        >
+                                            Transaction History
+                                        </Link>
+                                    )}
                                     <Link
                                         href="/logout"
                                         method="post"

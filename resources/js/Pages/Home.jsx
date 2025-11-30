@@ -9,6 +9,8 @@ function Home() {
         usePage().props;
 
     const isTutor = user.role_id === 2;
+    const isAdmin = user.role_id === 1;
+    const isStudent = !isTutor && !isAdmin;
 
     return (
         <div className="flex flex-col">
@@ -17,7 +19,8 @@ function Home() {
                     <h1 className="text-2xl font-extrabold dark:text-white">
                         Welcome back, {user.first_name}!
                     </h1>
-                    {!isTutor && (
+
+                    {isStudent && (
                         <Link
                             href={route("purchased-courses.index")}
                             className="text-sm font-semibold text-primary hover:underline"
@@ -27,7 +30,7 @@ function Home() {
                     )}
                 </div>
 
-                {!isTutor && (
+                {isStudent && (
                     <div>
                         <h2 className="text-xl font-bold mb-6 dark:text-white">
                             Your Courses
@@ -57,7 +60,7 @@ function Home() {
                 )}
             </section>
 
-            {!isTutor && (
+            {isStudent && (
                 <section className="px-8 py-16 bg-gray-50 dark:bg-gray-900">
                     <div className="flex justify-between items-center mb-12">
                         <h2 className="text-xl font-extrabold dark:text-white">
@@ -122,9 +125,10 @@ function Home() {
                 </div>
             </section>
 
+            {/* Forum Section (Visible to Everyone) */}
             <section
                 className={`px-8 py-16 ${
-                    !isTutor ? "bg-gray-50 dark:bg-gray-900" : ""
+                    !isTutor && !isAdmin ? "bg-gray-50 dark:bg-gray-900" : ""
                 }`}
             >
                 <h2 className="text-xl font-extrabold mb-12 dark:text-white">

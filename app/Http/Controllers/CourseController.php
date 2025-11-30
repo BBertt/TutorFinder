@@ -23,6 +23,10 @@ class CourseController extends Controller
                 return redirect()->route('tutor.courses.index')
                     ->with('error', 'Tutors cannot access the course catalog.');
             }
+            if($user->role_id === 1){
+                return redirect()->route('dashboard')
+                    ->with('error', 'Unauthorized action.');
+            }
         }
         $query = Course::with('user')->withAvg('reviews', 'rating');
         $query->where('status', 'published');
@@ -73,6 +77,10 @@ class CourseController extends Controller
                 return redirect()->route('tutor.courses.index')
                     ->with('error', 'Unauthorized action.');
             }
+            if($user->role_id === 1){
+                return redirect()->route('dashboard')
+                    ->with('error', 'Unauthorized action.');
+            }
         }
 
         $course->load('user', 'category', 'reviews.user', 'sections.lessons');
@@ -113,6 +121,9 @@ class CourseController extends Controller
 
         if ($user->role_id === 2 && $course->user_id !== $user->id) {
              return redirect()->route('tutor.courses.index')->with('error', 'Unauthorized action.');
+        }
+        if ($user->role_id === 1) {
+            return redirect()->route('dashboard')->with('error', 'Unauthorized action.');
         }
 
         /** @var \App\Models\User $user */
