@@ -23,29 +23,29 @@ class TutorReviewController extends Controller
     {
         $request->validate([
             'rating' => 'required|integer|min:1|max:5',
-            'review' => 'nullable|string',
+            'comment' => 'nullable|string',
         ]);
 
         if ($tutor->id === Auth::id()) {
-            return response()->json(['message' => 'You cannot review yourself.'], 403);
+            return redirect()->back()->with('error', 'You cannot review yourself.');
         }
 
         // Check if the user has already reviewed this tutor
-        $existingReview = TutorReview::where('user_id', Auth::id())
+        $existingReview = TutorReview::where('reviewer_id', Auth::id())
                                       ->where('tutor_id', $tutor->id)
                                       ->first();
 
         if ($existingReview) {
-            return response()->json(['message' => 'You have already reviewed this tutor.'], 409);
+            return redirect()->back()->with('error', 'You have already reviewed this tutor.');
         }
 
         $tutorReview = new TutorReview();
-        $tutorReview->user_id = Auth::id();
+        $tutorReview->reviewer_id = Auth::id();
         $tutorReview->tutor_id = $tutor->id;
         $tutorReview->rating = $request->rating;
-        $tutorReview->review = $request->review;
+        $tutorReview->comment = $request->comment;
         $tutorReview->save();
 
-        return response()->json(['message' => 'Tutor review submitted successfully.'], 201);
+        return redirect()->back()->with('success', 'Tutor review submitted successfully.');
     }
 }

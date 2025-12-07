@@ -2,7 +2,7 @@ import React from "react";
 import Layout from "@/Layouts/Layout";
 import { Head } from "@inertiajs/react";
 import CourseCard from "@/Components/Course/CourseCard";
-import TutorReviewCard from "@/Components/Tutor/TutorReviewCard";
+import ReviewCard from "@/Components/ReviewCard";
 
 function TutorProfile({ tutor }) {
     const tutorName = `${tutor.first_name} ${tutor.last_name}`;
@@ -60,7 +60,7 @@ function TutorProfile({ tutor }) {
                     {tutor.reviews?.length > 0 ? (
                         <div className="space-y-6">
                             {tutor.reviews.map((review) => (
-                                <TutorReviewCard
+                                <ReviewCard
                                     key={review.id}
                                     review={review}
                                 />
