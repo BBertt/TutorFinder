@@ -58,14 +58,17 @@ class User extends Authenticatable implements MustVerifyEmail
      */
     public function getProfileImageUrlAttribute(): ?string
     {
-        if ($this->profile_image_path) {
-            if (str_starts_with($this->profile_image_path, 'http')) {
-                return $this->profile_image_path;
-            }
-            return Storage::url($this->profile_image_path);
+        $path = $this->profile_image_path;
+
+        if (!$path) {
+            return '/assets/icons/profile.svg';
         }
 
-        return null;
+        if (str_starts_with($path, 'profile')) {
+            return Storage::url($path);
+        }
+
+        return '/' . ltrim($path, '/');
     }
 
     /**
