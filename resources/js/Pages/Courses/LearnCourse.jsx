@@ -5,6 +5,7 @@ import React, { useEffect, useRef } from "react";
 import VideoPlayer from "@/Components/VideoPlayer";
 import Quiz from "@/Components/Quiz";
 import ConfirmationModal from "@/Components/Modals/ConfirmationModal";
+import RatingModal from "@/Components/Modals/RatingModal";
 
 // ... (Icons and Modal components remain the same)
 const CheckmarkIcon = ({ className }) => (
@@ -36,102 +37,8 @@ const LockIcon = ({ className }) => (
         />
     </svg>
 );
-const StarRating = ({ rating, onRatingChange }) => (
-    <div className="flex">
-        {[1, 2, 3, 4, 5].map((star) => (
-            <svg
-                key={star}
-                className={`w-8 h-8 cursor-pointer ${rating >= star ? "text-yellow-400" : "text-gray-400"
-                    }`}
-                fill="currentColor"
-                viewBox="0 0 20 20"
-                onClick={() => onRatingChange(star)}
-            >
-                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.286 3.957a1 1 0 00.95.69h4.162c.969 0 1.371 1.24.588 1.81l-3.368 2.448a1 1 0 00-.364 1.118l1.287 3.957c.3.921-.755 1.688-1.54 1.118l-3.368-2.448a1 1 0 00-1.175 0l-3.368 2.448c-.784.57-1.838-.197-1.539-1.118l1.287-3.957a1 1 0 00-.364-1.118L2.25 9.384c-.783-.57-.38-1.81.588-1.81h4.162a1 1 0 00.95-.69L9.049 2.927z" />
-            </svg>
-        ))}
-    </div>
-);
 
-const RatingModal = ({ course, onClose }) => {
-    const [courseRating, setCourseRating] = React.useState(0);
-    const [courseComment, setCourseComment] = React.useState("");
-    const [isSubmitting, setIsSubmitting] = React.useState(false);
-
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        setIsSubmitting(true);
-
-        if (courseRating > 0) {
-            router.post(
-                `/courses/${course.id}/reviews`,
-                {
-                    rating: courseRating,
-                    comment: courseComment,
-                },
-                {
-                    onSuccess: () => {
-                        setIsSubmitting(false);
-                        onClose();
-                    },
-                    onError: () => {
-                        setIsSubmitting(false);
-                    },
-                }
-            );
-        } else {
-            setIsSubmitting(false);
-            onClose();
-        }
-    };
-
-    return (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white dark:bg-darkPrimary dark:text-white p-8 rounded-lg shadow-xl w-full max-w-2xl">
-                <h2 className="text-2xl font-bold mb-6 text-center">
-                    Rate Your Course
-                </h2>
-                <form onSubmit={handleSubmit}>
-                    <div className="mb-6">
-                        <h3 className="text-xl font-semibold mb-2">
-                            Rate the Course: "{course.title}"
-                        </h3>
-                        <StarRating
-                            rating={courseRating}
-                            onRatingChange={setCourseRating}
-                        />
-                        <textarea
-                            className="mt-4 p-2 block w-full border-gray-200 rounded-md shadow-sm dark:bg-darkSecondary dark:border-dark dark:text-white dark:placeholder-gray-400"
-                            rows="3"
-                            placeholder="Tell us about your experience with the course..."
-                            value={courseComment}
-                            onChange={(e) => setCourseComment(e.target.value)}
-                        ></textarea>
-                    </div>
-
-                    <div className="flex justify-end gap-4">
-                        <button
-                            type="button"
-                            onClick={onClose}
-                            className="px-6 py-2 bg-gray-200 text-black dark:text-white font-medium rounded-md hover:bg-gray-400 dark:bg-gray-700 dark:hover:bg-gray-600"
-                        >
-                            Maybe Later
-                        </button>
-                        <button
-                            type="submit"
-                            disabled={isSubmitting || courseRating === 0}
-                            className="px-6 py-2 rounded-md text-white bg-primary hover:bg-primary-dark disabled:opacity-50"
-                        >
-                            {isSubmitting ? "Submitting..." : "Submit Review"}
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    );
-};
-
-function LearnCourse({ course, progress: initialProgress, last_watched_lesson_id, has_reviewed_by_user, course_completed, final_quiz_attempts }) {
+function LearnCourse({ course, progress: initialProgress, last_watched_lesson_id, has_reviewed_by_user, course_completed, final_quiz_attempts, has_reviewed_tutor }) {
     const { quiz_submitted } = usePage().props;
 
     const [activeContent, setActiveContent] = React.useState(() => {
@@ -146,6 +53,7 @@ function LearnCourse({ course, progress: initialProgress, last_watched_lesson_id
 
     const [progress, setProgress] = React.useState(initialProgress);
     const [showRatingModal, setShowRatingModal] = React.useState(false);
+    const [showTutorRatingModal, setShowTutorRatingModal] = React.useState(false);
     const [isSubmitting, setIsSubmitting] = React.useState(false);
     const [showQuizConfirm, setShowQuizConfirm] = React.useState(false);
     const [pendingQuiz, setPendingQuiz] = React.useState(null);
@@ -584,6 +492,18 @@ function LearnCourse({ course, progress: initialProgress, last_watched_lesson_id
             );
         }
 
+        if (!has_reviewed_tutor) {
+            buttons.push(
+                <button
+                    key="review-tutor"
+                    onClick={() => setShowTutorRatingModal(true)}
+                    className="px-4 py-2 bg-secondary text-white rounded-md"
+                >
+                    Review Tutor
+                </button>
+            );
+        }
+
         // If there's a final quiz available and we're not on any quiz, prefer offering to start it
         if (!next && canStartFinalQuiz && activeContent?.type !== "quiz") {
             buttons.push(
@@ -717,8 +637,20 @@ function LearnCourse({ course, progress: initialProgress, last_watched_lesson_id
         <div>
             {showRatingModal && (
                 <RatingModal
-                    course={course}
+                    revieweeType="Course"
+                    revieweeName={course.title}
+                    postUrl={`/courses/${course.id}/reviews`}
                     onClose={() => setShowRatingModal(false)}
+                    onSuccess={() => router.reload()}
+                />
+            )}
+            {showTutorRatingModal && (
+                <RatingModal
+                    revieweeType="Tutor"
+                    revieweeName={`${course.user.first_name} ${course.user.last_name}`}
+                    postUrl={`/tutors/${course.user.id}/reviews`}
+                    onClose={() => setShowTutorRatingModal(false)}
+                    onSuccess={() => router.reload()}
                 />
             )}
             {showQuizConfirm && (

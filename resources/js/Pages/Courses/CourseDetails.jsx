@@ -2,6 +2,7 @@ import React from "react";
 import Layout from "@/Layouts/Layout";
 import { Head, router, Link } from "@inertiajs/react";
 import Breadcrumb from "@/Components/Course/Breadcrumb";
+import ReviewCard from "@/Components/ReviewCard";
 
 import SuccessModal from "@/Components/Modals/SuccessModal";
 function CourseDetails({
@@ -142,6 +143,23 @@ function CourseDetails({
                             </div>
                         </div>
                     </div>
+                </div>
+
+                <div className="mt-12">
+                    <h2 className="text-2xl font-bold mb-6">
+                        Course Reviews
+                    </h2>
+                    {course.reviews?.length > 0 ? (
+                        <div className="space-y-6">
+                            {course.reviews.map((review) => (
+                                <ReviewCard key={review.id} review={review} />
+                            ))}
+                        </div>
+                    ) : (
+                        <p className="text-gray-500">
+                            This course has no reviews yet.
+                        </p>
+                    )}
                 </div>
             </main>
         </>

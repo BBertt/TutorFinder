@@ -1,8 +1,9 @@
 import React from "react";
 import StarIcon from "@/Components/Course/StarIcon";
 
-export default function TutorReviewCard({ review }) {
-    const reviewerName = `${review.reviewer.first_name} ${review.reviewer.last_name}`;
+export default function ReviewCard({ review }) {
+    const reviewer = review.reviewer || review.user;
+    const reviewerName = `${reviewer.first_name} ${reviewer.last_name}`;
 
     return (
         <div className="bg-white p-6 rounded-lg shadow-md dark:bg-darkSecondary dark:border-dark">
@@ -11,8 +12,8 @@ export default function TutorReviewCard({ review }) {
                     <img
                         className="w-12 h-12 rounded-full"
                         src={
-                            review.reviewer.profile_image_path
-                                ? `/${review.reviewer.profile_image_path}`
+                            reviewer.profile_image_path
+                                ? `/${reviewer.profile_image_path}`
                                 : "/assets/icons/profile.svg"
                         }
                         alt={reviewerName}

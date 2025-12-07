@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Course;
 use App\Models\CourseCart;
 use App\Models\TransactionHeader;
+use App\Models\TutorReview;
 use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -83,7 +84,14 @@ class CourseController extends Controller
             }
         }
 
-        $course->load('user', 'category', 'reviews.user', 'sections.lessons');
+        $course->load([
+            'user',
+            'category',
+            'reviews' => function ($query) {
+                $query->with('user')->latest();
+            },
+            'sections.lessons'
+        ]);
 
         $isEnrolled = false;
         $isInCart = false; // 2. Initialize isInCart
@@ -150,6 +158,10 @@ class CourseController extends Controller
 
         $hasReviewedByUser = $course->reviews()->where('user_id', $user->id)->exists();
 
+        $hasReviewedTutor = TutorReview::where('reviewer_id', $user->id)
+            ->where('tutor_id', $course->user_id)
+            ->exists();
+
         $finalAttempts = collect();
         if ($course->finalQuiz) {
             $finalAttempts = $course->finalQuiz->attempts->where('user_id', $user->id)->values();
@@ -171,6 +183,7 @@ class CourseController extends Controller
             'progress' => $progress,
             'last_watched_lesson_id' => $lastWatched ? $lastWatched->course_lesson_id : null,
             'has_reviewed_by_user' => $hasReviewedByUser,
+            'has_reviewed_tutor' => $hasReviewedTutor,
             'course_completed' => $courseCompleted,
             'final_quiz_attempts' => $finalAttempts,
         ]);
