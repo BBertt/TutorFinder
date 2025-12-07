@@ -63,6 +63,7 @@ Route::get('/', function () {
     // }
     return redirect('/landing');
 });
+
 Route::middleware('guest')->group(function() {
     Route::get('/landing', [TutorReviewController::class, 'show'])->name('landing');
     Route::get('/about', function() {
@@ -70,16 +71,26 @@ Route::middleware('guest')->group(function() {
     })->name('about');
 });
 
-Route::get('/courses', [CourseController::class, 'index'])->name('courses.index');
-Route::get('/forums', [ForumController::class, 'index'])->name('forums.index');
+
+Route::middleware('not.admin')->group(function() {
+    Route::get('/forums', [ForumController::class, 'index'])->name('forums.index');
+    Route::get('/courses', [CourseController::class, 'index'])->name('courses.index');
+});
 
 
-Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+Route::middleware(['auth', 'verified', 'student'])->group(function(){
 
-    Route::post('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    // Cart
+    Route::get('/cart', [CourseCartController::class, 'show'])->name('cart.show');
+    Route::post('/cart', [CourseCartController::class, 'store'])->name('cart.store');
+    Route::delete('/cart/{cartItem}', [CourseCartController::class, 'destroy'])->name('cart.destroy');
+
+    // Purchased Courses
+    Route::get('/purchased-courses', [PurchasedCoursesController::class, 'index'])->name('purchased-courses.index');
+
+    // Transactions
+    Route::get('/transactions', [TransactionController::class, 'index'])->name('transactions.index');
+    Route::get('/transactions/failure', [TransactionController::class, 'failure'])->name('transactions.failure');
 
     // Courses
     // Route::get('/courses', [CourseController::class, 'index'])->name('courses.index');
@@ -88,17 +99,22 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/courses/{course}/reviews', [CourseReviewController::class, 'store'])->name('courses.reviews.store'); // NEW
     Route::post('/courses/{course}/complete', [CourseController::class, 'complete'])->name('courses.complete');
 
-    // Purchased Courses
-    Route::get('/purchased-courses', [PurchasedCoursesController::class, 'index'])->name('purchased-courses.index');
+    // Learn Course
+    Route::post('/course-progress/{course_lesson_id}', [CourseProgressController::class, 'update'])->name('course-progress.update');
+
+    Route::post('/quizzes/{quiz}/submit', [QuizController::class, 'submit'])->name('quizzes.submit');
+});
+
+Route::middleware(['auth', 'verified', 'not.admin'])->group(function () {
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    Route::post('/profile', [ProfileController::class, 'update'])->name('profile.update');
 
     // Tutor Profile
     Route::get('/tutors/{tutor}', [TutorController::class, 'show'])->name('tutors.show');
     Route::post('/tutors/{tutor}/reviews', [TutorReviewController::class, 'store'])->name('tutors.reviews.store'); // NEW
-
-    // Cart
-    Route::get('/cart', [CourseCartController::class, 'show'])->name('cart.show');
-    Route::post('/cart', [CourseCartController::class, 'store'])->name('cart.store');
-    Route::delete('/cart/{cartItem}', [CourseCartController::class, 'destroy'])->name('cart.destroy');
 
     // Transaction
     Route::post('/cart/checkout', [TransactionController::class, 'checkout'])->name('checkout');
@@ -116,8 +132,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::post('/forums/{forum}/replies', [ForumReplyController::class, 'store'])->name('forums.replies.store');
     Route::post('/votes/{type}/{id}', [ForumVoteController::class, 'store'])->name('votes.store');
-    Route::get('/transactions', [TransactionController::class, 'index'])->name('transactions.index');
-    Route::get('/transactions/failure', [TransactionController::class, 'failure'])->name('transactions.failure');
 
     // Messages
     Route::get('/chat', [ChatController::class, 'index'])->name('chat.index');
@@ -125,13 +139,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/chat/{receiver}', [ChatController::class, 'store'])->name('chat.store');
     Route::get('/chat/{receiver}/messages', [ChatController::class, 'getMessages'])->name('chat.getMessages');
     Route::delete('/chat/messages/{message}', [ChatController::class, 'destroy'])->name('chat.destroy');
+
     // Home
     Route::get('/home', [HomeController::class, 'index'])->name('home');
 
-    Route::post('/course-progress/{course_lesson_id}', [CourseProgressController::class, 'update'])->name('course-progress.update');
-
-    Route::post('/quizzes/{quiz}/submit', [QuizController::class, 'submit'])->name('quizzes.submit');
 });
+
 
 Route::middleware('admin')->group(function() {
     Route::get('/dashboard', function() {

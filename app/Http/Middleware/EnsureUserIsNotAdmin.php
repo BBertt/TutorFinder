@@ -4,10 +4,10 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Facades\Auth;
+use Symfony\Component\HttpFoundation\Response;
 
-class EnsureRoleIsAdmin
+class EnsureUserIsNotAdmin
 {
     /**
      * Handle an incoming request.
@@ -16,12 +16,9 @@ class EnsureRoleIsAdmin
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (!Auth::check()) {
-            return redirect()->route('login');
-        }
-
-        if (Auth::user()->role_id !== 1) {
-            return redirect()->route('home')->with('error', 'This area is for admins only.');
+        if (Auth::check() && Auth::user()->role_id === 1) {
+            return redirect()->route('dashboard')
+                ->with('error', 'You cannot go here...');
         }
 
         return $next($request);

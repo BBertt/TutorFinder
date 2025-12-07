@@ -337,17 +337,24 @@ export default function Layout({ children, showFooter = true }) {
     const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
 
+    const [shownFlash, setShownFlash] = useState({
+        success: null,
+        error: null,
+    });
+
     useEffect(() => {
-        if (flash.success) {
+        if (flash.success && flash.success !== shownFlash.success) {
             setSuccessMessage(flash.success);
             setIsSuccessModalOpen(true);
+            setShownFlash((prev) => ({ ...prev, success: flash.success }));
         }
 
-        if (flash.error) {
+        if (flash.error && flash.error !== shownFlash.error) {
             setErrorMessage(flash.error);
             setIsErrorModalOpen(true);
+            setShownFlash((prev) => ({ ...prev, error: flash.error }));
         }
-    }, [flash]);
+    }, [flash.success, flash.error]);
 
     return (
         <div className="flex flex-col min-h-screen bg-white dark:bg-darkPrimary dark:text-white">

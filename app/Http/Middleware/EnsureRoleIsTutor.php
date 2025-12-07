@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 
 class EnsureRoleIsTutor
@@ -16,10 +17,14 @@ class EnsureRoleIsTutor
     public function handle(Request $request, Closure $next): Response
     {
 
-        if ($request->user() && $request->user()->role_id == 2) {
-            return $next($request);
+        if (!Auth::check()) {
+            return redirect()->route('login');
         }
 
-        abort(403, 'Unauthorized action.');
+        if (Auth::user()->role_id !== 2) {
+            return redirect()->route('home')->with('error', 'This area is for tutors only.');
+        }
+
+        return $next($request);
     }
 }
