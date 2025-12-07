@@ -103,6 +103,12 @@ class TransactionController extends Controller
     public function index()
     {
         $user = Auth::user();
+        if ($user->role_id === 2) {
+             return redirect()->route('tutor.courses.index')->with('error', 'Unauthorized action.');
+        }
+        if ($user->role_id === 1) {
+            return redirect()->route('dashboard')->with('error', 'Unauthorized action.');
+        }
         $transactions = TransactionHeader::where('user_id', $user->id)
             ->with('details.course.user')
             ->latest()
