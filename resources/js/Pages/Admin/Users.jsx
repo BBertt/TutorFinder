@@ -2,6 +2,7 @@ import { usePage, router } from "@inertiajs/react";
 import Layout from "@/Layouts/Layout";
 import { useState } from "react";
 import ConfirmationModal from "@/Components/Modals/ConfirmationModal";
+import Pagination from "@/Components/Pagination";
 
 const Users = () => {
     const { users } = usePage().props;
@@ -25,7 +26,7 @@ const Users = () => {
     return (
         <div className="flex flex-col items-center m-10">
             <h1 className="text-2xl font-extrabold mb-6">Users</h1>
-            {users.length === 0 ? (
+            {users.data.length === 0 ? (
                 <h2 className="text-xl font-bold mb-3">
                     There are no Student or Tutor that have registered.
                 </h2>
@@ -44,7 +45,7 @@ const Users = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {users.map((user) => (
+                        {users.data.map((user) => (
                             <tr>
                                 <td className="border p-2">
                                     {user.first_name} {user.last_name}
@@ -105,6 +106,7 @@ const Users = () => {
                 cancelText="Cancel"
                 confirmColor="bg-red-600"
             />
+            <Pagination links={users.links} />
         </div>
     );
 };

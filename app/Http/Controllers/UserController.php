@@ -12,15 +12,9 @@ use Inertia\Inertia;
 class UserController extends Controller
 {
     public function index(Request $request) {
-        $students = User::with('role')->whereHas('role', function (Builder $query) {
+        $users = User::with('role')->whereHas('role', function (Builder $query) {
             $query->where('name', '=', 'student');
-        })->get();
-
-        $tutors = User::with('role')->whereHas('tutorRegistration', function(Builder $query) {
-            $query->where('status', '=', 'approved');
-        })->get();
-
-        $users = $students->merge($tutors);
+        })->paginate(10);
 
         if ($request->is('users/transactions')) {
             return Inertia::render('Admin/UserTransactionSelection', [
