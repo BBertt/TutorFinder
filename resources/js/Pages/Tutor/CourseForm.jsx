@@ -61,7 +61,7 @@ export default function CourseForm({ categories }) {
         price: course?.price || "",
         category_id: course?.category_id || "",
         thumbnail_image: null,
-        intro_video: null,
+        intro_video: course?.intro_video_url || "",
         sections: (course?.sections || []).map((s) => ({
             ...s,
             quiz_title: s.quiz?.title || s.quiz_title || "",
