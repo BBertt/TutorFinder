@@ -85,6 +85,11 @@ Route::middleware(['auth', 'verified', 'student'])->group(function(){
     Route::post('/cart', [CourseCartController::class, 'store'])->name('cart.store');
     Route::delete('/cart/{cartItem}', [CourseCartController::class, 'destroy'])->name('cart.destroy');
 
+    // Transaction
+    Route::post('/cart/checkout', [TransactionController::class, 'checkout'])->name('checkout');
+    Route::post('/transactions/{transaction}/cancel', [TransactionController::class, 'cancel'])->name('transactions.cancel');
+    Route::post('/transactions/{transaction}/pay', [TransactionController::class, 'pay'])->name('transactions.pay');
+
     // Purchased Courses
     Route::get('/purchased-courses', [PurchasedCoursesController::class, 'index'])->name('purchased-courses.index');
 
@@ -115,11 +120,6 @@ Route::middleware(['auth', 'verified', 'not.admin'])->group(function () {
     // Tutor Profile
     Route::get('/tutors/{tutor}', [TutorController::class, 'show'])->name('tutors.show');
     Route::post('/tutors/{tutor}/reviews', [TutorReviewController::class, 'store'])->name('tutors.reviews.store'); // NEW
-
-    // Transaction
-    Route::post('/cart/checkout', [TransactionController::class, 'checkout'])->name('checkout');
-    Route::post('/transactions/{transaction}/cancel', [TransactionController::class, 'cancel'])->name('transactions.cancel');
-    Route::post('/transactions/{transaction}/pay', [TransactionController::class, 'pay'])->name('transactions.pay');
 
     // Forum
     // Route::get('/forums', [ForumController::class, 'index'])->name('forums.index');

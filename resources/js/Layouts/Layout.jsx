@@ -165,42 +165,51 @@ const AppNavbar = ({ logoSrc }) => {
                             </Link>
                         )}
 
-                        <Link
-                            href="/forums"
-                            className="flex gap-2 items-center"
-                        >
-                            <img
-                                className={`w-7 h-7 ${
-                                    !url.startsWith("/forums") && "dark:invert"
-                                }`}
-                                src={
-                                    url.startsWith("/forums")
-                                        ? "/assets/icons/forum-primary.svg"
-                                        : "/assets/icons/forum-secondary.svg"
-                                }
-                                alt="Forums"
-                            />
-                            <span className="font-medium text-gray-700 dark:text-gray-200">
-                                Forum
-                            </span>
-                        </Link>
+                        {!isAdmin && (
+                            <Link
+                                href="/forums"
+                                className="flex gap-2 items-center"
+                            >
+                                <img
+                                    className={`w-7 h-7 ${
+                                        !url.startsWith("/forums") &&
+                                        "dark:invert"
+                                    }`}
+                                    src={
+                                        url.startsWith("/forums")
+                                            ? "/assets/icons/forum-primary.svg"
+                                            : "/assets/icons/forum-secondary.svg"
+                                    }
+                                    alt="Forums"
+                                />
+                                <span className="font-medium text-gray-700 dark:text-gray-200">
+                                    Forum
+                                </span>
+                            </Link>
+                        )}
 
-                        <Link href="/chat" className="flex gap-2 items-center">
-                            <img
-                                className={`w-7 h-7 ${
-                                    !url.startsWith("/chat") && "dark:invert"
-                                }`}
-                                src={
-                                    url.startsWith("/chat")
-                                        ? "/assets/icons/messages-primary.svg"
-                                        : "/assets/icons/messages-secondary.svg"
-                                }
-                                alt="Messages"
-                            />
-                            <span className="font-medium text-gray-700 dark:text-gray-200">
-                                Chat
-                            </span>
-                        </Link>
+                        {!isAdmin && (
+                            <Link
+                                href="/chat"
+                                className="flex gap-2 items-center"
+                            >
+                                <img
+                                    className={`w-7 h-7 ${
+                                        !url.startsWith("/chat") &&
+                                        "dark:invert"
+                                    }`}
+                                    src={
+                                        url.startsWith("/chat")
+                                            ? "/assets/icons/messages-primary.svg"
+                                            : "/assets/icons/messages-secondary.svg"
+                                    }
+                                    alt="Messages"
+                                />
+                                <span className="font-medium text-gray-700 dark:text-gray-200">
+                                    Chat
+                                </span>
+                            </Link>
+                        )}
 
                         <ThemeToggle />
 
@@ -221,13 +230,15 @@ const AppNavbar = ({ logoSrc }) => {
 
                             {open && (
                                 <div className="absolute right-0 mt-2 w-64 bg-white rounded-md border border-gray-200 z-1 dark:bg-darkSecondary dark:border-dark">
-                                    <Link
-                                        href="/profile"
-                                        className="block px-4 py-2 text-secondary hover:bg-gray-200 hover:text-gray-800 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-white"
-                                        onClick={() => setOpen(false)}
-                                    >
-                                        Profile
-                                    </Link>
+                                    {!isAdmin && (
+                                        <Link
+                                            href="/profile"
+                                            className="block px-4 py-2 text-secondary hover:bg-gray-200 hover:text-gray-800 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-white"
+                                            onClick={() => setOpen(false)}
+                                        >
+                                            Profile
+                                        </Link>
+                                    )}
 
                                     {!isTutor && !isAdmin && (
                                         <Link
