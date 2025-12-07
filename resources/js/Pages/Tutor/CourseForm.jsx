@@ -47,6 +47,7 @@ const Stepper = ({ currentStep }) => {
 export default function CourseForm({ categories }) {
     const { course, flash } = usePage().props;
     const isEditing = !!course;
+    const initialIntroVideoUrl = course?.intro_video_url || "";
 
     const [currentStep, setCurrentStep] = useState(() => {
         if (isEditing && flash.from_create) return 2;

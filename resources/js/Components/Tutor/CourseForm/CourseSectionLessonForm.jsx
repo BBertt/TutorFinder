@@ -26,8 +26,39 @@ export default function CourseSectionLessonForm({
     const [newSectionDesc, setNewSectionDesc] = useState("");
 
     const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
-    const [deleteTarget, setDeleteTarget] = useState(null);
-    const openModal = (modal, item) => {
+        const [deleteTarget, setDeleteTarget] = useState(null);
+    
+        const handleAddQuiz = (sectionId) => {
+            setData(
+                "sections",
+                sections.map((s) =>
+                    s.id === sectionId
+                        ? {
+                              ...s,
+                              quiz: { title: "", questions: [] },
+                              quiz_title: "",
+                          }
+                        : s
+                )
+            );
+        };
+    
+        const handleRemoveQuiz = (sectionId) => {
+            setData(
+                "sections",
+                sections.map((s) => {
+                    if (s.id === sectionId) {
+                        const newSection = { ...s };
+                        delete newSection.quiz;
+                        delete newSection.quiz_title;
+                        return newSection;
+                    }
+                    return s;
+                })
+            );
+        };
+    
+        const openModal = (modal, item) => {
         if (modal === "addLesson") {
             setSelectedSection(item);
             setLessonModalOpen(true);
@@ -278,58 +309,90 @@ export default function CourseSectionLessonForm({
                                     >
                                         + Add Lesson
                                     </button>
-                                    <input
-                                        type="text"
-                                        value={
-                                            section.quiz?.title ||
-                                            section.quiz_title ||
-                                            ""
-                                        }
-                                        onChange={(e) =>
-                                            setData(
-                                                "sections",
-                                                sections.map((s) =>
-                                                    s.id === section.id
-                                                        ? {
-                                                              ...s,
-                                                              quiz: {
-                                                                  ...(s.quiz ||
-                                                                      {}),
-                                                                  title: e
-                                                                      .target
-                                                                      .value,
-                                                                  questions:
-                                                                      s.quiz
-                                                                          ?.questions ||
-                                                                      [],
-                                                              },
-                                                          }
-                                                        : s
-                                                )
-                                            )
-                                        }
-                                        placeholder="Optional Section Quiz Title"
-                                        className="text-sm w-full border-gray-200 rounded-md shadow-sm dark:bg-darkSecondary dark:border-dark dark:text-white dark:placeholder-gray-400"
-                                    />
-                                    {(section.quiz?.title ||
-                                        section.quiz_title) && (
-                                        <div className="mt-2">
-                                            <QuizEditor
-                                                value={section.quiz}
-                                                onChange={(qz) =>
+
+                                    {section.quiz?.title !== undefined ||
+                                    section.quiz_title !== undefined ? (
+                                        <>
+                                            <div className="flex justify-between items-center mt-2">
+                                                <h4 className="font-semibold dark:text-white">
+                                                    Section Quiz
+                                                </h4>
+                                                <button
+                                                    type="button"
+                                                    onClick={() =>
+                                                        handleRemoveQuiz(
+                                                            section.id
+                                                        )
+                                                    }
+                                                    className="text-red-400 text-xs font-semibold"
+                                                >
+                                                    Remove Quiz
+                                                </button>
+                                            </div>
+                                            <input
+                                                type="text"
+                                                value={
+                                                    section.quiz?.title ??
+                                                    section.quiz_title ??
+                                                    ""
+                                                }
+                                                onChange={(e) =>
                                                     setData(
                                                         "sections",
                                                         sections.map((s) =>
                                                             s.id === section.id
                                                                 ? {
                                                                       ...s,
-                                                                      quiz: qz,
+                                                                      quiz: {
+                                                                          ...(s.quiz ||
+                                                                              {}),
+                                                                          title: e
+                                                                              .target
+                                                                              .value,
+                                                                      },
+                                                                      quiz_title:
+                                                                          e
+                                                                              .target
+                                                                              .value,
                                                                   }
                                                                 : s
                                                         )
                                                     )
                                                 }
+                                                placeholder="Section Quiz Title"
+                                                className="text-sm w-full border-gray-200 rounded-md shadow-sm dark:bg-darkSecondary dark:border-dark dark:text-white dark:placeholder-gray-400"
                                             />
+                                            <div className="mt-2">
+                                                <QuizEditor
+                                                    value={section.quiz}
+                                                    onChange={(qz) =>
+                                                        setData(
+                                                            "sections",
+                                                            sections.map((s) =>
+                                                                s.id ===
+                                                                section.id
+                                                                    ? {
+                                                                          ...s,
+                                                                          quiz: qz,
+                                                                      }
+                                                                    : s
+                                                            )
+                                                        )
+                                                    }
+                                                />
+                                            </div>
+                                        </>
+                                    ) : (
+                                        <div className="mt-3">
+                                            <button
+                                                type="button"
+                                                onClick={() =>
+                                                    handleAddQuiz(section.id)
+                                                }
+                                                className="text-sm font-semibold text-primary hover:underline"
+                                            >
+                                                + Add Section Quiz
+                                            </button>
                                         </div>
                                     )}
                                 </div>

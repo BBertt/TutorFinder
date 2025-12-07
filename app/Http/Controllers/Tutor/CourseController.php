@@ -46,7 +46,7 @@ class CourseController extends Controller
         if ($course->user_id !== Auth::id()) {
             abort(403);
         }
-        $course->load(['sections.lessons', 'category']);
+        $course->load(['sections.lessons', 'sections.quiz.questions.options', 'category']);
 
         return Inertia::render('Tutor/CourseForm', [
             'course' => $course,
