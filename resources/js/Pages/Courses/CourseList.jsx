@@ -18,6 +18,7 @@ function CourseList({ courses }) {
     const handleGuestClick = (e) => {
         if (!auth.user) {
             e.preventDefault();
+            e.stopPropagation();
             setLoginModalOpen(true);
         }
     };

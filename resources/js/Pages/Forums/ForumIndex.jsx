@@ -21,6 +21,7 @@ function ForumIndex({ forums, topStudents, topTutors, filters }) {
     const handleGuestClick = (e) => {
         if (!auth.user) {
             e.preventDefault();
+            e.stopPropagation();
             setLoginModalOpen(true);
         }
     };
