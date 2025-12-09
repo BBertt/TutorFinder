@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import QuizEditor from "./QuizEditor";
 import AddLessonModal from "./AddLessonModal";
 import EditSectionModal from "./EditSectionModal";
@@ -26,9 +26,21 @@ export default function CourseSectionLessonForm({
     const [newSectionDesc, setNewSectionDesc] = useState("");
 
     const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
-        const [deleteTarget, setDeleteTarget] = useState(null);
-    
-        const handleAddQuiz = (sectionId) => {
+    const [deleteTarget, setDeleteTarget] = useState(null);
+    const [showFrontendErrors, setShowFrontendErrors] = useState(true);
+
+    // Reset showFrontendErrors when frontendErrors change
+    useEffect(() => {
+        if (
+            frontendErrors.sections_min ||
+            frontendErrors.lessons_min ||
+            frontendErrors.lesson_content
+        ) {
+            setShowFrontendErrors(true);
+        }
+    }, [frontendErrors]);
+
+    const handleAddQuiz = (sectionId) => {
             setData(
                 "sections",
                 sections.map((s) =>
@@ -203,19 +215,43 @@ export default function CourseSectionLessonForm({
 
                 {(frontendErrors.sections_min ||
                     frontendErrors.lessons_min ||
-                    frontendErrors.lesson_content) && (
-                    <div className="p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-100">
-                        {frontendErrors.sections_min && (
-                            <p>{frontendErrors.sections_min}</p>
-                        )}
-                        {frontendErrors.lessons_min && (
-                            <p>{frontendErrors.lessons_min}</p>
-                        )}
-                        {frontendErrors.lesson_content && (
-                            <p>{frontendErrors.lesson_content}</p>
-                        )}
-                    </div>
-                )}
+                    frontendErrors.lesson_content) &&
+                    showFrontendErrors && (
+                        <div className="p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-100 flex items-center justify-between">
+                            <div className="flex-grow">
+                                {frontendErrors.sections_min && (
+                                    <p>{frontendErrors.sections_min}</p>
+                                )}
+                                {frontendErrors.lessons_min && (
+                                    <p>{frontendErrors.lessons_min}</p>
+                                )}
+                                {frontendErrors.lesson_content && (
+                                    <p>{frontendErrors.lesson_content}</p>
+                                )}
+                            </div>
+                            <button
+                                type="button"
+                                onClick={() => setShowFrontendErrors(false)}
+                                className="ml-4 text-red-800 hover:text-red-900"
+                                aria-label="Close"
+                            >
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    className="h-4 w-4"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                    stroke="currentColor"
+                                >
+                                    <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth={2}
+                                        d="M6 18L18 6M6 6l12 12"
+                                    />
+                                </svg>
+                            </button>
+                        </div>
+                    )}
 
                 <div className="space-y-4 mb-8">
                     {sections.map((section, index) => (
