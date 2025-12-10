@@ -1,485 +1,487 @@
 {
-  "_AuthPagesLayout-DbRUxb85.js": {
-    "file": "assets/AuthPagesLayout-DbRUxb85.js",
+  "_AuthPagesLayout-CuCkLGJz.js": {
+    "file": "assets/AuthPagesLayout-CuCkLGJz.js",
     "name": "AuthPagesLayout",
     "imports": [
       "resources/js/app.jsx"
     ]
   },
-  "_Breadcrumb-Df4E2Oh9.js": {
-    "file": "assets/Breadcrumb-Df4E2Oh9.js",
+  "_Breadcrumb-D9gm4tFF.js": {
+    "file": "assets/Breadcrumb-D9gm4tFF.js",
     "name": "Breadcrumb",
     "imports": [
       "resources/js/app.jsx"
     ]
   },
-  "_ConfirmationModal-JUKUvmrZ.js": {
-    "file": "assets/ConfirmationModal-JUKUvmrZ.js",
+  "_ConfirmationModal-CBmAON1O.js": {
+    "file": "assets/ConfirmationModal-CBmAON1O.js",
     "name": "ConfirmationModal",
     "imports": [
       "resources/js/app.jsx"
     ]
   },
-  "_CourseCard-CsCHllTl.js": {
-    "file": "assets/CourseCard-CsCHllTl.js",
+  "_CourseCard-B23YL_yZ.js": {
+    "file": "assets/CourseCard-B23YL_yZ.js",
     "name": "CourseCard",
     "imports": [
       "resources/js/app.jsx",
-      "_StarIcon-DG8mW8oC.js"
+      "_StarIcon-DAoal6jy.js"
     ]
   },
-  "_ForumPostCard-mEt07jHi.js": {
-    "file": "assets/ForumPostCard-mEt07jHi.js",
+  "_ForumPostCard-CStzfL85.js": {
+    "file": "assets/ForumPostCard-CStzfL85.js",
     "name": "ForumPostCard",
     "imports": [
       "resources/js/app.jsx",
-      "_VoteButtons-CB65umwB.js",
-      "_ConfirmationModal-JUKUvmrZ.js"
+      "_VoteButtons-JGlFPLx2.js",
+      "_ConfirmationModal-CBmAON1O.js"
     ]
   },
-  "_GuestNavbar-CAQsJ3KH.js": {
-    "file": "assets/GuestNavbar-CAQsJ3KH.js",
+  "_GuestNavbar-DHozK7im.js": {
+    "file": "assets/GuestNavbar-DHozK7im.js",
     "name": "GuestNavbar",
     "imports": [
       "resources/js/app.jsx"
     ]
   },
-  "_Layout-C84A4Xv9.js": {
-    "file": "assets/Layout-C84A4Xv9.js",
+  "_Layout-Dxn0dT_C.js": {
+    "file": "assets/Layout-Dxn0dT_C.js",
     "name": "Layout",
     "imports": [
       "resources/js/app.jsx",
-      "_GuestNavbar-CAQsJ3KH.js",
-      "_SuccessModal-BQvV3_2x.js"
+      "_GuestNavbar-DHozK7im.js",
+      "_SuccessModal-BP30cpHk.js"
     ]
   },
-  "_LoginModal-CuZZ2RwB.js": {
-    "file": "assets/LoginModal-CuZZ2RwB.js",
+  "_LoginModal-BCuVPhc8.js": {
+    "file": "assets/LoginModal-BCuVPhc8.js",
     "name": "LoginModal",
     "imports": [
       "resources/js/app.jsx",
-      "_ConfirmationModal-JUKUvmrZ.js"
+      "_ConfirmationModal-CBmAON1O.js"
     ]
   },
-  "_Pagination-BH_sBok4.js": {
-    "file": "assets/Pagination-BH_sBok4.js",
+  "_Pagination-DfQd3ovB.js": {
+    "file": "assets/Pagination-DfQd3ovB.js",
     "name": "Pagination",
     "imports": [
       "resources/js/app.jsx"
     ]
   },
-  "_ReviewCard-5crg3VlW.js": {
-    "file": "assets/ReviewCard-5crg3VlW.js",
+  "_ReviewCard-Dy2-OMSp.js": {
+    "file": "assets/ReviewCard-Dy2-OMSp.js",
     "name": "ReviewCard",
     "imports": [
       "resources/js/app.jsx",
-      "_StarIcon-DG8mW8oC.js"
+      "_StarIcon-DAoal6jy.js"
     ]
   },
-  "_SortDropdown-BKc3jZnU.js": {
-    "file": "assets/SortDropdown-BKc3jZnU.js",
+  "_SortDropdown-COKuCmBU.js": {
+    "file": "assets/SortDropdown-COKuCmBU.js",
     "name": "SortDropdown",
     "imports": [
       "resources/js/app.jsx"
     ]
   },
-  "_StarIcon-DG8mW8oC.js": {
-    "file": "assets/StarIcon-DG8mW8oC.js",
+  "_StarIcon-DAoal6jy.js": {
+    "file": "assets/StarIcon-DAoal6jy.js",
     "name": "StarIcon",
     "imports": [
       "resources/js/app.jsx"
     ]
   },
-  "_SuccessModal-BQvV3_2x.js": {
-    "file": "assets/SuccessModal-BQvV3_2x.js",
+  "_SuccessModal-BP30cpHk.js": {
+    "file": "assets/SuccessModal-BP30cpHk.js",
     "name": "SuccessModal",
     "imports": [
       "resources/js/app.jsx"
     ]
   },
-  "_VideoPlayer-DN_wRnAi.js": {
-    "file": "assets/VideoPlayer-DN_wRnAi.js",
+  "_VideoPlayer-B0RL0QzJ.js": {
+    "file": "assets/VideoPlayer-B0RL0QzJ.js",
     "name": "VideoPlayer",
     "imports": [
       "resources/js/app.jsx"
     ]
   },
-  "_VoteButtons-CB65umwB.js": {
-    "file": "assets/VoteButtons-CB65umwB.js",
+  "_VoteButtons-JGlFPLx2.js": {
+    "file": "assets/VoteButtons-JGlFPLx2.js",
     "name": "VoteButtons",
     "imports": [
       "resources/js/app.jsx"
     ]
   },
   "resources/js/Pages/Admin/Dashboard.jsx": {
-    "file": "assets/Dashboard-75oVuL-f.js",
+    "file": "assets/Dashboard-Df0MoDwZ.js",
     "name": "Dashboard",
     "src": "resources/js/Pages/Admin/Dashboard.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_Layout-C84A4Xv9.js",
-      "_GuestNavbar-CAQsJ3KH.js",
-      "_SuccessModal-BQvV3_2x.js"
+      "_Layout-Dxn0dT_C.js",
+      "_GuestNavbar-DHozK7im.js",
+      "_SuccessModal-BP30cpHk.js"
     ]
   },
   "resources/js/Pages/Admin/Transaction/Index.jsx": {
-    "file": "assets/Index-B0G8F8fu.js",
+    "file": "assets/Index-Tvolqxtj.js",
     "name": "Index",
     "src": "resources/js/Pages/Admin/Transaction/Index.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_Layout-C84A4Xv9.js",
-      "_GuestNavbar-CAQsJ3KH.js",
-      "_SuccessModal-BQvV3_2x.js"
+      "_Layout-Dxn0dT_C.js",
+      "_GuestNavbar-DHozK7im.js",
+      "_SuccessModal-BP30cpHk.js"
     ]
   },
   "resources/js/Pages/Admin/Tutors.jsx": {
-    "file": "assets/Tutors-DaZEAo81.js",
+    "file": "assets/Tutors-D7aVWaN7.js",
     "name": "Tutors",
     "src": "resources/js/Pages/Admin/Tutors.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_Layout-C84A4Xv9.js",
-      "_ConfirmationModal-JUKUvmrZ.js",
-      "_GuestNavbar-CAQsJ3KH.js",
-      "_SuccessModal-BQvV3_2x.js"
+      "_Layout-Dxn0dT_C.js",
+      "_ConfirmationModal-CBmAON1O.js",
+      "_GuestNavbar-DHozK7im.js",
+      "_SuccessModal-BP30cpHk.js"
     ]
   },
   "resources/js/Pages/Admin/UserEdit.jsx": {
-    "file": "assets/UserEdit-BzpGi1AE.js",
+    "file": "assets/UserEdit-D0pCYrN6.js",
     "name": "UserEdit",
     "src": "resources/js/Pages/Admin/UserEdit.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_Layout-C84A4Xv9.js",
-      "_ConfirmationModal-JUKUvmrZ.js",
-      "_GuestNavbar-CAQsJ3KH.js",
-      "_SuccessModal-BQvV3_2x.js"
+      "_Layout-Dxn0dT_C.js",
+      "_ConfirmationModal-CBmAON1O.js",
+      "_GuestNavbar-DHozK7im.js",
+      "_SuccessModal-BP30cpHk.js"
     ]
   },
   "resources/js/Pages/Admin/UserTransactionSelection.jsx": {
-    "file": "assets/UserTransactionSelection-opnXHm1D.js",
+    "file": "assets/UserTransactionSelection-DT0_zP0l.js",
     "name": "UserTransactionSelection",
     "src": "resources/js/Pages/Admin/UserTransactionSelection.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_Layout-C84A4Xv9.js",
-      "_GuestNavbar-CAQsJ3KH.js",
-      "_SuccessModal-BQvV3_2x.js"
+      "_Layout-Dxn0dT_C.js",
+      "_Pagination-DfQd3ovB.js",
+      "_GuestNavbar-DHozK7im.js",
+      "_SuccessModal-BP30cpHk.js"
     ]
   },
   "resources/js/Pages/Admin/Users.jsx": {
-    "file": "assets/Users-BhzHssgh.js",
+    "file": "assets/Users-BVJvRPWY.js",
     "name": "Users",
     "src": "resources/js/Pages/Admin/Users.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_Layout-C84A4Xv9.js",
-      "_ConfirmationModal-JUKUvmrZ.js",
-      "_GuestNavbar-CAQsJ3KH.js",
-      "_SuccessModal-BQvV3_2x.js"
+      "_Layout-Dxn0dT_C.js",
+      "_ConfirmationModal-CBmAON1O.js",
+      "_Pagination-DfQd3ovB.js",
+      "_GuestNavbar-DHozK7im.js",
+      "_SuccessModal-BP30cpHk.js"
     ]
   },
   "resources/js/Pages/Auth/Login.jsx": {
-    "file": "assets/Login-BTgemvrV.js",
+    "file": "assets/Login-Duh2kSvc.js",
     "name": "Login",
     "src": "resources/js/Pages/Auth/Login.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AuthPagesLayout-DbRUxb85.js",
-      "_SuccessModal-BQvV3_2x.js"
+      "_AuthPagesLayout-CuCkLGJz.js",
+      "_SuccessModal-BP30cpHk.js"
     ]
   },
   "resources/js/Pages/Auth/Register.jsx": {
-    "file": "assets/Register-CoTZooTU.js",
+    "file": "assets/Register-YladXaWP.js",
     "name": "Register",
     "src": "resources/js/Pages/Auth/Register.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AuthPagesLayout-DbRUxb85.js"
+      "_AuthPagesLayout-CuCkLGJz.js"
     ]
   },
   "resources/js/Pages/Auth/TutorRegister.jsx": {
-    "file": "assets/TutorRegister-CECvMh6R.js",
+    "file": "assets/TutorRegister-CPJAmbt1.js",
     "name": "TutorRegister",
     "src": "resources/js/Pages/Auth/TutorRegister.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_AuthPagesLayout-DbRUxb85.js"
+      "_AuthPagesLayout-CuCkLGJz.js"
     ]
   },
   "resources/js/Pages/Auth/VerifyEmail.jsx": {
-    "file": "assets/VerifyEmail-Cx8bLxlm.js",
+    "file": "assets/VerifyEmail-BYXIlPNf.js",
     "name": "VerifyEmail",
     "src": "resources/js/Pages/Auth/VerifyEmail.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_SuccessModal-BQvV3_2x.js",
-      "_AuthPagesLayout-DbRUxb85.js"
+      "_SuccessModal-BP30cpHk.js",
+      "_AuthPagesLayout-CuCkLGJz.js"
     ]
   },
   "resources/js/Pages/Chat/Index.jsx": {
-    "file": "assets/Index-BtkjEO9Q.js",
+    "file": "assets/Index-D98qRAmD.js",
     "name": "Index",
     "src": "resources/js/Pages/Chat/Index.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_ConfirmationModal-JUKUvmrZ.js",
-      "_Layout-C84A4Xv9.js",
-      "_GuestNavbar-CAQsJ3KH.js",
-      "_SuccessModal-BQvV3_2x.js"
+      "_ConfirmationModal-CBmAON1O.js",
+      "_Layout-Dxn0dT_C.js",
+      "_GuestNavbar-DHozK7im.js",
+      "_SuccessModal-BP30cpHk.js"
     ]
   },
   "resources/js/Pages/Courses/CourseDetails.jsx": {
-    "file": "assets/CourseDetails-BqmjT-Mb.js",
+    "file": "assets/CourseDetails-Dl14nw5F.js",
     "name": "CourseDetails",
     "src": "resources/js/Pages/Courses/CourseDetails.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_Layout-C84A4Xv9.js",
-      "_Breadcrumb-Df4E2Oh9.js",
-      "_ReviewCard-5crg3VlW.js",
-      "_SuccessModal-BQvV3_2x.js",
-      "_GuestNavbar-CAQsJ3KH.js",
-      "_StarIcon-DG8mW8oC.js"
+      "_Layout-Dxn0dT_C.js",
+      "_Breadcrumb-D9gm4tFF.js",
+      "_ReviewCard-Dy2-OMSp.js",
+      "_SuccessModal-BP30cpHk.js",
+      "_GuestNavbar-DHozK7im.js",
+      "_StarIcon-DAoal6jy.js"
     ]
   },
   "resources/js/Pages/Courses/CourseList.jsx": {
-    "file": "assets/CourseList-vUYmIblg.js",
+    "file": "assets/CourseList-DA6EtFPM.js",
     "name": "CourseList",
     "src": "resources/js/Pages/Courses/CourseList.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_Layout-C84A4Xv9.js",
-      "_CourseCard-CsCHllTl.js",
-      "_Breadcrumb-Df4E2Oh9.js",
-      "_LoginModal-CuZZ2RwB.js",
-      "_Pagination-BH_sBok4.js",
-      "_GuestNavbar-CAQsJ3KH.js",
-      "_SuccessModal-BQvV3_2x.js",
-      "_StarIcon-DG8mW8oC.js",
-      "_ConfirmationModal-JUKUvmrZ.js"
+      "_Layout-Dxn0dT_C.js",
+      "_CourseCard-B23YL_yZ.js",
+      "_Breadcrumb-D9gm4tFF.js",
+      "_LoginModal-BCuVPhc8.js",
+      "_Pagination-DfQd3ovB.js",
+      "_GuestNavbar-DHozK7im.js",
+      "_SuccessModal-BP30cpHk.js",
+      "_StarIcon-DAoal6jy.js",
+      "_ConfirmationModal-CBmAON1O.js"
     ]
   },
   "resources/js/Pages/Courses/LearnCourse.jsx": {
-    "file": "assets/LearnCourse-nEU4s4XH.js",
+    "file": "assets/LearnCourse-Bk4_d71b.js",
     "name": "LearnCourse",
     "src": "resources/js/Pages/Courses/LearnCourse.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_Layout-C84A4Xv9.js",
-      "_VideoPlayer-DN_wRnAi.js",
-      "_ConfirmationModal-JUKUvmrZ.js",
-      "_GuestNavbar-CAQsJ3KH.js",
-      "_SuccessModal-BQvV3_2x.js"
+      "_Layout-Dxn0dT_C.js",
+      "_VideoPlayer-B0RL0QzJ.js",
+      "_ConfirmationModal-CBmAON1O.js",
+      "_GuestNavbar-DHozK7im.js",
+      "_SuccessModal-BP30cpHk.js"
     ]
   },
   "resources/js/Pages/Courses/PurchasedCourse.jsx": {
-    "file": "assets/PurchasedCourse-CC40qJeB.js",
+    "file": "assets/PurchasedCourse-ndP4IBEQ.js",
     "name": "PurchasedCourse",
     "src": "resources/js/Pages/Courses/PurchasedCourse.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_Layout-C84A4Xv9.js",
-      "_StarIcon-DG8mW8oC.js",
-      "_GuestNavbar-CAQsJ3KH.js",
-      "_SuccessModal-BQvV3_2x.js"
+      "_Layout-Dxn0dT_C.js",
+      "_StarIcon-DAoal6jy.js",
+      "_GuestNavbar-DHozK7im.js",
+      "_SuccessModal-BP30cpHk.js"
     ]
   },
   "resources/js/Pages/Forums/CreateForum.jsx": {
-    "file": "assets/CreateForum-BRyREYTF.js",
+    "file": "assets/CreateForum-DV-hrW_N.js",
     "name": "CreateForum",
     "src": "resources/js/Pages/Forums/CreateForum.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_Layout-C84A4Xv9.js",
-      "_ConfirmationModal-JUKUvmrZ.js",
-      "_GuestNavbar-CAQsJ3KH.js",
-      "_SuccessModal-BQvV3_2x.js"
+      "_Layout-Dxn0dT_C.js",
+      "_ConfirmationModal-CBmAON1O.js",
+      "_GuestNavbar-DHozK7im.js",
+      "_SuccessModal-BP30cpHk.js"
     ]
   },
   "resources/js/Pages/Forums/ForumDetails.jsx": {
-    "file": "assets/ForumDetails-B8uvMLI6.js",
+    "file": "assets/ForumDetails-DeOvywDP.js",
     "name": "ForumDetails",
     "src": "resources/js/Pages/Forums/ForumDetails.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_Layout-C84A4Xv9.js",
-      "_VoteButtons-CB65umwB.js",
-      "_Pagination-BH_sBok4.js",
-      "_SortDropdown-BKc3jZnU.js",
-      "_GuestNavbar-CAQsJ3KH.js",
-      "_SuccessModal-BQvV3_2x.js"
+      "_Layout-Dxn0dT_C.js",
+      "_VoteButtons-JGlFPLx2.js",
+      "_Pagination-DfQd3ovB.js",
+      "_SortDropdown-COKuCmBU.js",
+      "_GuestNavbar-DHozK7im.js",
+      "_SuccessModal-BP30cpHk.js"
     ]
   },
   "resources/js/Pages/Forums/ForumIndex.jsx": {
-    "file": "assets/ForumIndex-CBHK9Of3.js",
+    "file": "assets/ForumIndex-BmdlJzpV.js",
     "name": "ForumIndex",
     "src": "resources/js/Pages/Forums/ForumIndex.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_Layout-C84A4Xv9.js",
-      "_ForumPostCard-mEt07jHi.js",
-      "_Pagination-BH_sBok4.js",
-      "_SortDropdown-BKc3jZnU.js",
-      "_LoginModal-CuZZ2RwB.js",
-      "_GuestNavbar-CAQsJ3KH.js",
-      "_SuccessModal-BQvV3_2x.js",
-      "_VoteButtons-CB65umwB.js",
-      "_ConfirmationModal-JUKUvmrZ.js"
+      "_Layout-Dxn0dT_C.js",
+      "_ForumPostCard-CStzfL85.js",
+      "_Pagination-DfQd3ovB.js",
+      "_SortDropdown-COKuCmBU.js",
+      "_LoginModal-BCuVPhc8.js",
+      "_GuestNavbar-DHozK7im.js",
+      "_SuccessModal-BP30cpHk.js",
+      "_VoteButtons-JGlFPLx2.js",
+      "_ConfirmationModal-CBmAON1O.js"
     ]
   },
   "resources/js/Pages/Home.jsx": {
-    "file": "assets/Home-CZtjCqgH.js",
+    "file": "assets/Home-DR9vjshI.js",
     "name": "Home",
     "src": "resources/js/Pages/Home.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_Layout-C84A4Xv9.js",
-      "_CourseCard-CsCHllTl.js",
-      "_ForumPostCard-mEt07jHi.js",
-      "_GuestNavbar-CAQsJ3KH.js",
-      "_SuccessModal-BQvV3_2x.js",
-      "_StarIcon-DG8mW8oC.js",
-      "_VoteButtons-CB65umwB.js",
-      "_ConfirmationModal-JUKUvmrZ.js"
+      "_Layout-Dxn0dT_C.js",
+      "_CourseCard-B23YL_yZ.js",
+      "_ForumPostCard-CStzfL85.js",
+      "_GuestNavbar-DHozK7im.js",
+      "_SuccessModal-BP30cpHk.js",
+      "_StarIcon-DAoal6jy.js",
+      "_VoteButtons-JGlFPLx2.js",
+      "_ConfirmationModal-CBmAON1O.js"
     ]
   },
   "resources/js/Pages/Landing/About.jsx": {
-    "file": "assets/About-CXsYr3Gw.js",
+    "file": "assets/About-CxA3yEwk.js",
     "name": "About",
     "src": "resources/js/Pages/Landing/About.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_GuestNavbar-CAQsJ3KH.js"
+      "_GuestNavbar-DHozK7im.js"
     ]
   },
   "resources/js/Pages/Landing/Landing.jsx": {
-    "file": "assets/Landing-C1SSZqHf.js",
+    "file": "assets/Landing-BfHV0hdm.js",
     "name": "Landing",
     "src": "resources/js/Pages/Landing/Landing.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_GuestNavbar-CAQsJ3KH.js"
+      "_GuestNavbar-DHozK7im.js"
     ]
   },
   "resources/js/Pages/Profile.jsx": {
-    "file": "assets/Profile-oC0hsH0P.js",
+    "file": "assets/Profile-Cq_IYrVz.js",
     "name": "Profile",
     "src": "resources/js/Pages/Profile.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_Layout-C84A4Xv9.js",
-      "_ConfirmationModal-JUKUvmrZ.js",
-      "_GuestNavbar-CAQsJ3KH.js",
-      "_SuccessModal-BQvV3_2x.js"
+      "_Layout-Dxn0dT_C.js",
+      "_ConfirmationModal-CBmAON1O.js",
+      "_GuestNavbar-DHozK7im.js",
+      "_SuccessModal-BP30cpHk.js"
     ]
   },
   "resources/js/Pages/Transaction/Cart.jsx": {
-    "file": "assets/Cart-Br0ubUAK.js",
+    "file": "assets/Cart-dsoelVRG.js",
     "name": "Cart",
     "src": "resources/js/Pages/Transaction/Cart.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_Layout-C84A4Xv9.js",
-      "_ConfirmationModal-JUKUvmrZ.js",
-      "_GuestNavbar-CAQsJ3KH.js",
-      "_SuccessModal-BQvV3_2x.js"
+      "_Layout-Dxn0dT_C.js",
+      "_ConfirmationModal-CBmAON1O.js",
+      "_GuestNavbar-DHozK7im.js",
+      "_SuccessModal-BP30cpHk.js"
     ]
   },
   "resources/js/Pages/Transaction/Failure.jsx": {
-    "file": "assets/Failure-CMIWRKzq.js",
+    "file": "assets/Failure-BfCmU3CR.js",
     "name": "Failure",
     "src": "resources/js/Pages/Transaction/Failure.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_Layout-C84A4Xv9.js",
-      "_GuestNavbar-CAQsJ3KH.js",
-      "_SuccessModal-BQvV3_2x.js"
+      "_Layout-Dxn0dT_C.js",
+      "_GuestNavbar-DHozK7im.js",
+      "_SuccessModal-BP30cpHk.js"
     ]
   },
   "resources/js/Pages/Transaction/Index.jsx": {
-    "file": "assets/Index-DxRyeWr_.js",
+    "file": "assets/Index-C6ROeaPH.js",
     "name": "Index",
     "src": "resources/js/Pages/Transaction/Index.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_Layout-C84A4Xv9.js",
-      "_GuestNavbar-CAQsJ3KH.js",
-      "_SuccessModal-BQvV3_2x.js"
+      "_Layout-Dxn0dT_C.js",
+      "_GuestNavbar-DHozK7im.js",
+      "_SuccessModal-BP30cpHk.js"
     ]
   },
   "resources/js/Pages/Tutor/CourseForm.jsx": {
-    "file": "assets/CourseForm-DR5JeMMm.js",
+    "file": "assets/CourseForm-Bndz7MYn.js",
     "name": "CourseForm",
     "src": "resources/js/Pages/Tutor/CourseForm.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_Layout-C84A4Xv9.js",
-      "_VideoPlayer-DN_wRnAi.js",
-      "_ConfirmationModal-JUKUvmrZ.js",
-      "_GuestNavbar-CAQsJ3KH.js",
-      "_SuccessModal-BQvV3_2x.js"
+      "_Layout-Dxn0dT_C.js",
+      "_VideoPlayer-B0RL0QzJ.js",
+      "_ConfirmationModal-CBmAON1O.js",
+      "_GuestNavbar-DHozK7im.js",
+      "_SuccessModal-BP30cpHk.js"
     ]
   },
   "resources/js/Pages/Tutor/ManageCourses.jsx": {
-    "file": "assets/ManageCourses-BZzc8Ga3.js",
+    "file": "assets/ManageCourses-BFIULtGi.js",
     "name": "ManageCourses",
     "src": "resources/js/Pages/Tutor/ManageCourses.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_Layout-C84A4Xv9.js",
-      "_StarIcon-DG8mW8oC.js",
-      "_ConfirmationModal-JUKUvmrZ.js",
-      "_Pagination-BH_sBok4.js",
-      "_GuestNavbar-CAQsJ3KH.js",
-      "_SuccessModal-BQvV3_2x.js"
+      "_Layout-Dxn0dT_C.js",
+      "_StarIcon-DAoal6jy.js",
+      "_ConfirmationModal-CBmAON1O.js",
+      "_Pagination-DfQd3ovB.js",
+      "_GuestNavbar-DHozK7im.js",
+      "_SuccessModal-BP30cpHk.js"
     ]
   },
   "resources/js/Pages/Tutor/TutorProfile.jsx": {
-    "file": "assets/TutorProfile-D65tjGWI.js",
+    "file": "assets/TutorProfile-2I-5TxHh.js",
     "name": "TutorProfile",
     "src": "resources/js/Pages/Tutor/TutorProfile.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_Layout-C84A4Xv9.js",
-      "_CourseCard-CsCHllTl.js",
-      "_ReviewCard-5crg3VlW.js",
-      "_GuestNavbar-CAQsJ3KH.js",
-      "_SuccessModal-BQvV3_2x.js",
-      "_StarIcon-DG8mW8oC.js"
+      "_Layout-Dxn0dT_C.js",
+      "_CourseCard-B23YL_yZ.js",
+      "_ReviewCard-Dy2-OMSp.js",
+      "_GuestNavbar-DHozK7im.js",
+      "_SuccessModal-BP30cpHk.js",
+      "_StarIcon-DAoal6jy.js"
     ]
   },
   "resources/js/app.jsx": {
-    "file": "assets/app-C4Y_S2gZ.js",
+    "file": "assets/app-DsVyxgb5.js",
     "name": "app",
     "src": "resources/js/app.jsx",
     "isEntry": true,
@@ -514,7 +516,7 @@
       "resources/js/Pages/Tutor/TutorProfile.jsx"
     ],
     "css": [
-      "assets/app-DSCId-6j.css"
+      "assets/app-CyZpN0lR.css"
     ]
   }
 }
