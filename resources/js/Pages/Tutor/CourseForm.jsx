@@ -47,6 +47,7 @@ const Stepper = ({ currentStep }) => {
 export default function CourseForm({ categories }) {
     const { course, flash } = usePage().props;
     const isEditing = !!course;
+    const initialIntroVideoUrl = course?.intro_video_url || "";
 
     const [currentStep, setCurrentStep] = useState(() => {
         if (isEditing && flash.from_create) return 2;
@@ -61,7 +62,7 @@ export default function CourseForm({ categories }) {
         price: course?.price || "",
         category_id: course?.category_id || "",
         thumbnail_image: null,
-        intro_video: null,
+        intro_video: course?.intro_video_url || "",
         sections: (course?.sections || []).map((s) => ({
             ...s,
             quiz_title: s.quiz?.title || s.quiz_title || "",
@@ -115,7 +116,8 @@ export default function CourseForm({ categories }) {
                 formData.append(`sections[${s_index}][id]`, section.id || "");
                 formData.append(`sections[${s_index}][quiz_title]`, (section.quiz && section.quiz.title) || section.quiz_title || "");
                 if ((section.quiz && (section.quiz.title || section.quiz_title))) {
-                    formData.append(`sections[${s_index}][quiz_duration_seconds]`, String((section.quiz?.duration_seconds ?? 900)));
+                    formData.append(`sections[${s_index}][quiz][description]`, section.quiz.description || "");
+                    formData.append(`sections[${s_index}][quiz][duration_seconds]`, String((section.quiz?.duration_seconds ?? 900)));
                 }
                 if (section.quiz && Array.isArray(section.quiz.questions)) {
                     section.quiz.questions.forEach((q, q_index) => {
@@ -176,7 +178,8 @@ export default function CourseForm({ categories }) {
 
         formData.append('final_quiz_title', data.final_quiz_title || '');
         if (data.final_quiz_title) {
-            formData.append('final_quiz_duration_seconds', String(data.final_quiz?.duration_seconds ?? 900));
+            formData.append('final_quiz.description', data.final_quiz?.description || '');
+            formData.append('final_quiz.duration_seconds', String(data.final_quiz?.duration_seconds ?? 900));
         }
 
         if (data.final_quiz && Array.isArray(data.final_quiz.questions)) {
