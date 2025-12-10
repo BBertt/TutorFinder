@@ -115,6 +115,22 @@ export default function QuizEditor({ value, onChange }) {
                     + Add Question
                 </button>
             </div>
+            <div className="grid grid-cols-1 gap-3">
+                <div>
+                    <label className="text-sm font-medium dark:text-white">
+                        Quiz Description
+                    </label>
+                    <textarea
+                        value={quiz.description || ""}
+                        onChange={(e) =>
+                            setQuiz({ ...quiz, description: e.target.value })
+                        }
+                        rows={3}
+                        className="mt-1 block w-full border-gray-200 rounded-md shadow-sm dark:bg-darkSecondary dark:border-dark dark:text-white dark:placeholder-gray-400"
+                        placeholder="Enter quiz instructions or description..."
+                    />
+                </div>
+            </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                     <label className="text-sm font-medium dark:text-white">

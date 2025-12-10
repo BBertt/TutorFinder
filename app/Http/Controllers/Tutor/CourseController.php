@@ -176,9 +176,9 @@ class CourseController extends Controller
                     if ($quizTitle) {
                         $quiz = $section->quiz()->updateOrCreate([], [
                             'title' => $quizTitle,
-                            'description' => '',
+                            'description' => $request->input("sections.$s_index.quiz.description", ''),
                             'course_section_id' => $section->id,
-                            'duration_seconds' => (int) $request->input("sections.$s_index.quiz_duration_seconds", 900),
+                            'duration_seconds' => (int) $request->input("sections.$s_index.quiz.duration_seconds", 900),
                         ]);
                         // Sync questions/options (simple replace)
                         if (is_array($quizPayload)) {
@@ -240,10 +240,16 @@ class CourseController extends Controller
             $finalQuizPayload = $request->input('final_quiz.questions', []);
             if ($finalQuizTitle) {
                 $final = $course->finalQuiz;
+                $quizData = [
+                    'title' => $finalQuizTitle,
+                    'description' => $request->input('final_quiz.description', ''),
+                    'duration_seconds' => (int) $request->input('final_quiz.duration_seconds', 900)
+                ];
+                
                 if ($final) {
-                    $final->update(['title' => $finalQuizTitle, 'description' => '', 'duration_seconds' => (int) $request->input('final_quiz_duration_seconds', 900)]);
+                    $final->update($quizData);
                 } else {
-                    $final = $course->quizzes()->create(['title' => $finalQuizTitle, 'description' => '', 'course_id' => $course->id, 'duration_seconds' => (int) $request->input('final_quiz_duration_seconds', 900)]);
+                    $final = $course->quizzes()->create(array_merge($quizData, ['course_id' => $course->id]));
                 }
                 if (is_array($finalQuizPayload)) {
                     $final->questions()->delete();

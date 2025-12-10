@@ -47,7 +47,7 @@ export default function CourseSectionLessonForm({
                     s.id === sectionId
                         ? {
                               ...s,
-                              quiz: { title: "", questions: [] },
+                              quiz: { title: "", description: "", questions: [] },
                               quiz_title: "",
                           }
                         : s
