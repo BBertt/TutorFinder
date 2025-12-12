@@ -13,7 +13,7 @@ use Inertia\Inertia;
 
 class ForumController extends Controller
 {
-     public function index(Request $request)
+    public function index(Request $request)
     {
         $request->validate([
             'sort' => 'nullable|in:newest,oldest,top_likes',
@@ -42,7 +42,7 @@ class ForumController extends Controller
             });
         }
 
-        switch($sort){
+        switch ($sort) {
             case 'oldest':
                 $forumsQuery->orderBy('created_at', 'asc');
                 break;
@@ -53,7 +53,7 @@ class ForumController extends Controller
             default:
                 $forumsQuery->orderBy('created_at', 'desc');
                 break;
-        };
+        }
 
         $forums = $forumsQuery->paginate(10)->withQueryString();
 
@@ -86,9 +86,12 @@ class ForumController extends Controller
         $repliesQuery = $forum->replies()->with(['user', 'userVote', 'allChildren']);
 
         switch ($sort) {
-            case 'oldest': $repliesQuery->oldest(); break;
-            case 'top_likes': $repliesQuery->orderBy('likes', 'desc'); break;
-            case 'newest': default: $repliesQuery->latest(); break;
+            case 'oldest': $repliesQuery->oldest();
+                break;
+            case 'top_likes': $repliesQuery->orderBy('likes', 'desc');
+                break;
+            case 'newest': default: $repliesQuery->latest();
+                break;
         }
 
         $replies = $repliesQuery->paginate(10, ['*'], 'repliesPage')->withQueryString();
@@ -99,7 +102,7 @@ class ForumController extends Controller
             'forum' => $forum,
             'replies' => $replies,
             'filters' => ['sort' => $sort],
-            'repliesTotal' => $repliesTotal
+            'repliesTotal' => $repliesTotal,
         ]);
     }
 

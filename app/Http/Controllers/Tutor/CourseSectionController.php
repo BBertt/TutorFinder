@@ -30,7 +30,11 @@ class CourseSectionController extends Controller
      */
     public function store(Request $request, Course $course)
     {
-        if ($course->user_id !== auth()->id()) { abort(403); }
+        $user = auth();
+        /** @var \App\Models\User $user */
+        if ($course->user_id !== $user->id()) {
+            abort(403);
+        }
 
         $validated = $request->validate([
             'title' => 'required|string|max:255',
@@ -63,7 +67,11 @@ class CourseSectionController extends Controller
      */
     public function update(Request $request, CourseSection $section)
     {
-        if ($section->course->user_id !== auth()->id()) { abort(403); }
+        $user = auth();
+        /** @var \App\Models\User $user */
+        if ($section->course->user_id !== $user->id()) {
+            abort(403);
+        }
 
         $validated = $request->validate([
             'title' => 'required|string|max:255',
@@ -80,9 +88,14 @@ class CourseSectionController extends Controller
      */
     public function destroy(CourseSection $section)
     {
-        if ($section->course->user_id !== auth()->id()) { abort(403); }
+        $user = auth();
+        /** @var \App\Models\User $user */
+        if ($section->course->user_id !== $user->id()) {
+            abort(403);
+        }
 
         $section->delete();
+
         return back()->with('success', 'Section deleted successfully.');
     }
 }

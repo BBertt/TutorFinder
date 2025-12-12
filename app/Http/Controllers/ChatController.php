@@ -3,39 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Models\Chat;
-use App\Models\User;
 use App\Models\Course;
 use App\Models\CourseEnrollment;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
 class ChatController extends Controller
 {
-    public function index()
-    {
-        $user = Auth::user();
-        /** @var \App\Models\User $user */
-        $contacts = collect();
-
-        if ($user->role->name === 'tutor') {
-            $courseIds = $user->courses()->pluck('id');
-            $studentIds = CourseEnrollment::whereIn('course_id', $courseIds)->distinct()->pluck('user_id');
-            $contacts = User::whereIn('id', $studentIds)->get();
-        } else {
-            $courseIds = $user->enrollments()->pluck('course_id');
-            $tutorIds = Course::whereIn('id', $courseIds)->distinct()->pluck('user_id');
-            $contacts = User::whereIn('id', $tutorIds)->get();
-        }
-
-
-        return Inertia::render('Chat/Index', [
-            'contacts' => $contacts,
-            'receiver' => null,
-            'messages' => [],
-        ]);
-    }
-
     public function show(User $receiver)
     {
         $user = Auth::user();

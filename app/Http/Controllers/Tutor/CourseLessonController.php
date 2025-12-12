@@ -31,7 +31,11 @@ class CourseLessonController extends Controller
      */
     public function store(Request $request, CourseSection $section)
     {
-        if ($section->course->user_id !== auth()->id()) { abort(403); }
+        $user = auth();
+        /** @var \App\Models\User $user */
+        if ($section->course->user_id !== $user->id()) {
+            abort(403);
+        }
 
         $validated = $request->validate([
             'title' => 'required|string|max:255',
@@ -69,7 +73,9 @@ class CourseLessonController extends Controller
      */
     public function update(Request $request, CourseSection $section, CourseLesson $lesson)
     {
-        if($section->course->user_id !== auth()->id()) {
+        $user = auth();
+        /** @var \App\Models\User $user */
+        if ($section->course->user_id !== $user->id()) {
             abort(403);
         }
 
@@ -80,8 +86,8 @@ class CourseLessonController extends Controller
             'video_url' => 'nullable|string|regex:/^(https?:\/\/)?(www\.)?(youtube\.com\/watch\?v=|youtu\.be\/)[A-Za-z0-9_-]{11}(?:[&#?].*)?$/',
         ]);
 
-        if($request->hasFile('video')){
-            if($lesson->video_url && str_starts_with($lesson->video_url, 'course-lessons')){
+        if ($request->hasFile('video')) {
+            if ($lesson->video_url && str_starts_with($lesson->video_url, 'course-lessons')) {
                 Storage::delete($lesson->video_url);
             }
             $validated['video_url'] = $request->file('video')->store('course-lessons');
@@ -97,7 +103,9 @@ class CourseLessonController extends Controller
      */
     public function destroy(CourseSection $section, CourseLesson $lesson)
     {
-        if ($section->course->user_id !== auth()->id()) {
+        $user = auth();
+        /** @var \App\Models\User $user */
+        if ($section->course->user_id !== $user->id()) {
             abort(403);
         }
 
@@ -106,6 +114,7 @@ class CourseLessonController extends Controller
         }
 
         $lesson->delete();
+
         return back()->with('success', 'Lesson deleted.');
     }
 }

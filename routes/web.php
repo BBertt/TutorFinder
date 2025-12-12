@@ -1,30 +1,31 @@
 <?php
 
+use App\Http\Controllers\ChatController;
 use App\Http\Controllers\CourseCartController;
-use App\Http\Controllers\CourseController;
+use App\Http\Controllers\CourseReviewController;
 use App\Http\Controllers\ForumController;
 use App\Http\Controllers\ForumReplyController;
 use App\Http\Controllers\ForumVoteController;
-use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\TransactionController;
-use App\Http\Controllers\TutorRegistrationController;
-use App\Http\Controllers\TutorController;
-use App\Http\Controllers\TutorReviewController;
-use App\Http\Controllers\UserController;
-use App\Http\Controllers\WebhookController;
 use App\Http\Controllers\GoogleAuthController;
-use App\Http\Controllers\ChatController;
 use App\Http\Controllers\HomeController;
-use App\Http\Controllers\PurchasedCoursesController;
-use App\Http\Controllers\CourseProgressController;
-use App\Http\Controllers\CourseReviewController;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\PublicCourseController;
 use App\Http\Controllers\QuizController;
+use App\Http\Controllers\StudentCourseController;
+use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\Tutor\CourseController as TutorCourseController;
 use App\Http\Controllers\Tutor\CourseLessonController;
 use App\Http\Controllers\Tutor\CourseSectionController;
+use App\Http\Controllers\TutorController;
+use App\Http\Controllers\TutorRegistrationController;
+use App\Http\Controllers\TutorReviewController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\WebhookController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;Route::get('/auth/google/redirect', [GoogleAuthController::class, 'redirect'])->name('google.auth.redirect');
+use Inertia\Inertia;
+
+Route::get('/auth/google/redirect', [GoogleAuthController::class, 'redirect'])->name('google.auth.redirect');
 Route::get('/auth/google/callback', [GoogleAuthController::class, 'callback'])->name('google.auth.callback');
 
 Route::post('/webhooks/xendit', [WebhookController::class, 'handleXendit'])->name('webhooks.xendit');
@@ -63,16 +64,15 @@ Route::get('/', function () {
     // }
     return redirect('/landing');
 });
-Route::middleware('guest')->group(function() {
+Route::middleware('guest')->group(function () {
     Route::get('/landing', [TutorReviewController::class, 'show'])->name('landing');
-    Route::get('/about', function() {
+    Route::get('/about', function () {
         return Inertia::render('Landing/About');
     })->name('about');
 });
 
-Route::get('/courses', [CourseController::class, 'index'])->name('courses.index');
+Route::get('/courses', [PublicCourseController::class, 'index'])->name('courses.index');
 Route::get('/forums', [ForumController::class, 'index'])->name('forums.index');
-
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -82,21 +82,20 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/profile', [ProfileController::class, 'update'])->name('profile.update');
 
     // Courses
-    // Route::get('/courses', [CourseController::class, 'index'])->name('courses.index');
-    Route::get('/courses/{course}', [CourseController::class, 'show'])->name('courses.show');
-    Route::get('/courses/{course}/learn', [CourseController::class, 'learn'])->name('courses.learn');
-    Route::post('/courses/{course}/reviews', [CourseReviewController::class, 'store'])->name('courses.reviews.store'); // NEW
-    Route::post('/courses/{course}/complete', [CourseController::class, 'complete'])->name('courses.complete');
+    Route::get('/courses/{course}', [PublicCourseController::class, 'show'])->name('courses.show');
+    Route::get('/courses/{course}/learn', [StudentCourseController::class, 'learn'])->name('courses.learn');
+    Route::post('/courses/{course}/complete', [StudentCourseController::class, 'complete'])->name('courses.complete');
+    Route::post('/courses/{course}/reviews', [CourseReviewController::class, 'store'])->name('courses.reviews.store');
 
     // Purchased Courses
-    Route::get('/purchased-courses', [PurchasedCoursesController::class, 'index'])->name('purchased-courses.index');
+    Route::get('/purchased-courses', [StudentCourseController::class, 'viewPurchased'])->name('purchased-courses.index');
 
     // Tutor Profile
     Route::get('/tutors/{tutor}', [TutorController::class, 'show'])->name('tutors.show');
-    Route::post('/tutors/{tutor}/reviews', [TutorReviewController::class, 'store'])->name('tutors.reviews.store'); // NEW
+    Route::post('/tutors/{tutor}/reviews', [TutorReviewController::class, 'store'])->name('tutors.reviews.store');
 
     // Cart
-    Route::get('/cart', [CourseCartController::class, 'show'])->name('cart.show');
+    Route::get('/cart', [CourseCartController::class, 'index'])->name('cart.index');
     Route::post('/cart', [CourseCartController::class, 'store'])->name('cart.store');
     Route::delete('/cart/{cartItem}', [CourseCartController::class, 'destroy'])->name('cart.destroy');
 
@@ -120,7 +119,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/transactions/failure', [TransactionController::class, 'failure'])->name('transactions.failure');
 
     // Messages
-    Route::get('/chat', [ChatController::class, 'index'])->name('chat.index');
     Route::get('/chat/{receiver}', [ChatController::class, 'show'])->name('chat.show');
     Route::post('/chat/{receiver}', [ChatController::class, 'store'])->name('chat.store');
     Route::get('/chat/{receiver}/messages', [ChatController::class, 'getMessages'])->name('chat.getMessages');
@@ -128,13 +126,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Home
     Route::get('/home', [HomeController::class, 'index'])->name('home');
 
-    Route::post('/course-progress/{course_lesson_id}', [CourseProgressController::class, 'update'])->name('course-progress.update');
+    Route::post('/course-progress/{course_lesson_id}', [StudentCourseController::class, 'updateProgress'])->name('course-progress.update');
 
     Route::post('/quizzes/{quiz}/submit', [QuizController::class, 'submit'])->name('quizzes.submit');
 });
 
-Route::middleware('admin')->group(function() {
-    Route::get('/dashboard', function() {
+Route::middleware('admin')->group(function () {
+    Route::get('/dashboard', function () {
         return Inertia::render('Admin/Dashboard');
     })->name('dashboard');
 
@@ -149,4 +147,4 @@ Route::middleware('admin')->group(function() {
     Route::get('/users/transactions', [UserController::class, 'index'])->name('admin.transactions');
     Route::get('/users/{user}/transactions', [TransactionController::class, 'adminIndex'])->name('admin.transactions.index');
 });
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';
