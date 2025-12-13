@@ -37,11 +37,7 @@ export default function ForumPostCard({ post, showDeleteButton = false }) {
                 <div className="flex items-start space-x-4">
                     <img
                         className="w-12 h-12 rounded-full"
-                        src={
-                            post.user.profile_image_path
-                                ? post.user.profile_image_path
-                                : "/assets/icons/profile.svg"
-                        }
+                        src={post.user.profile_image_url}
                         alt={authorName}
                     />
                     <div className="flex-1">
