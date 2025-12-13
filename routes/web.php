@@ -133,6 +133,7 @@ Route::middleware(['auth', 'verified', 'not.admin'])->group(function () {
     Route::post('/votes/{type}/{id}', [ForumVoteController::class, 'store'])->name('votes.store');
 
     // Messages
+    Route::get('/chat', [ChatController::class, 'index'])->name('chat.index');
     Route::get('/chat/{receiver}', [ChatController::class, 'show'])->name('chat.show');
     Route::post('/chat/{receiver}', [ChatController::class, 'store'])->name('chat.store');
     Route::get('/chat/{receiver}/messages', [ChatController::class, 'getMessages'])->name('chat.getMessages');
