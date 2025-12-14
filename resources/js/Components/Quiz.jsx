@@ -110,6 +110,11 @@ const Quiz = ({ quiz }) => {
         return (
             <div className="p-8 bg-white dark:bg-gray-900 dark:text-gray-100 rounded-lg shadow-lg">
                 <h2 className="text-2xl font-bold mb-2">{quiz.title}</h2>
+                {quiz.description && (
+                    <div className="mb-4 text-gray-700 dark:text-gray-300 whitespace-pre-wrap">
+                        {quiz.description}
+                    </div>
+                )}
                 <p className="text-gray-600 dark:text-gray-300">
                     Question {currentQuestionIndex + 1} of{" "}
                     {quiz.questions.length}

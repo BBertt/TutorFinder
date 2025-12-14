@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import QuizEditor from "./QuizEditor";
 import AddLessonModal from "./AddLessonModal";
 import EditSectionModal from "./EditSectionModal";
@@ -27,7 +27,50 @@ export default function CourseSectionLessonForm({
 
     const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
     const [deleteTarget, setDeleteTarget] = useState(null);
-    const openModal = (modal, item) => {
+    const [showFrontendErrors, setShowFrontendErrors] = useState(true);
+
+    // Reset showFrontendErrors when frontendErrors change
+    useEffect(() => {
+        if (
+            frontendErrors.sections_min ||
+            frontendErrors.lessons_min ||
+            frontendErrors.lesson_content
+        ) {
+            setShowFrontendErrors(true);
+        }
+    }, [frontendErrors]);
+
+    const handleAddQuiz = (sectionId) => {
+            setData(
+                "sections",
+                sections.map((s) =>
+                    s.id === sectionId
+                        ? {
+                              ...s,
+                              quiz: { title: "", description: "", questions: [] },
+                              quiz_title: "",
+                          }
+                        : s
+                )
+            );
+        };
+    
+        const handleRemoveQuiz = (sectionId) => {
+            setData(
+                "sections",
+                sections.map((s) => {
+                    if (s.id === sectionId) {
+                        const newSection = { ...s };
+                        delete newSection.quiz;
+                        delete newSection.quiz_title;
+                        return newSection;
+                    }
+                    return s;
+                })
+            );
+        };
+    
+        const openModal = (modal, item) => {
         if (modal === "addLesson") {
             setSelectedSection(item);
             setLessonModalOpen(true);
@@ -172,19 +215,43 @@ export default function CourseSectionLessonForm({
 
                 {(frontendErrors.sections_min ||
                     frontendErrors.lessons_min ||
-                    frontendErrors.lesson_content) && (
-                    <div className="p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-100">
-                        {frontendErrors.sections_min && (
-                            <p>{frontendErrors.sections_min}</p>
-                        )}
-                        {frontendErrors.lessons_min && (
-                            <p>{frontendErrors.lessons_min}</p>
-                        )}
-                        {frontendErrors.lesson_content && (
-                            <p>{frontendErrors.lesson_content}</p>
-                        )}
-                    </div>
-                )}
+                    frontendErrors.lesson_content) &&
+                    showFrontendErrors && (
+                        <div className="p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-100 flex items-center justify-between">
+                            <div className="flex-grow">
+                                {frontendErrors.sections_min && (
+                                    <p>{frontendErrors.sections_min}</p>
+                                )}
+                                {frontendErrors.lessons_min && (
+                                    <p>{frontendErrors.lessons_min}</p>
+                                )}
+                                {frontendErrors.lesson_content && (
+                                    <p>{frontendErrors.lesson_content}</p>
+                                )}
+                            </div>
+                            <button
+                                type="button"
+                                onClick={() => setShowFrontendErrors(false)}
+                                className="ml-4 text-red-800 hover:text-red-900"
+                                aria-label="Close"
+                            >
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    className="h-4 w-4"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                    stroke="currentColor"
+                                >
+                                    <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth={2}
+                                        d="M6 18L18 6M6 6l12 12"
+                                    />
+                                </svg>
+                            </button>
+                        </div>
+                    )}
 
                 <div className="space-y-4 mb-8">
                     {sections.map((section, index) => (
@@ -278,58 +345,89 @@ export default function CourseSectionLessonForm({
                                     >
                                         + Add Lesson
                                     </button>
-                                    <input
-                                        type="text"
-                                        value={
-                                            section.quiz?.title ||
-                                            section.quiz_title ||
-                                            ""
-                                        }
-                                        onChange={(e) =>
-                                            setData(
-                                                "sections",
-                                                sections.map((s) =>
-                                                    s.id === section.id
-                                                        ? {
-                                                              ...s,
-                                                              quiz: {
-                                                                  ...(s.quiz ||
-                                                                      {}),
-                                                                  title: e
-                                                                      .target
-                                                                      .value,
-                                                                  questions:
-                                                                      s.quiz
-                                                                          ?.questions ||
-                                                                      [],
-                                                              },
-                                                          }
-                                                        : s
-                                                )
-                                            )
-                                        }
-                                        placeholder="Optional Section Quiz Title"
-                                        className="text-sm w-full border-gray-200 rounded-md shadow-sm dark:bg-darkSecondary dark:border-dark dark:text-white dark:placeholder-gray-400"
-                                    />
-                                    {(section.quiz?.title ||
-                                        section.quiz_title) && (
-                                        <div className="mt-2">
-                                            <QuizEditor
-                                                value={section.quiz}
-                                                onChange={(qz) =>
+
+                                    {section.quiz_title != null ? (
+                                        <>
+                                            <div className="flex justify-between items-center mt-2">
+                                                <h4 className="font-semibold dark:text-white">
+                                                    Section Quiz
+                                                </h4>
+                                                <button
+                                                    type="button"
+                                                    onClick={() =>
+                                                        handleRemoveQuiz(
+                                                            section.id
+                                                        )
+                                                    }
+                                                    className="text-red-400 text-xs font-semibold"
+                                                >
+                                                    Remove Quiz
+                                                </button>
+                                            </div>
+                                            <input
+                                                type="text"
+                                                value={
+                                                    section.quiz?.title ??
+                                                    section.quiz_title ??
+                                                    ""
+                                                }
+                                                onChange={(e) =>
                                                     setData(
                                                         "sections",
                                                         sections.map((s) =>
                                                             s.id === section.id
                                                                 ? {
                                                                       ...s,
-                                                                      quiz: qz,
+                                                                      quiz: {
+                                                                          ...(s.quiz ||
+                                                                              {}),
+                                                                          title: e
+                                                                              .target
+                                                                              .value,
+                                                                      },
+                                                                      quiz_title:
+                                                                          e
+                                                                              .target
+                                                                              .value,
                                                                   }
                                                                 : s
                                                         )
                                                     )
                                                 }
+                                                placeholder="Section Quiz Title"
+                                                className="text-sm w-full border-gray-200 rounded-md shadow-sm dark:bg-darkSecondary dark:border-dark dark:text-white dark:placeholder-gray-400"
                                             />
+                                            <div className="mt-2">
+                                                <QuizEditor
+                                                    value={section.quiz}
+                                                    onChange={(qz) =>
+                                                        setData(
+                                                            "sections",
+                                                            sections.map((s) =>
+                                                                s.id ===
+                                                                section.id
+                                                                    ? {
+                                                                          ...s,
+                                                                          quiz: qz,
+                                                                      }
+                                                                    : s
+                                                            )
+                                                        )
+                                                    }
+                                                />
+                                            </div>
+                                        </>
+                                    ) : (
+                                        <div className="mt-3">
+                                            <button
+                                                type="button"
+                                                onClick={() =>
+                                                    handleAddQuiz(section.id)
+                                                }
+                                                className="text-sm font-semibold text-primary hover:underline"
+                                            >
+                                                + Add Section Quiz
+                                            </button>
                                         </div>
                                     )}
                                 </div>
@@ -386,31 +484,55 @@ export default function CourseSectionLessonForm({
                 </form>
                 <div className="mt-10">
                     <div className="mb-6 p-4 border rounded-lg bg-white dark:bg-darkSecondary dark:border-dark">
-                        <h2 className="text-lg font-semibold mb-3 dark:text-white">
-                            Final Quiz (Optional)
-                        </h2>
-                        <input
-                            type="text"
-                            value={finalQuizTitle || ""}
-                            onChange={(e) =>
-                                onFinalQuizTitleChange &&
-                                onFinalQuizTitleChange(e.target.value)
-                            }
-                            placeholder="Enter a final quiz title or leave blank"
-                            className="w-full border-gray-200 rounded-md shadow-sm dark:bg-darkSecondary dark:border-dark dark:text-white dark:placeholder-gray-400"
-                        />
-                        {finalQuizTitle ? (
-                            <div className="mt-3">
-                                <QuizEditor
-                                    value={finalQuiz}
-                                    onChange={onFinalQuizChange}
+                        <div className="flex justify-between items-center mb-3">
+                            <h2 className="text-lg font-semibold dark:text-white">
+                                Final Quiz (Optional)
+                            </h2>
+                            {finalQuizTitle != null && (
+                                <button
+                                    type="button"
+                                    onClick={() => onFinalQuizTitleChange(null)}
+                                    className="text-red-400 text-xs font-semibold"
+                                >
+                                    Remove Quiz
+                                </button>
+                            )}
+                        </div>
+
+                        {finalQuizTitle != null ? (
+                            <>
+                                <input
+                                    type="text"
+                                    value={finalQuizTitle || ""}
+                                    onChange={(e) =>
+                                        onFinalQuizTitleChange &&
+                                        onFinalQuizTitleChange(e.target.value)
+                                    }
+                                    placeholder="Enter a final quiz title"
+                                    className="w-full border-gray-200 rounded-md shadow-sm dark:bg-darkSecondary dark:border-dark dark:text-white dark:placeholder-gray-400"
                                 />
-                            </div>
-                        ) : null}
-                        <p className="text-xs text-gray-400 mt-1">
-                            If provided, a final quiz will be created for the
-                            whole course.
-                        </p>
+                                <div className="mt-3">
+                                    <QuizEditor
+                                        value={finalQuiz}
+                                        onChange={onFinalQuizChange}
+                                    />
+                                </div>
+                            </>
+                        ) : (
+                            <>
+                                <button
+                                    type="button"
+                                    onClick={() => onFinalQuizTitleChange("")}
+                                    className="text-sm font-semibold text-primary hover:underline"
+                                >
+                                    + Add Final Quiz
+                                </button>
+                                <p className="text-xs text-gray-400 mt-1">
+                                    If provided, a final quiz will be created
+                                    for the whole course.
+                                </p>
+                            </>
+                        )}
                     </div>
                 </div>
             </div>
