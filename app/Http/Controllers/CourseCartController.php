@@ -50,7 +50,7 @@ class CourseCartController extends Controller
         return redirect()->back()->with('success', 'Item removed from cart.');
     }
 
-    public function show()
+    public function index()
     {
         if (Auth::check()) {
             $user = Auth::user();

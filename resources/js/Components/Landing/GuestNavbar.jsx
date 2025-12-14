@@ -1,9 +1,8 @@
 import { Link } from "@inertiajs/react";
 import { ThemeToggle } from "@/Components/ThemeToggle";
 
-const GuestNavbar = ({}) => {
+const GuestNavbar = ({ }) => {
     const logoSrc = "/assets/logo.png";
-    console.log("Logo Source:", logoSrc);
     return (
         <nav className="bg-accent shadow-sm sticky top-0 z-50 dark:bg-darkSecondary dark:border-b dark:border-dark">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8">

@@ -56,7 +56,7 @@ function CourseDetails({
                             <>
                                 {isInCart ? (
                                     <Link
-                                        href={route("cart.show")}
+                                        href={route("cart.index")}
                                         className="mt-6 bg-gray-200 text-gray-800 px-8 py-3 rounded-lg font-semibold hover:bg-gray-300 transition-colors inline-block text-center"
                                     >
                                         Go to Cart
@@ -146,9 +146,7 @@ function CourseDetails({
                 </div>
 
                 <div className="mt-12">
-                    <h2 className="text-2xl font-bold mb-6">
-                        Course Reviews
-                    </h2>
+                    <h2 className="text-2xl font-bold mb-6">Course Reviews</h2>
                     {course.reviews?.length > 0 ? (
                         <div className="space-y-6">
                             {course.reviews.map((review) => (

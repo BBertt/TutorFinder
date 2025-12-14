@@ -3,9 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Chat;
-use App\Models\User;
 use App\Models\Course;
 use App\Models\CourseEnrollment;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
@@ -27,7 +27,6 @@ class ChatController extends Controller
             $tutorIds = Course::whereIn('id', $courseIds)->distinct()->pluck('user_id');
             $contacts = User::whereIn('id', $tutorIds)->get();
         }
-
 
         return Inertia::render('Chat/Index', [
             'contacts' => $contacts,

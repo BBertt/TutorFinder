@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\TutorReview;
 use App\Models\User;
-use App\Models\TutorReview; // Import TutorReview model
-use Illuminate\Http\Request; // Import Request
-use Illuminate\Support\Facades\Auth; // Import Auth
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
 class TutorReviewController extends Controller
@@ -13,9 +13,9 @@ class TutorReviewController extends Controller
     public function show()
     {
         $reviews = User::withAvg('reviews', 'rating')->orderByDesc('reviews_avg_rating')->take(2)->get();
-        
+
         return Inertia::render('Landing/Landing', [
-            'reviews' => $reviews
+            'reviews' => $reviews,
         ]);
     }
 
@@ -32,8 +32,8 @@ class TutorReviewController extends Controller
 
         // Check if the user has already reviewed this tutor
         $existingReview = TutorReview::where('reviewer_id', Auth::id())
-                                      ->where('tutor_id', $tutor->id)
-                                      ->first();
+            ->where('tutor_id', $tutor->id)
+            ->first();
 
         if ($existingReview) {
             return redirect()->back()->with('error', 'You have already reviewed this tutor.');

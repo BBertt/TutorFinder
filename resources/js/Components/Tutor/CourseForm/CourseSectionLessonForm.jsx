@@ -346,8 +346,7 @@ export default function CourseSectionLessonForm({
                                         + Add Lesson
                                     </button>
 
-                                    {section.quiz?.title !== undefined ||
-                                    section.quiz_title !== undefined ? (
+                                    {section.quiz_title != null ? (
                                         <>
                                             <div className="flex justify-between items-center mt-2">
                                                 <h4 className="font-semibold dark:text-white">
@@ -485,31 +484,55 @@ export default function CourseSectionLessonForm({
                 </form>
                 <div className="mt-10">
                     <div className="mb-6 p-4 border rounded-lg bg-white dark:bg-darkSecondary dark:border-dark">
-                        <h2 className="text-lg font-semibold mb-3 dark:text-white">
-                            Final Quiz (Optional)
-                        </h2>
-                        <input
-                            type="text"
-                            value={finalQuizTitle || ""}
-                            onChange={(e) =>
-                                onFinalQuizTitleChange &&
-                                onFinalQuizTitleChange(e.target.value)
-                            }
-                            placeholder="Enter a final quiz title or leave blank"
-                            className="w-full border-gray-200 rounded-md shadow-sm dark:bg-darkSecondary dark:border-dark dark:text-white dark:placeholder-gray-400"
-                        />
-                        {finalQuizTitle ? (
-                            <div className="mt-3">
-                                <QuizEditor
-                                    value={finalQuiz}
-                                    onChange={onFinalQuizChange}
+                        <div className="flex justify-between items-center mb-3">
+                            <h2 className="text-lg font-semibold dark:text-white">
+                                Final Quiz (Optional)
+                            </h2>
+                            {finalQuizTitle != null && (
+                                <button
+                                    type="button"
+                                    onClick={() => onFinalQuizTitleChange(null)}
+                                    className="text-red-400 text-xs font-semibold"
+                                >
+                                    Remove Quiz
+                                </button>
+                            )}
+                        </div>
+
+                        {finalQuizTitle != null ? (
+                            <>
+                                <input
+                                    type="text"
+                                    value={finalQuizTitle || ""}
+                                    onChange={(e) =>
+                                        onFinalQuizTitleChange &&
+                                        onFinalQuizTitleChange(e.target.value)
+                                    }
+                                    placeholder="Enter a final quiz title"
+                                    className="w-full border-gray-200 rounded-md shadow-sm dark:bg-darkSecondary dark:border-dark dark:text-white dark:placeholder-gray-400"
                                 />
-                            </div>
-                        ) : null}
-                        <p className="text-xs text-gray-400 mt-1">
-                            If provided, a final quiz will be created for the
-                            whole course.
-                        </p>
+                                <div className="mt-3">
+                                    <QuizEditor
+                                        value={finalQuiz}
+                                        onChange={onFinalQuizChange}
+                                    />
+                                </div>
+                            </>
+                        ) : (
+                            <>
+                                <button
+                                    type="button"
+                                    onClick={() => onFinalQuizTitleChange("")}
+                                    className="text-sm font-semibold text-primary hover:underline"
+                                >
+                                    + Add Final Quiz
+                                </button>
+                                <p className="text-xs text-gray-400 mt-1">
+                                    If provided, a final quiz will be created
+                                    for the whole course.
+                                </p>
+                            </>
+                        )}
                     </div>
                 </div>
             </div>
