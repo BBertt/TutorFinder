@@ -179,7 +179,6 @@ export default function CourseForm({ categories }) {
             formData.append('final_quiz.duration_seconds', String(data.final_quiz?.duration_seconds ?? 900));
         }
 
-        console.log(data.final_quiz);
         if (data.final_quiz && Array.isArray(data.final_quiz.questions)) {
             data.final_quiz.questions.forEach((q, q_index) => {
                 formData.append(
