@@ -65,13 +65,10 @@ export default function CourseForm({ categories }) {
         intro_video: course?.intro_video_url || "",
         sections: (course?.sections || []).map((s) => ({
             ...s,
-            quiz_title: s.quiz?.title || s.quiz_title || "",
+            quiz_title: s.quiz?.title ?? null,
         })),
-        final_quiz_title: course?.finalQuiz?.title || "",
-        final_quiz: course?.finalQuiz || {
-            title: course?.finalQuiz?.title || "",
-            questions: [],
-        },
+        final_quiz_title: course?.finalQuiz?.title ?? null,
+        final_quiz: course?.finalQuiz ?? null,
         status: course?.status || "draft",
     });
 
@@ -182,6 +179,7 @@ export default function CourseForm({ categories }) {
             formData.append('final_quiz.duration_seconds', String(data.final_quiz?.duration_seconds ?? 900));
         }
 
+        console.log(data.final_quiz);
         if (data.final_quiz && Array.isArray(data.final_quiz.questions)) {
             data.final_quiz.questions.forEach((q, q_index) => {
                 formData.append(
@@ -369,12 +367,20 @@ export default function CourseForm({ categories }) {
                             finalQuizTitle={data.final_quiz_title}
                             finalQuiz={data.final_quiz}
                             onFinalQuizTitleChange={(v) => {
-                                setData("final_quiz_title", v);
-                                setData("final_quiz", {
-                                    ...(data.final_quiz || {}),
-                                    title: v,
-                                    questions: data.final_quiz?.questions || [],
-                                });
+                                if (v === null) {
+                                    setData("final_quiz_title", null);
+                                    setData("final_quiz", null);
+                                } else {
+                                    setData("final_quiz_title", v);
+                                    setData("final_quiz", {
+                                        ...(data.final_quiz || {
+                                            questions: [],
+                                            description: "",
+                                            duration_seconds: 900,
+                                        }),
+                                        title: v,
+                                    });
+                                }
                             }}
                             onFinalQuizChange={(qz) =>
                                 setData("final_quiz", qz)
