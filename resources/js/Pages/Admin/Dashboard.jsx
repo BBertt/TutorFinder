@@ -12,7 +12,7 @@ const Dashboard = () => {
                     className="max-w-md w-full p-10 bg-primary rounded-xl hover:bg-secondary text-center dark:bg-darkSecondary dark:border-dark dark:hover:bg-gray-700"
                 >
                     <h2 className="text-xl font-bold mb-2">
-                        Manage Tutor Registration
+                        Manage Tutor Registrations
                     </h2>
                     <p>Approve or reject pending tutor registrations.</p>
                 </Link>
