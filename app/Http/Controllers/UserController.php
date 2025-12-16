@@ -12,19 +12,18 @@ use Inertia\Inertia;
 class UserController extends Controller
 {
     public function index(Request $request) {
-        $users = User::with('role')->whereHas('role', function (Builder $query) {
-            $query->where('name', '=', 'student');
-        })->paginate(10);
+        $isTransactionPage = $request->is('users/transactions');
 
-        if ($request->is('users/transactions')) {
-            return Inertia::render('Admin/UserTransactionSelection', [
-                'users' => $users
-            ]);
-        }
+        $roles = $isTransactionPage ? ['student'] : ['student', 'tutor'];
 
-        return Inertia::render('Admin/Users', [
-            'users' => $users
-        ]);
+        $users = User::with('role')
+            ->whereHas('role', fn($q) => $q->whereIn('name', $roles))
+            ->paginate(10);
+
+        return Inertia::render(
+            $isTransactionPage ? 'Admin/UserTransactionSelection' : 'Admin/Users',
+            ['users' => $users]
+        );
     }
 
     public function edit(User $user) {
