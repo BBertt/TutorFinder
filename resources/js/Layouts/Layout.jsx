@@ -23,18 +23,14 @@ const AppNavbar = ({ logoSrc }) => {
 
     const handleSearch = (e) => {
         e.preventDefault();
-        const targetUrl = isForumsPage
-            ? route("forums.index")
-            : route("courses.index");
+        const targetUrl = route("courses.index");
         get(targetUrl, {
             preserveState: true,
             preserveScroll: true,
         });
     };
 
-    const placeholder = isForumsPage ? "Search Forums..." : "Search Courses...";
-
-    const showCategories = !isForumsPage && !isTutor && !isAdmin;
+    const showCategories = !isTutor && !isAdmin;
 
     return (
         <nav className="bg-accent shadow-sm sticky top-0 z-50 dark:bg-darkSecondary dark:border-b dark:border-dark">
@@ -71,7 +67,7 @@ const AppNavbar = ({ logoSrc }) => {
                                         setData("search", e.target.value)
                                     }
                                     className="block w-full pl-10 pr-3 py-2 border border-gray-200 rounded-full leading-5 bg-white placeholder-gray-400 sm:text-sm dark:bg-darkSecondary dark:border-g dark:text-white dark:placeholder-gray-400"
-                                    placeholder={placeholder}
+                                    placeholder="Search Courses..."
                                     type="Search"
                                 />
                                 {showCategories && (
