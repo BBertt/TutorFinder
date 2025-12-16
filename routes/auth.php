@@ -25,10 +25,10 @@ Route::middleware('guest')->group(function () {
 });
 
 Route::middleware('auth')->group(function () {
-    Route::get('verify-email', [EmailVerificationController::class, 'view'])
+    Route::get('verify-email', [EmailVerificationController::class, 'show'])
         ->name('verification.notice');
 
-    Route::post('email/verification-notification', [EmailVerificationController::class, 'show'])
+    Route::post('email/verification-notification', [EmailVerificationController::class, 'store'])
         ->middleware('throttle:6,1')
         ->name('verification.send');
 
