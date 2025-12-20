@@ -27,13 +27,6 @@ function CourseList({ courses }) {
         <>
             <Head title="Our Courses" />
 
-            {/* TODO : Show category name dynamically by filter */}
-
-            {/* <div className="bg-primary text-white">
-                <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12 text-center">
-                    <h1 className="text-4xl font-bold">Web Development</h1>
-                </div>
-            </div> */}
             {categoryParam && <Breadcrumb category={category} />}
 
             <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -52,14 +45,21 @@ function CourseList({ courses }) {
                                 {category.name}
                             </span>
                         </>
-                    ) : null}
-                </h1>
-                {(searchParam || categoryParam) &&
-                    courses.data.length === 0 && (
-                        <h2 className="text-xl font-extrabold mb-12">
-                            No results found.
-                        </h2>
+                    ) : (
+                        "Explore All Courses"
                     )}
+                </h1>
+
+                {courses.data.length === 0 && (
+                    <div className="text-center py-12">
+                        <h2 className="text-xl font-extrabold text-gray-600 dark:text-gray-400 mb-4">
+                            {searchParam || categoryParam
+                                ? "No results found."
+                                : "No courses available right now..."}
+                        </h2>
+                    </div>
+                )}
+
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                     {courses.data.map((course) => (
                         <div key={course.id} onClickCapture={handleGuestClick}>
@@ -68,8 +68,11 @@ function CourseList({ courses }) {
                     ))}
                 </div>
 
-                <Pagination links={courses.links} />
+                {courses.data.length > 0 && (
+                    <Pagination links={courses.links} />
+                )}
             </main>
+
             <LoginModal
                 isOpen={isLoginModalOpen}
                 onClose={() => setLoginModalOpen(false)}
