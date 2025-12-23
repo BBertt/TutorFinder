@@ -6,7 +6,7 @@ const About = () => {
             <GuestNavbar />
 
             {/* Hero Section */}
-            <section className="bg-primary text-white py-16 flex flex-col items-center text-center dark:bg-darkSecondary dark:border-dark">
+            <section className="min-h-[50vh] bg-primary text-white py-16 flex flex-col items-center text-center dark:bg-darkSecondary dark:border-dark">
                 <h1 className="text-4xl font-extrabold mb-4">
                     About TutorFinder
                 </h1>
@@ -23,7 +23,7 @@ const About = () => {
             </section>
 
             {/* Mission Section */}
-            <section className="py-16 bg-secondary text-center text-white dark:bg-darkPrimary">
+            <section className="min-h-[50vh] py-16 bg-secondary text-center text-white dark:bg-darkPrimary">
                 <h2 className="text-4xl font-extrabold mb-4">Our Mission</h2>
                 <div className="flex justify-evenly items-center gap-8">
                     {[

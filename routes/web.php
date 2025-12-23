@@ -98,7 +98,6 @@ Route::middleware(['auth', 'verified', 'student'])->group(function () {
 
     // Courses
     // Route::get('/courses', [CourseController::class, 'index'])->name('courses.index');
-    Route::get('/courses/{course}', [PublicCourseController::class, 'show'])->name('courses.show');
     Route::get('/courses/{course}/learn', [StudentCourseController::class, 'learn'])->name('courses.learn');
     Route::post('/courses/{course}/reviews', [CourseReviewController::class, 'store'])->name('courses.reviews.store'); // NEW
     Route::post('/courses/{course}/complete', [StudentCourseController::class, 'complete'])->name('courses.complete');
@@ -142,6 +141,8 @@ Route::middleware(['auth', 'verified', 'not.admin'])->group(function () {
     // Home
     Route::get('/home', [HomeController::class, 'index'])->name('home');
 
+    // View Course Detail
+        Route::get('/courses/{course}', [PublicCourseController::class, 'show'])->name('courses.show');
 });
 
 Route::middleware('admin')->group(function () {

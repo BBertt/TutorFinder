@@ -18,11 +18,16 @@ class TutorController extends Controller
 
         $tutor->load([
             'courses' => fn($q) => $q->with('user')->withAvg('reviews', 'rating')->latest(),
-            'reviews' => fn($q) => $q->with('reviewer')->latest(),
         ]);
+
+        $reviews = $tutor->reviews()
+        ->with('reviewer')
+        ->orderByDesc('rating')
+        ->paginate(10);
 
         return Inertia::render('Tutor/TutorProfile', [
             'tutor' => $tutor,
+            'reviews' => $reviews
         ]);
     }
 }
