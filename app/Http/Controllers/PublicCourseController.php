@@ -56,7 +56,7 @@ class PublicCourseController extends Controller
     {
         if (Auth::check()) {
             $user = Auth::user();
-            if ($user->role_id === 2) {
+            if ($user->role_id === 2 && $user->id !== $course->user_id) {
                 return redirect()->route('tutor.courses.index')
                     ->with('error', 'Unauthorized action.');
             }
@@ -69,15 +69,18 @@ class PublicCourseController extends Controller
         $course->load([
             'user',
             'category',
-            'reviews' => function ($query) {
-                $query->with('user')->latest();
-            },
             'sections.lessons',
         ]);
+
+        $reviews = $course->reviews()
+        ->with('user')
+        ->orderByDesc('rating')
+        ->paginate(10);
 
         $isEnrolled = false;
         $isInCart = false; // 2. Initialize isInCart
         $hasPendingTransaction = false;
+        $isTutor = false;
 
         if (Auth::check()) {
             $user = Auth::user();
@@ -95,6 +98,11 @@ class PublicCourseController extends Controller
                     $q->where('course_id', $course->id);
                 })
                 ->exists();
+            
+            // Check is tutor
+            if ($user->role_id === 2) {
+                $isTutor = true;
+            }
         }
 
         return Inertia::render('Courses/CourseDetails', [
@@ -102,6 +110,8 @@ class PublicCourseController extends Controller
             'isEnrolled' => $isEnrolled,
             'isInCart' => $isInCart,
             'hasPendingTransaction' => $hasPendingTransaction,
+            'isTutor' => $isTutor,
+            'reviews' => $reviews
         ]);
     }
 }
