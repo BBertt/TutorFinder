@@ -51,7 +51,7 @@ const Landing = () => {
                             </p>
                             <Link
                                 href="/tutor/register"
-                                className="bg-secondary text-white hover:bg-white hover:text-[primary] px-6 py-2 rounded-full font-bold mt-2 dark:bg-primary dark:hover:bg-opacity-80 dark:text-white"
+                                className="bg-secondary text-white hover:text-white hover:bg-black px-6 py-2 rounded-full font-bold mt-2 dark:bg-primary dark:hover:bg-opacity-80 dark:text-white"
                             >
                                 Register as a Tutor
                             </Link>

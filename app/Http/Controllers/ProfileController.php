@@ -10,12 +10,20 @@ class ProfileController extends Controller
 {
     public function edit()
     {
-        $user = auth();
+        $user = auth()->user();
         /** @var \App\Models\User $user */
+
+        $user->load('role');
+
+        $reviews = null;
+        if ($user->role_id === 2) {
+            $reviews = $user->reviews()->with('reviewer')->orderByDesc('rating')->paginate(10);
+        }
 
         return Inertia::render('Profile', [
             'auth' => [
-                'user' => $user->user()->load('role'),
+                'user' => $user, 
+                'reviews' => $reviews
             ],
         ]);
     }

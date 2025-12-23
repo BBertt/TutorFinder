@@ -3,8 +3,9 @@ import Layout from "@/Layouts/Layout";
 import { Head } from "@inertiajs/react";
 import CourseCard from "@/Components/Course/CourseCard";
 import ReviewCard from "@/Components/ReviewCard";
+import Pagination from "@/Components/Pagination";
 
-function TutorProfile({ tutor }) {
+function TutorProfile({ tutor, reviews }) {
     const tutorName = `${tutor.first_name} ${tutor.last_name}`;
 
     return (
@@ -57,13 +58,10 @@ function TutorProfile({ tutor }) {
                     <h2 className="text-3xl font-bold mb-6 dark:text-white">
                         Review
                     </h2>
-                    {tutor.reviews?.length > 0 ? (
+                    {reviews?.data?.length > 0 ? (
                         <div className="space-y-6">
-                            {tutor.reviews.map((review) => (
-                                <ReviewCard
-                                    key={review.id}
-                                    review={review}
-                                />
+                            {reviews.data.map((review) => (
+                                <ReviewCard key={review.id} review={review} />
                             ))}
                         </div>
                     ) : (
@@ -72,6 +70,10 @@ function TutorProfile({ tutor }) {
                         </p>
                     )}
                 </section>
+
+                {reviews?.data?.length > 0 && (
+                    <Pagination links={reviews.links} />
+                )}
             </main>
         </>
     );

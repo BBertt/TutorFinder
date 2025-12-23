@@ -3,6 +3,7 @@ import Layout from "@/Layouts/Layout";
 import { Head, router, Link } from "@inertiajs/react";
 import Breadcrumb from "@/Components/Course/Breadcrumb";
 import ReviewCard from "@/Components/ReviewCard";
+import Pagination from "@/Components/Pagination";
 
 import SuccessModal from "@/Components/Modals/SuccessModal";
 function CourseDetails({
@@ -10,6 +11,8 @@ function CourseDetails({
     isEnrolled,
     isInCart,
     hasPendingTransaction,
+    isTutor,
+    reviews,
 }) {
     const [showBlockedModal, setShowBlockedModal] = React.useState(false);
     const handleAddToCart = (e) => {
@@ -26,7 +29,9 @@ function CourseDetails({
             <Head title={course.title} />
 
             <div className="bg-primary text-white dark:bg-darkSecondary dark:border-dark">
-                <Breadcrumb category={course.category} course={course} />
+                {!isTutor && (
+                    <Breadcrumb category={course.category} course={course} />
+                )}
 
                 <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-16 grid md:grid-cols-2 gap-12 items-center">
                     <div>
@@ -39,45 +44,53 @@ function CourseDetails({
                         <p className="mt-4 text-lg opacity-80">
                             {course.description}
                         </p>
-                        {!isEnrolled && (
-                            <p className="text-3xl font-bold mt-6">
-                                Rp{" "}
-                                {Number(course.price).toLocaleString("id-ID")}
-                            </p>
-                        )}
-                        {isEnrolled ? (
-                            <Link
-                                href={route("courses.learn", course.id)}
-                                className="mt-6 bg-white text-primary px-8 py-3 rounded-lg font-semibold hover:bg-gray-200 transition-colors inline-block text-center"
-                            >
-                                Learn
-                            </Link>
-                        ) : (
+                        {!isTutor && (
                             <>
-                                {isInCart ? (
+                                {!isEnrolled && (
+                                    <p className="text-3xl font-bold mt-6">
+                                        Rp{" "}
+                                        {Number(course.price).toLocaleString(
+                                            "id-ID"
+                                        )}
+                                    </p>
+                                )}
+                                {isEnrolled ? (
                                     <Link
-                                        href={route("cart.index")}
-                                        className="mt-6 bg-gray-200 text-gray-800 px-8 py-3 rounded-lg font-semibold hover:bg-gray-300 transition-colors inline-block text-center"
+                                        href={route("courses.learn", course.id)}
+                                        className="mt-6 bg-white text-primary px-8 py-3 rounded-lg font-semibold hover:bg-gray-200 transition-colors inline-block text-center"
                                     >
-                                        Go to Cart
+                                        Learn
                                     </Link>
                                 ) : (
-                                    <button
-                                        onClick={handleAddToCart}
-                                        className="mt-6 bg-white text-primary px-8 py-3 rounded-lg font-semibold hover:bg-gray-200 transition-colors"
-                                    >
-                                        {hasPendingTransaction
-                                            ? "Pending Payment"
-                                            : "Add to Cart"}
-                                    </button>
-                                )}
+                                    <>
+                                        {isInCart ? (
+                                            <Link
+                                                href={route("cart.index")}
+                                                className="mt-6 bg-gray-200 text-gray-800 px-8 py-3 rounded-lg font-semibold hover:bg-gray-300 transition-colors inline-block text-center"
+                                            >
+                                                Go to Cart
+                                            </Link>
+                                        ) : (
+                                            <button
+                                                onClick={handleAddToCart}
+                                                className="mt-6 bg-white text-primary px-8 py-3 rounded-lg font-semibold hover:bg-gray-200 transition-colors"
+                                            >
+                                                {hasPendingTransaction
+                                                    ? "Pending Payment"
+                                                    : "Add to Cart"}
+                                            </button>
+                                        )}
 
-                                <SuccessModal
-                                    isOpen={showBlockedModal}
-                                    onClose={() => setShowBlockedModal(false)}
-                                    title="Pending Transaction"
-                                    message="You already have a pending transaction for this course. Please complete or cancel it before adding again."
-                                />
+                                        <SuccessModal
+                                            isOpen={showBlockedModal}
+                                            onClose={() =>
+                                                setShowBlockedModal(false)
+                                            }
+                                            title="Pending Transaction"
+                                            message="You already have a pending transaction for this course. Please complete or cancel it before adding again."
+                                        />
+                                    </>
+                                )}
                             </>
                         )}
                     </div>
@@ -147,9 +160,9 @@ function CourseDetails({
 
                 <div className="mt-12">
                     <h2 className="text-2xl font-bold mb-6">Course Reviews</h2>
-                    {course.reviews?.length > 0 ? (
+                    {reviews?.data?.length > 0 ? (
                         <div className="space-y-6">
-                            {course.reviews.map((review) => (
+                            {reviews.data.map((review) => (
                                 <ReviewCard key={review.id} review={review} />
                             ))}
                         </div>
@@ -157,6 +170,10 @@ function CourseDetails({
                         <p className="text-gray-500">
                             This course has no reviews yet.
                         </p>
+                    )}
+
+                    {reviews?.data?.length > 0 && (
+                        <Pagination links={reviews.links} />
                     )}
                 </div>
             </main>
