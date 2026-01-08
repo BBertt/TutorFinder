@@ -397,6 +397,9 @@ export default function CourseSectionLessonForm({
                                                 placeholder="Section Quiz Title"
                                                 className="text-sm w-full border-gray-200 rounded-md shadow-sm dark:bg-darkSecondary dark:border-dark dark:text-white dark:placeholder-gray-400"
                                             />
+                                            {frontendErrors[`sections.${index}.quiz.title`] && (
+                                                <p className="text-red-500 text-sm mt-1">{frontendErrors[`sections.${index}.quiz.title`]}</p>
+                                            )}
                                             <div className="mt-2">
                                                 <QuizEditor
                                                     value={section.quiz}
@@ -414,6 +417,8 @@ export default function CourseSectionLessonForm({
                                                             )
                                                         )
                                                     }
+                                                    errors={frontendErrors}
+                                                    errorPrefix={`sections.${index}.quiz`}
                                                 />
                                             </div>
                                         </>
@@ -511,10 +516,15 @@ export default function CourseSectionLessonForm({
                                     placeholder="Enter a final quiz title"
                                     className="w-full border-gray-200 rounded-md shadow-sm dark:bg-darkSecondary dark:border-dark dark:text-white dark:placeholder-gray-400"
                                 />
+                                {frontendErrors['final_quiz.title'] && (
+                                    <p className="text-red-500 text-sm mt-1">{frontendErrors['final_quiz.title']}</p>
+                                )}
                                 <div className="mt-3">
                                     <QuizEditor
                                         value={finalQuiz}
                                         onChange={onFinalQuizChange}
+                                        errors={frontendErrors}
+                                        errorPrefix="final_quiz"
                                     />
                                 </div>
                             </>
