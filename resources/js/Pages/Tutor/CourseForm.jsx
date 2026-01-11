@@ -175,8 +175,8 @@ export default function CourseForm({ categories }) {
 
         formData.append('final_quiz_title', data.final_quiz_title || '');
         if (data.final_quiz_title) {
-            formData.append('final_quiz.description', data.final_quiz?.description || '');
-            formData.append('final_quiz.duration_seconds', String(data.final_quiz?.duration_seconds ?? 900));
+            formData.append('final_quiz[description]', data.final_quiz?.description || '');
+            formData.append('final_quiz[duration_seconds]', String(data.final_quiz?.duration_seconds ?? 900));
         }
 
         if (data.final_quiz && Array.isArray(data.final_quiz.questions)) {
@@ -318,31 +318,28 @@ export default function CourseForm({ categories }) {
         }
 
         // Validate Final Quiz
-        const hasFinalQuiz = !!data.final_quiz_title || (data.final_quiz && data.final_quiz.questions && data.final_quiz.questions.length > 0);
-        if (hasFinalQuiz) {
-            if (!data.final_quiz_title) {
-                newErrors[`final_quiz.title`] = "Final quiz title is required.";
-            }
-            if (!data.final_quiz || !data.final_quiz.questions || data.final_quiz.questions.length === 0) {
-                newErrors[`final_quiz.questions_min`] = "Final quiz must have at least one question.";
-            } else {
-                data.final_quiz.questions.forEach((q, qIndex) => {
-                    if (!q.question || q.question.trim() === "") {
-                        newErrors[`final_quiz.questions.${qIndex}.question`] = "Question text is required.";
-                    }
+        if (!data.final_quiz_title) {
+            newErrors[`final_quiz.title`] = "Final quiz title is required.";
+        }
+        if (!data.final_quiz || !data.final_quiz.questions || data.final_quiz.questions.length === 0) {
+            newErrors[`final_quiz.questions_min`] = "Final quiz must have at least one question.";
+        } else {
+            data.final_quiz.questions.forEach((q, qIndex) => {
+                if (!q.question || q.question.trim() === "") {
+                    newErrors[`final_quiz.questions.${qIndex}.question`] = "Question text is required.";
+                }
 
-                    (q.options || []).forEach((opt, oIndex) => {
-                        if (!opt.option || opt.option.trim() === "") {
-                            newErrors[`final_quiz.questions.${qIndex}.options.${oIndex}.option`] = "Option text is required.";
-                        }
-                    });
-
-                    const hasCorrectOption = q.options && q.options.some(o => o.is_correct);
-                    if (!hasCorrectOption) {
-                        newErrors[`final_quiz.questions.${qIndex}.correct_option`] = "Select a correct answer.";
+                (q.options || []).forEach((opt, oIndex) => {
+                    if (!opt.option || opt.option.trim() === "") {
+                        newErrors[`final_quiz.questions.${qIndex}.options.${oIndex}.option`] = "Option text is required.";
                     }
                 });
-            }
+
+                const hasCorrectOption = q.options && q.options.some(o => o.is_correct);
+                if (!hasCorrectOption) {
+                    newErrors[`final_quiz.questions.${qIndex}.correct_option`] = "Select a correct answer.";
+                }
+            });
         }
 
         setFrontendErrors(newErrors);
