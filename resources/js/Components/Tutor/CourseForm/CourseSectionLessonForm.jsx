@@ -10,6 +10,7 @@ export default function CourseSectionLessonForm({
     setData,
     errors,
     frontendErrors = {},
+    setFrontendErrors,
     finalQuizTitle,
     finalQuiz,
     onFinalQuizTitleChange,
@@ -41,36 +42,49 @@ export default function CourseSectionLessonForm({
     }, [frontendErrors]);
 
     const handleAddQuiz = (sectionId) => {
-            setData(
-                "sections",
-                sections.map((s) =>
-                    s.id === sectionId
-                        ? {
-                              ...s,
-                              quiz: { title: "", description: "", questions: [] },
-                              quiz_title: "",
-                          }
-                        : s
-                )
-            );
-        };
-    
-        const handleRemoveQuiz = (sectionId) => {
-            setData(
-                "sections",
-                sections.map((s) => {
-                    if (s.id === sectionId) {
-                        const newSection = { ...s };
-                        delete newSection.quiz;
-                        delete newSection.quiz_title;
-                        return newSection;
+        setData(
+            "sections",
+            sections.map((s) =>
+                s.id === sectionId
+                    ? {
+                        ...s,
+                        quiz: { title: "", description: "", questions: [] },
+                        quiz_title: "",
                     }
-                    return s;
-                })
-            );
-        };
-    
-        const openModal = (modal, item) => {
+                    : s
+            )
+        );
+    };
+
+    const handleRemoveQuiz = (sectionId) => {
+        const sIndex = sections.findIndex(s => s.id === sectionId);
+        if (sIndex !== -1 && setFrontendErrors) {
+            setFrontendErrors(prev => {
+                const next = { ...prev };
+                Object.keys(next).forEach(key => {
+                    if (key.startsWith(`sections.${sIndex}.quiz`)) {
+                        delete next[key];
+                    }
+                });
+                return next;
+            });
+        }
+
+        setData(
+            "sections",
+            sections.map((s) => {
+                if (s.id === sectionId) {
+                    const newSection = { ...s };
+                    delete newSection.quiz;
+                    delete newSection.quiz_title;
+                    return newSection;
+                }
+                return s;
+            })
+        );
+    };
+
+    const openModal = (modal, item) => {
         if (modal === "addLesson") {
             setSelectedSection(item);
             setLessonModalOpen(true);
@@ -134,11 +148,11 @@ export default function CourseSectionLessonForm({
                 sections.map((s) =>
                     s.id === sectionId
                         ? {
-                              ...s,
-                              lessons: s.lessons.filter(
-                                  (l) => l.id !== lessonId
-                              ),
-                          }
+                            ...s,
+                            lessons: s.lessons.filter(
+                                (l) => l.id !== lessonId
+                            ),
+                        }
                         : s
                 )
             );
@@ -371,29 +385,39 @@ export default function CourseSectionLessonForm({
                                                     section.quiz_title ??
                                                     ""
                                                 }
-                                                onChange={(e) =>
+                                                onChange={(e) => {
+                                                    const val = e.target.value;
+                                                    if (setFrontendErrors) {
+                                                        if (!val || val.trim() === "") {
+                                                            setFrontendErrors(prev => ({
+                                                                ...prev,
+                                                                [`sections.${index}.quiz.title`]: "Quiz title is required."
+                                                            }));
+                                                        } else if (frontendErrors[`sections.${index}.quiz.title`]) {
+                                                            setFrontendErrors(prev => {
+                                                                const next = { ...prev };
+                                                                delete next[`sections.${index}.quiz.title`];
+                                                                return next;
+                                                            });
+                                                        }
+                                                    }
                                                     setData(
                                                         "sections",
                                                         sections.map((s) =>
                                                             s.id === section.id
                                                                 ? {
-                                                                      ...s,
-                                                                      quiz: {
-                                                                          ...(s.quiz ||
-                                                                              {}),
-                                                                          title: e
-                                                                              .target
-                                                                              .value,
-                                                                      },
-                                                                      quiz_title:
-                                                                          e
-                                                                              .target
-                                                                              .value,
-                                                                  }
+                                                                    ...s,
+                                                                    quiz: {
+                                                                        ...(s.quiz ||
+                                                                            {}),
+                                                                        title: val,
+                                                                    },
+                                                                    quiz_title: val,
+                                                                }
                                                                 : s
                                                         )
-                                                    )
-                                                }
+                                                    );
+                                                }}
                                                 placeholder="Section Quiz Title"
                                                 className="text-sm w-full border-gray-200 rounded-md shadow-sm dark:bg-darkSecondary dark:border-dark dark:text-white dark:placeholder-gray-400"
                                             />
@@ -408,16 +432,17 @@ export default function CourseSectionLessonForm({
                                                             "sections",
                                                             sections.map((s) =>
                                                                 s.id ===
-                                                                section.id
+                                                                    section.id
                                                                     ? {
-                                                                          ...s,
-                                                                          quiz: qz,
-                                                                      }
+                                                                        ...s,
+                                                                        quiz: qz,
+                                                                    }
                                                                     : s
                                                             )
                                                         )
                                                     }
                                                     errors={frontendErrors}
+                                                    setFrontendErrors={setFrontendErrors}
                                                     errorPrefix={`sections.${index}.quiz`}
                                                 />
                                             </div>
@@ -491,7 +516,7 @@ export default function CourseSectionLessonForm({
                     <div className="mb-6 p-4 border rounded-lg bg-white dark:bg-darkSecondary dark:border-dark">
                         <div className="flex justify-between items-center mb-3">
                             <h2 className="text-lg font-semibold dark:text-white">
-                                Final Quiz (Optional)
+                                Final Quiz
                             </h2>
                             {finalQuizTitle != null && (
                                 <button
@@ -509,10 +534,25 @@ export default function CourseSectionLessonForm({
                                 <input
                                     type="text"
                                     value={finalQuizTitle || ""}
-                                    onChange={(e) =>
+                                    onChange={(e) => {
+                                        const val = e.target.value;
+                                        if (setFrontendErrors) {
+                                            if (!val || val.trim() === "") {
+                                                setFrontendErrors(prev => ({
+                                                    ...prev,
+                                                    ['final_quiz.title']: "Final quiz title is required."
+                                                }));
+                                            } else if (frontendErrors['final_quiz.title']) {
+                                                setFrontendErrors(prev => {
+                                                    const next = { ...prev };
+                                                    delete next['final_quiz.title'];
+                                                    return next;
+                                                });
+                                            }
+                                        }
                                         onFinalQuizTitleChange &&
-                                        onFinalQuizTitleChange(e.target.value)
-                                    }
+                                            onFinalQuizTitleChange(val)
+                                    }}
                                     placeholder="Enter a final quiz title"
                                     className="w-full border-gray-200 rounded-md shadow-sm dark:bg-darkSecondary dark:border-dark dark:text-white dark:placeholder-gray-400"
                                 />
@@ -524,6 +564,7 @@ export default function CourseSectionLessonForm({
                                         value={finalQuiz}
                                         onChange={onFinalQuizChange}
                                         errors={frontendErrors}
+                                        setFrontendErrors={setFrontendErrors}
                                         errorPrefix="final_quiz"
                                     />
                                 </div>

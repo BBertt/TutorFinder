@@ -301,6 +301,12 @@ export default function CourseForm({ categories }) {
                                 newErrors[`sections.${sIndex}.quiz.questions.${qIndex}.question`] = "Question text is required.";
                             }
 
+                            (q.options || []).forEach((opt, oIndex) => {
+                                if (!opt.option || opt.option.trim() === "") {
+                                    newErrors[`sections.${sIndex}.quiz.questions.${qIndex}.options.${oIndex}.option`] = "Option text is required.";
+                                }
+                            });
+
                             const hasCorrectOption = q.options && q.options.some(o => o.is_correct);
                             if (!hasCorrectOption) {
                                 newErrors[`sections.${sIndex}.quiz.questions.${qIndex}.correct_option`] = "Select a correct answer.";
@@ -324,6 +330,12 @@ export default function CourseForm({ categories }) {
                     if (!q.question || q.question.trim() === "") {
                         newErrors[`final_quiz.questions.${qIndex}.question`] = "Question text is required.";
                     }
+
+                    (q.options || []).forEach((opt, oIndex) => {
+                        if (!opt.option || opt.option.trim() === "") {
+                            newErrors[`final_quiz.questions.${qIndex}.options.${oIndex}.option`] = "Option text is required.";
+                        }
+                    });
 
                     const hasCorrectOption = q.options && q.options.some(o => o.is_correct);
                     if (!hasCorrectOption) {
@@ -411,6 +423,7 @@ export default function CourseForm({ categories }) {
                             setData={setData}
                             errors={errors}
                             frontendErrors={frontendErrors}
+                            setFrontendErrors={setFrontendErrors}
                             finalQuizTitle={data.final_quiz_title}
                             finalQuiz={data.final_quiz}
                             onFinalQuizTitleChange={(v) => {
