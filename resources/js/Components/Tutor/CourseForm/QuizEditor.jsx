@@ -4,7 +4,7 @@ import {
     RadioGroupItem,
 } from "@/Components/UI/RadioGroup";
 
-export default function QuizEditor({ value, onChange }) {
+export default function QuizEditor({ value, onChange, errors = {}, errorPrefix = "", setFrontendErrors }) {
     const quiz = value || { title: "", questions: [] };
 
     const setQuiz = (updater) => {
@@ -13,6 +13,13 @@ export default function QuizEditor({ value, onChange }) {
     };
 
     const addQuestion = () => {
+        if (setFrontendErrors && errors[`${errorPrefix}.questions_min`]) {
+            setFrontendErrors(prev => {
+                const next = { ...prev };
+                delete next[`${errorPrefix}.questions_min`];
+                return next;
+            });
+        }
         setQuiz({
             ...quiz,
             questions: [
@@ -34,6 +41,20 @@ export default function QuizEditor({ value, onChange }) {
     };
 
     const updateQuestionText = (qi, text) => {
+        if (setFrontendErrors) {
+            if (!text || text.trim() === "") {
+                setFrontendErrors(prev => ({
+                    ...prev,
+                    [`${errorPrefix}.questions.${qi}.question`]: "Question text is required."
+                }));
+            } else if (errors[`${errorPrefix}.questions.${qi}.question`]) {
+                setFrontendErrors(prev => {
+                    const next = { ...prev };
+                    delete next[`${errorPrefix}.questions.${qi}.question`];
+                    return next;
+                });
+            }
+        }
         setQuiz({
             ...quiz,
             questions: quiz.questions.map((q, i) =>
@@ -71,6 +92,21 @@ export default function QuizEditor({ value, onChange }) {
     };
 
     const updateOptionText = (qi, oi, text) => {
+        if (setFrontendErrors) {
+            const errorKey = `${errorPrefix}.questions.${qi}.options.${oi}.option`;
+            if (!text || text.trim() === "") {
+                setFrontendErrors(prev => ({
+                    ...prev,
+                    [errorKey]: "Option text is required."
+                }));
+            } else if (errors[errorKey]) {
+                setFrontendErrors(prev => {
+                    const next = { ...prev };
+                    delete next[errorKey];
+                    return next;
+                });
+            }
+        }
         setQuiz({
             ...quiz,
             questions: quiz.questions.map((q, i) =>
@@ -87,6 +123,13 @@ export default function QuizEditor({ value, onChange }) {
     };
 
     const setCorrect = (qi, oi) => {
+        if (setFrontendErrors && errors[`${errorPrefix}.questions.${qi}.correct_option`]) {
+            setFrontendErrors(prev => {
+                const next = { ...prev };
+                delete next[`${errorPrefix}.questions.${qi}.correct_option`];
+                return next;
+            });
+        }
         setQuiz({
             ...quiz,
             questions: quiz.questions.map((q, i) =>
@@ -115,6 +158,9 @@ export default function QuizEditor({ value, onChange }) {
                     + Add Question
                 </button>
             </div>
+            {errors[`${errorPrefix}.questions_min`] && (
+                <p className="text-red-500 text-sm mt-1">{errors[`${errorPrefix}.questions_min`]}</p>
+            )}
             <div className="grid grid-cols-1 gap-3">
                 <div>
                     <label className="text-sm font-medium dark:text-white">
@@ -177,23 +223,28 @@ export default function QuizEditor({ value, onChange }) {
                         key={q.id || qi}
                         className="border dark:border-dark rounded-md p-3 space-y-2"
                     >
-                        <div className="flex gap-2 items-start">
-                            <input
-                                type="text"
-                                value={q.question || ""}
-                                onChange={(e) =>
-                                    updateQuestionText(qi, e.target.value)
-                                }
-                                placeholder={`Question ${qi + 1}`}
-                                className="mt-1 block w-full border-gray-200 rounded-md shadow-sm dark:bg-darkSecondary dark:border-dark dark:text-white dark:placeholder-gray-400"
-                            />
-                            <button
-                                type="button"
-                                onClick={() => removeQuestion(qi)}
-                                className="text-red-500 text-sm font-semibold"
-                            >
-                                Remove
-                            </button>
+                        <div className="flex flex-col gap-1">
+                            <div className="flex gap-2 items-start">
+                                <input
+                                    type="text"
+                                    value={q.question || ""}
+                                    onChange={(e) =>
+                                        updateQuestionText(qi, e.target.value)
+                                    }
+                                    placeholder={`Question ${qi + 1}`}
+                                    className="mt-1 block w-full border-gray-200 rounded-md shadow-sm dark:bg-darkSecondary dark:border-dark dark:text-white dark:placeholder-gray-400"
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => removeQuestion(qi)}
+                                    className="text-red-500 text-sm font-semibold"
+                                >
+                                    Remove
+                                </button>
+                            </div>
+                            {errors[`${errorPrefix}.questions.${qi}.question`] && (
+                                <p className="text-red-500 text-sm">{errors[`${errorPrefix}.questions.${qi}.question`]}</p>
+                            )}
                         </div>
 
                         <RadioGroup
@@ -202,27 +253,37 @@ export default function QuizEditor({ value, onChange }) {
                             className="pl-2 space-y-2"
                         >
                             {(q.options || []).map((o, oi) => (
-                                <div key={o.id || oi} className="flex items-center gap-2">
-                                    <RadioGroupItem value={String(o.id)} id={String(o.id)} />
-                                    <input
-                                        type="text"
-                                        value={o.option || ""}
-                                        onChange={(e) =>
-                                            updateOptionText(qi, oi, e.target.value)
-                                        }
-                                        placeholder={`Option ${oi + 1}`}
-                                        className="mt-1 block w-full border-gray-200 rounded-md shadow-sm dark:bg-darkSecondary dark:border-dark dark:text-white dark:placeholder-gray-400"
-                                    />
-                                    <button
-                                        type="button"
-                                        onClick={() => removeOption(qi, oi)}
-                                        className="text-xs text-red-500 font-semibold"
-                                    >
-                                        Delete
-                                    </button>
+                                <div key={o.id || oi} className="space-y-1">
+                                    <div className="flex items-center gap-2">
+                                        <RadioGroupItem value={String(o.id)} id={String(o.id)} />
+                                        <input
+                                            type="text"
+                                            value={o.option || ""}
+                                            onChange={(e) =>
+                                                updateOptionText(qi, oi, e.target.value)
+                                            }
+                                            placeholder={`Option ${oi + 1}`}
+                                            className="mt-1 block w-full border-gray-200 rounded-md shadow-sm dark:bg-darkSecondary dark:border-dark dark:text-white dark:placeholder-gray-400"
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={() => removeOption(qi, oi)}
+                                            className="text-xs text-red-500 font-semibold"
+                                        >
+                                            Delete
+                                        </button>
+                                    </div>
+                                    {errors[`${errorPrefix}.questions.${qi}.options.${oi}.option`] && (
+                                        <p className="text-red-500 text-xs ml-6">
+                                            {errors[`${errorPrefix}.questions.${qi}.options.${oi}.option`]}
+                                        </p>
+                                    )}
                                 </div>
                             ))}
                         </RadioGroup>
+                        {errors[`${errorPrefix}.questions.${qi}.correct_option`] && (
+                            <p className="text-red-500 text-sm ml-2">{errors[`${errorPrefix}.questions.${qi}.correct_option`]}</p>
+                        )}
                         <div className="pl-2">
                             <button
                                 type="button"
