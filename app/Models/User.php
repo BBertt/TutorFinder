@@ -68,7 +68,7 @@ class User extends Authenticatable implements MustVerifyEmail
             return Storage::url($path);
         }
 
-        return '/' . ltrim($path, '/');
+        return ltrim($path, '/');
     }
 
     /**

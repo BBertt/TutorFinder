@@ -175,8 +175,8 @@ export default function CourseForm({ categories }) {
 
         formData.append('final_quiz_title', data.final_quiz_title || '');
         if (data.final_quiz_title) {
-            formData.append('final_quiz.description', data.final_quiz?.description || '');
-            formData.append('final_quiz.duration_seconds', String(data.final_quiz?.duration_seconds ?? 900));
+            formData.append('final_quiz[description]', data.final_quiz?.description || '');
+            formData.append('final_quiz[duration_seconds]', String(data.final_quiz?.duration_seconds ?? 900));
         }
 
         if (data.final_quiz && Array.isArray(data.final_quiz.questions)) {
@@ -283,6 +283,63 @@ export default function CourseForm({ categories }) {
                 newErrors.lesson_content =
                     "All lessons must have both a title and description.";
             }
+
+            // Validate Section Quizzes
+            data.sections.forEach((section, sIndex) => {
+                const hasQuiz = !!section.quiz_title || (section.quiz && section.quiz.questions && section.quiz.questions.length > 0);
+
+                if (hasQuiz) {
+                    if (!section.quiz_title) {
+                        newErrors[`sections.${sIndex}.quiz.title`] = "Quiz title is required.";
+                    }
+
+                    if (!section.quiz || !section.quiz.questions || section.quiz.questions.length === 0) {
+                        newErrors[`sections.${sIndex}.quiz.questions_min`] = "Quiz must have at least one question.";
+                    } else {
+                        section.quiz.questions.forEach((q, qIndex) => {
+                            if (!q.question || q.question.trim() === "") {
+                                newErrors[`sections.${sIndex}.quiz.questions.${qIndex}.question`] = "Question text is required.";
+                            }
+
+                            (q.options || []).forEach((opt, oIndex) => {
+                                if (!opt.option || opt.option.trim() === "") {
+                                    newErrors[`sections.${sIndex}.quiz.questions.${qIndex}.options.${oIndex}.option`] = "Option text is required.";
+                                }
+                            });
+
+                            const hasCorrectOption = q.options && q.options.some(o => o.is_correct);
+                            if (!hasCorrectOption) {
+                                newErrors[`sections.${sIndex}.quiz.questions.${qIndex}.correct_option`] = "Select a correct answer.";
+                            }
+                        });
+                    }
+                }
+            });
+        }
+
+        // Validate Final Quiz
+        if (!data.final_quiz_title) {
+            newErrors[`final_quiz.title`] = "Final quiz title is required.";
+        }
+        if (!data.final_quiz || !data.final_quiz.questions || data.final_quiz.questions.length === 0) {
+            newErrors[`final_quiz.questions_min`] = "Final quiz must have at least one question.";
+        } else {
+            data.final_quiz.questions.forEach((q, qIndex) => {
+                if (!q.question || q.question.trim() === "") {
+                    newErrors[`final_quiz.questions.${qIndex}.question`] = "Question text is required.";
+                }
+
+                (q.options || []).forEach((opt, oIndex) => {
+                    if (!opt.option || opt.option.trim() === "") {
+                        newErrors[`final_quiz.questions.${qIndex}.options.${oIndex}.option`] = "Option text is required.";
+                    }
+                });
+
+                const hasCorrectOption = q.options && q.options.some(o => o.is_correct);
+                if (!hasCorrectOption) {
+                    newErrors[`final_quiz.questions.${qIndex}.correct_option`] = "Select a correct answer.";
+                }
+            });
         }
 
         setFrontendErrors(newErrors);
@@ -363,6 +420,7 @@ export default function CourseForm({ categories }) {
                             setData={setData}
                             errors={errors}
                             frontendErrors={frontendErrors}
+                            setFrontendErrors={setFrontendErrors}
                             finalQuizTitle={data.final_quiz_title}
                             finalQuiz={data.final_quiz}
                             onFinalQuizTitleChange={(v) => {

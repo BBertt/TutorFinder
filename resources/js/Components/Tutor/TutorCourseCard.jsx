@@ -16,24 +16,30 @@ export default function TutorCourseCard({ course }) {
             onFinish: () => setIsDeleteModalOpen(false),
         });
     };
-    const handleDelete = () => {
+
+    const handleDelete = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
         setIsDeleteModalOpen(true);
     };
 
     return (
         <>
-            <Link
-                href={route("courses.show", course.id)}
-                className="block group"
-            >
+            <div className="relative h-full group">
                 <div className="bg-white rounded-lg shadow-sm overflow-hidden transform hover:-translate-y-2 transition-transform duration-300 h-full flex flex-col dark:bg-darkSecondary dark:border-dark">
+                    <Link
+                        href={route("courses.show", course.id)}
+                        className="absolute inset-0 z-10"
+                    >
+                        <span className="sr-only">View Course</span>
+                    </Link>
                     <img
                         src={course.thumbnail_image_url}
                         alt={course.title}
                         className="w-full h-48 object-cover"
                     />
                     <div className="p-4 flex-1 flex flex-col sm:flex-row items-start sm:justify-between">
-                        <div className="flex-1 pr-0 sm:pr-4">
+                        <div className="flex-1 pr-0 sm:pr-4 pointer-events-none">
                             <h3 className="text-lg font-semibold truncate group-hover:text-primary dark:text-white">
                                 {course.title}
                             </h3>
@@ -47,17 +53,18 @@ export default function TutorCourseCard({ course }) {
                         </div>
 
                         <div className="flex flex-col items-end space-y-2 flex-shrink-0 w-full sm:w-auto mt-4 sm:mt-0">
-                            <div className="flex items-center space-x-1">
+                            <div className="flex items-center space-x-1 pointer-events-none">
                                 <StarIcon className="w-5 h-5 text-yellow-400" />
                                 <span className="text-sm font-semibold dark:text-white">
                                     {averageRating}
                                 </span>
                             </div>
-                            <div className="flex items-center space-x-2 w-full pt-2">
+
+                            <div className="flex items-center space-x-2 w-full pt-2 relative z-20">
                                 <Link
                                     href={route(
                                         "tutor.courses.edit",
-                                        course.id
+                                        course.id,
                                     )}
                                     className="flex-1 text-center px-4 py-1 text-sm bg-gray-200 text-black dark:text-white font-semibold rounded-md hover:bg-gray-400 dark:bg-gray-700 dark:hover:bg-gray-600"
                                 >
@@ -73,18 +80,18 @@ export default function TutorCourseCard({ course }) {
                         </div>
                     </div>
                 </div>
+            </div>
 
-                <ConfirmationModal
-                    isOpen={isDeleteModalOpen}
-                    onClose={() => setIsDeleteModalOpen(false)}
-                    onConfirm={performDelete}
-                    title="Confirm Deletion"
-                    message="Are you sure you want to permanently delete this course? This action cannot be undone."
-                    confirmText="Yes, Delete"
-                    cancelText="No"
-                    confirmColor="bg-red-600"
-                />
-            </Link>
+            <ConfirmationModal
+                isOpen={isDeleteModalOpen}
+                onClose={() => setIsDeleteModalOpen(false)}
+                onConfirm={performDelete}
+                title="Confirm Deletion"
+                message="Are you sure you want to permanently delete this course? This action cannot be undone."
+                confirmText="Yes, Delete"
+                cancelText="No"
+                confirmColor="bg-red-600"
+            />
         </>
     );
 }
