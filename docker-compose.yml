@@ -23,8 +23,8 @@ services:
             - "9001:9001"
 
         environment:
-            MINIO_ROOT_USER: ${MINIO_ROOT_USER}
-            MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+            MINIO_ROOT_USER: tutorfinder
+            MINIO_ROOT_PASSWORD: tutorfinder123
 
         volumes:
             - ./minio-data:/data
